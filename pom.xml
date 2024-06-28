@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>dev.ikm.build</groupId>
+        <artifactId>java-parent</artifactId>
+        <version>1.47.0</version>
+        <relativePath />
+    </parent>
+
+    <groupId>dev.ikm.tinkar</groupId>
+    <artifactId>composer</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>IKM Tinkar Composer</name>
+    <description>
+        Tinkar-Composer is a java software project that provides an API for creating,
+        updating, and writing data Components that adhere to the Tinkar data model.
+    </description>
+
+    <inceptionYear>2024</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>http://www.github.com/ikmdev/tinkar-composer</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>ikmdev</id>
+            <name>IKM Development Team</name>
+            <email>support@ikm.dev</email>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/ikmdev/tinkar-composer/issues</url>
+    </issueManagement>
+
+    <url>http://www.ikm.dev</url>
+
+    <organization>
+        <name>Integrated Knowledge Management</name>
+        <url>http://www.ikm.dev</url>
+    </organization>
+
+    <properties>
+        <tinkar-core.version>1.53.0</tinkar-core.version>
+        <slf4j.version>2.0.13</slf4j.version>
+        <log4j.version>3.0.0-alpha1</log4j.version>
+    </properties>
+
+    <!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>dev.ikm.tinkar</groupId>
+                <artifactId>tinkar-core</artifactId>
+                <version>${tinkar-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j2-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+       </dependencies>
+    </dependencyManagement>
+
+    <!-- Cross project dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
