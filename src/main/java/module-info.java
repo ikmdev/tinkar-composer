@@ -13,5 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Util {
+module dev.ikm.tinkar.composer {
+    requires dev.ikm.tinkar.common;
+    requires dev.ikm.tinkar.terms;
+    requires dev.ikm.tinkar.entity;
+    requires org.eclipse.collections.api;
+    exports dev.ikm.tinkar.composer;
+    exports dev.ikm.tinkar.composer.create;
 }
