@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.create;
+package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
 
 import java.util.UUID;
 
-public interface Creator {
+public class Utility {
 
-    default long[] createAdditionalLongs(PublicId publicId) {
+    public static long[] createAdditionalLongs(PublicId publicId) {
         long[] additionalLongs = new long[(publicId.uuidCount() * 2) - 2];
         int index = 0;
         for (int i = 1; i < publicId.uuidCount(); i++) {

@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PatternCreator implements Creator {
+import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
+
+public class PatternCreator {
 
     public final PublicId stamp;
 

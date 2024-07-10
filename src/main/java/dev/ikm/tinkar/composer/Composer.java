@@ -15,14 +15,23 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.common.id.PublicIds;
-import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.common.id.PublicId;
+import dev.ikm.tinkar.entity.transaction.Transaction;
+import dev.ikm.tinkar.terms.EntityProxy;
 
 public class Composer {
 
-    public static Session createSession(Concept status, long time, Concept author, Concept module, Concept path) {
+    private final Transaction transaction;
+    private final PublicId stampId;
 
-        return new Session(PublicIds.newRandom());
+    public Composer(Transaction transaction, PublicId stampId) {
+        this.transaction = transaction;
+        this.stampId = stampId;
+    }
+
+    public SemanticComposer concept(EntityProxy.Concept concept) {
+        //Create Concept
+        return new SemanticComposer(stampId, concept);
     }
 
 }

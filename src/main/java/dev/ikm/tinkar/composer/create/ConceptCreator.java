@@ -20,7 +20,9 @@ import dev.ikm.tinkar.entity.*;
 
 import java.util.UUID;
 
-public class ConceptCreator implements Creator {
+import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
+
+public class ConceptCreator {
 
     private final PublicId stamp;
 

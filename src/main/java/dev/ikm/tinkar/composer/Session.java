@@ -15,13 +15,34 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.common.id.PublicId;
+import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.entity.transaction.Transaction;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.State;
 
-public class Session {
+import java.io.Closeable;
 
-    private final PublicId stamp;
+public class Session implements Closeable {
 
-    public Session(PublicId stamp) {
-        this.stamp = stamp;
+    private final StampEntity stampEntity;
+    private final Transaction transaction;
+
+    public Session(State status, long time, Concept author, Concept module, Concept path){
+        this.transaction = new Transaction();
+        this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
+    }
+
+    public Session(State status, Concept author, Concept module, Concept path) {
+        this.transaction = new Transaction();
+        this.stampEntity = transaction.getStamp(status, author, module, path);
+    }
+
+    public Composer makeCompose() {
+        return new Composer(transaction, stampEntity.publicId());
+    }
+
+    @Override
+    public void close() {
+        transaction.commit();
     }
 }

@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.create.om;
+package dev.ikm.tinkar.composer.constituent;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import org.eclipse.collections.api.list.MutableList;
+import dev.ikm.tinkar.terms.EntityProxy;
 
-import java.util.function.Supplier;
+public class USEnglishDialect extends SemanticConstituent{
 
-public record SemanticDetail(PublicId pattern, PublicId referencedComponent, Supplier<MutableList<Object>> fieldsSupplier) { }
+    public USEnglishDialect(EntityProxy.Semantic semantic, EntityProxy.Pattern referencedPattern, PublicId stampId) {
+        super(semantic, referencedPattern, stampId);
+    }
+
+    @Override
+    public void create(PublicId referencedComponent) {
+
+    }
+}

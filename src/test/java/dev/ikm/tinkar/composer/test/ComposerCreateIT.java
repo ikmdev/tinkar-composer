@@ -16,7 +16,6 @@ package dev.ikm.tinkar.composer.test;
  * limitations under the License.
  */
 
-import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.common.service.CachingService;
 import dev.ikm.tinkar.common.service.PrimitiveData;
@@ -24,8 +23,12 @@ import dev.ikm.tinkar.common.service.ServiceKeys;
 import dev.ikm.tinkar.common.service.ServiceProperties;
 import dev.ikm.tinkar.composer.Composer;
 import dev.ikm.tinkar.composer.Session;
+import dev.ikm.tinkar.composer.constituent.Comment;
+import dev.ikm.tinkar.composer.constituent.FullyQualifiedName;
+import dev.ikm.tinkar.composer.constituent.USEnglishDialect;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.State;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -59,13 +62,26 @@ public class ComposerCreateIT {
 
     @Test
     public void createSessionTest() {
-        Concept status = Concept.make(PublicIds.newRandom());
+        State status = State.ACTIVE;
         long time = System.currentTimeMillis();
         Concept author = Concept.make(PublicIds.newRandom());
         Concept module = Concept.make(PublicIds.newRandom());
         Concept path = Concept.make(PublicIds.newRandom());
 
-        Session session = Composer.createSession(status, time, author, module, path);
+        try(Session session = new Session(status, time, author, module, path)){
+            Composer composer = session.makeCompose();
+
+            composer.concept(Concept.make("Concept", PublicIds.newRandom()))
+                    .with(new FullyQualifiedName(EntityProxy.Semantic.make("F1", PublicIds.newRandom()), null, null, null, null)
+                            .with(new USEnglishDialect(EntityProxy.Semantic.make("D1", PublicIds.newRandom()), null, null)
+                                    .with(new Comment(EntityProxy.Semantic.make("C1", PublicIds.newRandom()), null, null)))
+                            .with(new Comment(EntityProxy.Semantic.make("C11", PublicIds.newRandom()), null, null)))
+                    .with(new Comment(EntityProxy.Semantic.make("C2", PublicIds.newRandom()), null, null))
+                    .with(
+                            new FullyQualifiedName(EntityProxy.Semantic.make("F2", PublicIds.newRandom()), null, null, null, null),
+                            new Comment(EntityProxy.Semantic.make("C3", PublicIds.newRandom()), null, null));
+        }
+
     }
 
 }

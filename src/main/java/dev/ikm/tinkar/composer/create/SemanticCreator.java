@@ -15,162 +15,138 @@
  */
 package dev.ikm.tinkar.composer.create;
 
-import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.common.id.PublicIds;
-import dev.ikm.tinkar.composer.create.om.SemanticDetail;
-import dev.ikm.tinkar.entity.*;
-import dev.ikm.tinkar.entity.graph.DiTreeEntity;
-import dev.ikm.tinkar.entity.graph.EntityVertex;
-import dev.ikm.tinkar.terms.ConceptFacade;
-import dev.ikm.tinkar.terms.TinkarTerm;
-import org.eclipse.collections.api.factory.Lists;
-import org.eclipse.collections.api.factory.Maps;
-import org.eclipse.collections.api.factory.primitive.IntIntMaps;
-import org.eclipse.collections.api.factory.primitive.IntLists;
-import org.eclipse.collections.api.factory.primitive.IntObjectMaps;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.list.primitive.ImmutableIntList;
-import org.eclipse.collections.api.list.primitive.MutableIntList;
-import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.api.map.primitive.MutableIntIntMap;
-import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
+public class SemanticCreator {
 
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class SemanticCreator implements Creator {
-
-    private final PublicId stamp;
-
-    public SemanticCreator(PublicId stamp) {
-        this.stamp = stamp;
-    }
-
-    public void semantic(PublicId semantic, SemanticDetail semanticDetail){
-        write(semantic, semanticDetail);
-    }
-
-    public void description(PublicId semantic, PublicId referencedComponent, PublicId descriptionType, String text){
-        //Assign nids to description components
-        final int descriptionTypeNid = EntityService.get().nidForPublicId(descriptionType);
-        final ConceptFacade descriptionTypeFacade = ConceptFacade.make(descriptionTypeNid);
-
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.DESCRIPTION_PATTERN, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> descriptionFields = Lists.mutable.empty();
-            descriptionFields.add(TinkarTerm.ENGLISH_LANGUAGE);
-            descriptionFields.add(text);
-            descriptionFields.add(TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE);
-            descriptionFields.add(descriptionTypeFacade);
-            return descriptionFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
-    public void identifier(PublicId semantic, PublicId referencedComponent, PublicId source, String id){
-        //Reference Identifier Pattern
-        PublicId identifierPattern = PublicIds.of(UUID.fromString("5d60e14b-c410-5172-9559-3c4253278ae2"));
-
-        //Assign nids to description components
-        final int sourceNid = EntityService.get().nidForPublicId(source);
-        final ConceptFacade sourceFacade = ConceptFacade.make(sourceNid);
-
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(identifierPattern, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> identifierFields = Lists.mutable.empty();
-            identifierFields.add(sourceFacade);
-            identifierFields.add(id);
-            return identifierFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
-    public void usDialect(PublicId semantic, PublicId referencedComponent, PublicId dialectAcceptability){
-        //Assign nids to description components
-        final int dialectNid = EntityService.get().nidForPublicId(dialectAcceptability);
-        final ConceptFacade dialectFacade = ConceptFacade.make(dialectNid);
-
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.US_DIALECT_PATTERN, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> dialectFields = Lists.mutable.empty();
-            dialectFields.add(dialectFacade);
-            return dialectFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
-    public void axiomSyntax(PublicId semantic, PublicId referencedComponent, String axiomSyntax){
-        //Reference Axiom Syntax Pattern
-        PublicId axiomSyntaxPattern = PublicIds.of(UUID.fromString("c0ca180b-aae2-5fa1-9ab7-4a24f2dfe16b"));
-
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(axiomSyntaxPattern, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> axiomSyntaxFields = Lists.mutable.empty();
-            axiomSyntaxFields.add(axiomSyntax);
-            return axiomSyntaxFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
-    public void comment(PublicId semantic, PublicId referencedComponent, String comment, PublicId stamp){
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.COMMENT_PATTERN, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> commentFields = Lists.mutable.empty();
-            commentFields.add(comment);
-            return commentFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
-    public void membership(PublicId semantic, PublicId referencedComponent, PublicId membershipPattern){
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(membershipPattern, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> membershipFields = Lists.mutable.empty();
-            return membershipFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
-    public void versionControl(PublicId semantic, PublicId referencedComponent, PublicId concept, String formattedTime){
-        //Reference Version Control Pattern
-        PublicId versionControlPattern = PublicIds.of(UUID.fromString("70f89dd5-2cdb-59bb-bbaa-98527513547c"));
-
-        //Assign nids to description components
-        final int conceptNid = EntityService.get().nidForPublicId(concept);
-        final ConceptFacade conceptFacade = ConceptFacade.make(conceptNid);
-
-        //Create Semantic Detail
-        SemanticDetail semanticDetail = new SemanticDetail(versionControlPattern, referencedComponent, () -> {
-            //Semantic Field Object values
-            MutableList<Object> versionControlFields = Lists.mutable.empty();
-            versionControlFields.add(conceptFacade);
-            versionControlFields.add(formattedTime);
-            return versionControlFields;
-        });
-
-        //Write Semantic
-        semantic(semantic, semanticDetail);
-    }
-
+//    private final PublicId stamp;
+//
+//    public SemanticCreator(PublicId stamp) {
+//        this.stamp = stamp;
+//    }
+//
+//    public void semantic(PublicId semantic, SemanticDetail semanticDetail){
+//        write(semantic, semanticDetail);
+//    }
+//
+//    public void description(PublicId semantic, PublicId referencedComponent, PublicId descriptionType, String text){
+//        //Assign nids to description components
+//        final int descriptionTypeNid = EntityService.get().nidForPublicId(descriptionType);
+//        final ConceptFacade descriptionTypeFacade = ConceptFacade.make(descriptionTypeNid);
+//
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.DESCRIPTION_PATTERN, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> descriptionFields = Lists.mutable.empty();
+//            descriptionFields.add(TinkarTerm.ENGLISH_LANGUAGE);
+//            descriptionFields.add(text);
+//            descriptionFields.add(TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE);
+//            descriptionFields.add(descriptionTypeFacade);
+//            return descriptionFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
+//    public void identifier(PublicId semantic, PublicId referencedComponent, PublicId source, String id){
+//        //Reference Identifier Pattern
+//        PublicId identifierPattern = PublicIds.of(UUID.fromString("5d60e14b-c410-5172-9559-3c4253278ae2"));
+//
+//        //Assign nids to description components
+//        final int sourceNid = EntityService.get().nidForPublicId(source);
+//        final ConceptFacade sourceFacade = ConceptFacade.make(sourceNid);
+//
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(identifierPattern, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> identifierFields = Lists.mutable.empty();
+//            identifierFields.add(sourceFacade);
+//            identifierFields.add(id);
+//            return identifierFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
+//    public void usDialect(PublicId semantic, PublicId referencedComponent, PublicId dialectAcceptability){
+//        //Assign nids to description components
+//        final int dialectNid = EntityService.get().nidForPublicId(dialectAcceptability);
+//        final ConceptFacade dialectFacade = ConceptFacade.make(dialectNid);
+//
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.US_DIALECT_PATTERN, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> dialectFields = Lists.mutable.empty();
+//            dialectFields.add(dialectFacade);
+//            return dialectFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
+//    public void axiomSyntax(PublicId semantic, PublicId referencedComponent, String axiomSyntax){
+//        //Reference Axiom Syntax Pattern
+//        PublicId axiomSyntaxPattern = PublicIds.of(UUID.fromString("c0ca180b-aae2-5fa1-9ab7-4a24f2dfe16b"));
+//
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(axiomSyntaxPattern, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> axiomSyntaxFields = Lists.mutable.empty();
+//            axiomSyntaxFields.add(axiomSyntax);
+//            return axiomSyntaxFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
+//    public void comment(PublicId semantic, PublicId referencedComponent, String comment, PublicId stamp){
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.COMMENT_PATTERN, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> commentFields = Lists.mutable.empty();
+//            commentFields.add(comment);
+//            return commentFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
+//    public void membership(PublicId semantic, PublicId referencedComponent, PublicId membershipPattern){
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(membershipPattern, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> membershipFields = Lists.mutable.empty();
+//            return membershipFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
+//    public void versionControl(PublicId semantic, PublicId referencedComponent, PublicId concept, String formattedTime){
+//        //Reference Version Control Pattern
+//        PublicId versionControlPattern = PublicIds.of(UUID.fromString("70f89dd5-2cdb-59bb-bbaa-98527513547c"));
+//
+//        //Assign nids to description components
+//        final int conceptNid = EntityService.get().nidForPublicId(concept);
+//        final ConceptFacade conceptFacade = ConceptFacade.make(conceptNid);
+//
+//        //Create Semantic Detail
+//        SemanticDetail semanticDetail = new SemanticDetail(versionControlPattern, referencedComponent, () -> {
+//            //Semantic Field Object values
+//            MutableList<Object> versionControlFields = Lists.mutable.empty();
+//            versionControlFields.add(conceptFacade);
+//            versionControlFields.add(formattedTime);
+//            return versionControlFields;
+//        });
+//
+//        //Write Semantic
+//        semantic(semantic, semanticDetail);
+//    }
+//
 //    public void statedAxiom(PublicId semantic, PublicId referencedComponent, List<PublicId> origins){
 //        //Create Semantic Detail
 //        SemanticDetail semanticDetail = new SemanticDetail(TinkarTerm.EL_PLUS_PLUS_STATED_AXIOMS_PATTERN, referencedComponent, () -> {
@@ -258,45 +234,45 @@ public class SemanticCreator implements Creator {
 //        //Write Semantic
 //        semantic(semantic, semanticDetail);
 //    }
-
-    private void write(PublicId semantic, SemanticDetail semanticDetail){
-        //Assign primordial UUID from PublicId
-        UUID primordialUUID = semantic.asUuidArray()[0];
-
-        //Assign nids for PublicIds
-        int semanticNid = EntityService.get().nidForPublicId(semantic);
-        int patternNid = EntityService.get().nidForPublicId(semanticDetail.pattern());
-        int referencedComponentNid = EntityService.get().nidForPublicId(semanticDetail.referencedComponent());
-        int stampNid = EntityService.get().nidForPublicId(stamp);
-
-        //Process additional UUID longs from PublicId
-        long[] additionalLongs = createAdditionalLongs(semantic);
-
-        //Create empty version list
-        RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
-
-        //Create Semantic Chronology
-        SemanticRecord semanticRecord = SemanticRecordBuilder.builder()
-                .nid(semanticNid)
-                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
-                .mostSignificantBits(primordialUUID.getMostSignificantBits())
-                .additionalUuidLongs(additionalLongs)
-                .patternNid(patternNid)
-                .referencedComponentNid(referencedComponentNid)
-                .versions(versions.toImmutable())
-                .build();
-
-        //Create Semantic Version
-        versions.add(SemanticVersionRecordBuilder.builder()
-                .chronology(semanticRecord)
-                .stampNid(stampNid)
-                .fieldValues(semanticDetail.fieldsSupplier().get().toImmutable())
-                .build());
-
-        //Rebuild the Semantic with the now populated version data
-        SemanticEntity<? extends SemanticEntityVersion> semanticEntity = SemanticRecordBuilder
-                .builder(semanticRecord)
-                .versions(versions.toImmutable()).build();
-        EntityService.get().putEntity(semanticEntity);
-    }
+//
+//    private void write(PublicId semantic, SemanticDetail semanticDetail){
+//        //Assign primordial UUID from PublicId
+//        UUID primordialUUID = semantic.asUuidArray()[0];
+//
+//        //Assign nids for PublicIds
+//        int semanticNid = EntityService.get().nidForPublicId(semantic);
+//        int patternNid = EntityService.get().nidForPublicId(semanticDetail.pattern());
+//        int referencedComponentNid = EntityService.get().nidForPublicId(semanticDetail.referencedComponent());
+//        int stampNid = EntityService.get().nidForPublicId(stamp);
+//
+//        //Process additional UUID longs from PublicId
+//        long[] additionalLongs = createAdditionalLongs(semantic);
+//
+//        //Create empty version list
+//        RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
+//
+//        //Create Semantic Chronology
+//        SemanticRecord semanticRecord = SemanticRecordBuilder.builder()
+//                .nid(semanticNid)
+//                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
+//                .mostSignificantBits(primordialUUID.getMostSignificantBits())
+//                .additionalUuidLongs(additionalLongs)
+//                .patternNid(patternNid)
+//                .referencedComponentNid(referencedComponentNid)
+//                .versions(versions.toImmutable())
+//                .build();
+//
+//        //Create Semantic Version
+//        versions.add(SemanticVersionRecordBuilder.builder()
+//                .chronology(semanticRecord)
+//                .stampNid(stampNid)
+//                .fieldValues(semanticDetail.fieldsSupplier().get().toImmutable())
+//                .build());
+//
+//        //Rebuild the Semantic with the now populated version data
+//        SemanticEntity<? extends SemanticEntityVersion> semanticEntity = SemanticRecordBuilder
+//                .builder(semanticRecord)
+//                .versions(versions.toImmutable()).build();
+//        EntityService.get().putEntity(semanticEntity);
+//    }
 }
