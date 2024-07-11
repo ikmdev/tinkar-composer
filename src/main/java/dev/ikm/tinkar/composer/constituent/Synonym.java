@@ -15,21 +15,31 @@
  */
 package dev.ikm.tinkar.composer.constituent;
 
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.list.MutableList;
 
-public class Comment extends SemanticTemplate {
+public class Synonym extends SemanticTemplate {
 
-    private final String commentText;
+    private final Concept language;
+    private final String synonym;
+    private final Concept caseSensitivity;
+    private final Concept type;
 
-    public Comment(Semantic semantic, String commentText) {
-        super(semantic, TinkarTerm.COMMENT_PATTERN);
-        this.commentText = commentText;
+    public Synonym(Semantic semantic, Concept language, String synonym, Concept caseSensitivity) {
+        super(semantic, TinkarTerm.DESCRIPTION_PATTERN);
+        this.language = language;
+        this.synonym = synonym;
+        this.caseSensitivity = caseSensitivity;
+        this.type = TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE;
     }
 
     @Override
     public void setFields(MutableList<Object> fields) {
-        fields.add(commentText);
+        fields.add(language);
+        fields.add(synonym);
+        fields.add(caseSensitivity);
+        fields.add(type);
     }
 }

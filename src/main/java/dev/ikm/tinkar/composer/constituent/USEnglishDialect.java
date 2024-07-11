@@ -15,17 +15,22 @@
  */
 package dev.ikm.tinkar.composer.constituent;
 
-import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.EntityProxy.Semantic;
+import dev.ikm.tinkar.terms.TinkarTerm;
+import org.eclipse.collections.api.list.MutableList;
 
-public class USEnglishDialect extends SemanticConstituent{
+public class USEnglishDialect extends SemanticTemplate {
 
-    public USEnglishDialect(EntityProxy.Semantic semantic, EntityProxy.Pattern referencedPattern, PublicId stampId) {
-        super(semantic, referencedPattern, stampId);
+    private final Concept dialectAcceptability;
+
+    public USEnglishDialect(Semantic semantic, Concept dialectAcceptability) {
+        super(semantic, TinkarTerm.US_DIALECT_PATTERN);
+        this.dialectAcceptability = dialectAcceptability;
     }
 
     @Override
-    public void create(PublicId referencedComponent) {
-
+    public void setFields(MutableList<Object> fields) {
+        fields.add(dialectAcceptability);
     }
 }

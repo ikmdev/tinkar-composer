@@ -15,20 +15,20 @@
  */
 package dev.ikm.tinkar.composer.constituent;
 
-import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
+import org.eclipse.collections.api.list.MutableList;
 
-public class FullyQualifiedName extends SemanticConstituent {
+public class FullyQualifiedName extends SemanticTemplate {
 
     private final Concept language;
     private final String fqn;
     private final Concept caseSensitivity;
     private final Concept type;
 
-    public FullyQualifiedName(Semantic semantic, Concept language, String fqn, Concept caseSensitivity, PublicId stampId) {
-        super(semantic, TinkarTerm.DESCRIPTION_PATTERN, stampId);
+    public FullyQualifiedName(Semantic semantic, Concept language, String fqn, Concept caseSensitivity) {
+        super(semantic, TinkarTerm.DESCRIPTION_PATTERN);
         this.language = language;
         this.fqn = fqn;
         this.caseSensitivity = caseSensitivity;
@@ -36,14 +36,10 @@ public class FullyQualifiedName extends SemanticConstituent {
     }
 
     @Override
-    public void create(PublicId referencedComponent) {
-//        save(referencedComponent,
-//                fields -> {
-//                    fields.add(language);
-//                    fields.add(fqn);
-//                    fields.add(caseSensitivity);
-//                    fields.add(type);
-//                });
+    public void setFields(MutableList<Object> fields) {
+        fields.add(language);
+        fields.add(fqn);
+        fields.add(caseSensitivity);
+        fields.add(type);
     }
-
 }
