@@ -17,16 +17,19 @@ package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.composer.templates.SemanticTemplate;
+import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
 
 import java.util.Arrays;
 
 public class SemanticComposer {
 
+    private final Transaction transaction;
     private final PublicId stampId;
     private final EntityProxy referencedComponent;
 
-    public SemanticComposer(PublicId stampId, EntityProxy referencedConcept) {
+    public SemanticComposer(Transaction transaction, PublicId stampId, EntityProxy referencedConcept) {
+        this.transaction = transaction;
         this.stampId = stampId;
         this.referencedComponent = referencedConcept;
     }
@@ -35,6 +38,7 @@ public class SemanticComposer {
         templates.setReferencedComponent(referencedComponent);
         templates.getSemanticTemplates().forEach(semanticTemplate -> {
             semanticTemplate.save(stampId);
+            transaction.addComponent(semanticTemplate.getSemantic());
             System.out.println(semanticTemplate.getSemantic().description() + " references " + semanticTemplate.getReferencedComponent().description());
         });
         return this;
@@ -44,4 +48,5 @@ public class SemanticComposer {
         Arrays.stream(templates).forEach(this::with);
         return this;
     }
+
 }

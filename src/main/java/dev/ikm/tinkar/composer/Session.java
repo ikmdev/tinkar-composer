@@ -42,13 +42,11 @@ public class Session implements Closeable {
     }
 
     public void cancel() {
-        // TODO: Remove cancelled items from transaction
         transaction.cancel();
     }
 
     @Override
     public void close() {
-        // TODO: Add written items to transaction
         transaction.commit();
     }
 }

@@ -16,7 +16,7 @@
 package dev.ikm.tinkar.composer.templates;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.entity.*;
+import dev.ikm.tinkar.composer.Write;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
@@ -25,9 +25,6 @@ import org.eclipse.collections.api.list.MutableList;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-
-import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
 
 public abstract class SemanticTemplate {
 
@@ -61,49 +58,6 @@ public abstract class SemanticTemplate {
 
     protected abstract void setFields(MutableList<Object> fields);
 
-    public void save(PublicId stampId){
-        //Assign primordial UUID from PublicId
-        UUID primordialUUID = semantic.asUuidArray()[0];
-
-        //Assign nids for PublicIds
-        int semanticNid = EntityService.get().nidForPublicId(semantic);
-        int patternNid = EntityService.get().nidForPublicId(pattern);
-        int referencedComponentNid = EntityService.get().nidForPublicId(referencedComponent);
-        int stampNid = EntityService.get().nidForPublicId(stampId);
-
-        //Process additional UUID longs from PublicId
-        long[] additionalLongs = createAdditionalLongs(semantic);
-
-        //Create empty version list
-        RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
-
-        //Create Semantic Chronology
-        SemanticRecord semanticRecord = SemanticRecordBuilder.builder()
-                .nid(semanticNid)
-                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
-                .mostSignificantBits(primordialUUID.getMostSignificantBits())
-                .additionalUuidLongs(additionalLongs)
-                .patternNid(patternNid)
-                .referencedComponentNid(referencedComponentNid)
-                .versions(versions.toImmutable())
-                .build();
-
-        //Create Semantic Version
-        MutableList<Object> fields = Lists.mutable.empty();
-        setFields(fields);
-        versions.add(SemanticVersionRecordBuilder.builder()
-                .chronology(semanticRecord)
-                .stampNid(stampNid)
-                .fieldValues(fields.toImmutable())
-                .build());
-
-        //Rebuild the Semantic with the now populated version data
-        SemanticEntity<? extends SemanticEntityVersion> semanticEntity = SemanticRecordBuilder
-                .builder(semanticRecord)
-                .versions(versions.toImmutable()).build();
-        EntityService.get().putEntity(semanticEntity);
-    }
-
     public SemanticTemplate with(SemanticTemplate semanticTemplate) {
         semanticTemplate.setReferencedComponent(this.semantic);
         descendantSemanticTemplates.addAll(semanticTemplate.getSemanticTemplates());
@@ -113,6 +67,12 @@ public abstract class SemanticTemplate {
     public SemanticTemplate with(SemanticTemplate... templates) {
         Arrays.stream(templates).forEach(this::with);
         return this;
+    }
+
+    public void save(PublicId stampId){
+        MutableList<Object> fieldValues = Lists.mutable.empty();
+        setFields(fieldValues);
+        Write.semantic(semantic.publicId(), stampId, referencedComponent, pattern, fieldValues.toImmutable());
     }
 
 }

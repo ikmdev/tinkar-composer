@@ -16,15 +16,13 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.composer.create.ConceptCreator;
-import dev.ikm.tinkar.composer.create.PatternCreator;
-import dev.ikm.tinkar.composer.create.SemanticCreator;
 import dev.ikm.tinkar.composer.create.om.PatternDetail;
 import dev.ikm.tinkar.composer.create.om.PatternFieldDetail;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
+import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.List;
 
@@ -39,20 +37,18 @@ public class Composer {
     }
 
     public SemanticComposer concept(Concept concept) {
-        // TODO: Check if concept already exists
-        ConceptCreator.write(concept.publicId(), stampId);
-        return new SemanticComposer(stampId, concept);
+        Write.concept(concept.publicId(), stampId);
+        return new SemanticComposer(transaction, stampId, concept);
     }
 
     public SemanticComposer pattern(Pattern pattern, PatternDetail patternDetail, List<PatternFieldDetail> patternFieldDetails) {
-        // TODO: Check if pattern already exists
-        PatternCreator.write(pattern.publicId(), stampId, patternDetail, patternFieldDetails);
-        return new SemanticComposer(stampId, pattern);
+        Write.pattern(pattern.publicId(), stampId, patternDetail, patternFieldDetails);
+        return new SemanticComposer(transaction, stampId, pattern);
     }
 
-    public SemanticComposer semantic(Semantic semantic, Concept referencedComponent, Pattern pattern, List fieldValues) {
-        // TODO: Check if semantic already exists
-        SemanticCreator.write(semantic.publicId(), stampId, referencedComponent, pattern, fieldValues);
-        return new SemanticComposer(stampId, semantic);
+    public SemanticComposer semantic(Semantic semantic, Concept referencedComponent, Pattern pattern, ImmutableList fieldValues) {
+        Write.semantic(semantic.publicId(), stampId, referencedComponent, pattern, fieldValues);
+        return new SemanticComposer(transaction, stampId, semantic);
     }
+
 }
