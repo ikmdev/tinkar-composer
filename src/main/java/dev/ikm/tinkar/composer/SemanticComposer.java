@@ -16,7 +16,7 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.composer.constituent.SemanticTemplate;
+import dev.ikm.tinkar.composer.templates.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy;
 
 import java.util.Arrays;

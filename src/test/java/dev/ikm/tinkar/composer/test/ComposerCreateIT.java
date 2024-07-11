@@ -19,14 +19,12 @@ package dev.ikm.tinkar.composer.test;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.common.service.CachingService;
 import dev.ikm.tinkar.common.service.PrimitiveData;
-import dev.ikm.tinkar.common.service.ServiceKeys;
-import dev.ikm.tinkar.common.service.ServiceProperties;
 import dev.ikm.tinkar.composer.Composer;
 import dev.ikm.tinkar.composer.Session;
-import dev.ikm.tinkar.composer.constituent.Comment;
-import dev.ikm.tinkar.composer.constituent.FullyQualifiedName;
-import dev.ikm.tinkar.composer.constituent.Synonym;
-import dev.ikm.tinkar.composer.constituent.USEnglishDialect;
+import dev.ikm.tinkar.composer.templates.Comment;
+import dev.ikm.tinkar.composer.templates.FullyQualifiedName;
+import dev.ikm.tinkar.composer.templates.Synonym;
+import dev.ikm.tinkar.composer.templates.USEnglishDialect;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
@@ -37,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

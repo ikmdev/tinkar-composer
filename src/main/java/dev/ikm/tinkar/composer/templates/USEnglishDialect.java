@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.constituent;
+package dev.ikm.tinkar.composer.templates;
 
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.list.MutableList;
 
-public class Comment extends SemanticTemplate {
+public class USEnglishDialect extends SemanticTemplate {
 
-    private final String commentText;
+    private final Concept dialectAcceptability;
 
-    public Comment(Semantic semantic, String commentText) {
-        super(semantic, TinkarTerm.COMMENT_PATTERN);
-        this.commentText = commentText;
+    public USEnglishDialect(Semantic semantic, Concept dialectAcceptability) {
+        super(semantic, TinkarTerm.US_DIALECT_PATTERN);
+        this.dialectAcceptability = dialectAcceptability;
     }
 
     @Override
     public void setFields(MutableList<Object> fields) {
-        fields.add(commentText);
+        fields.add(dialectAcceptability);
     }
 }
