@@ -16,8 +16,17 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
+import dev.ikm.tinkar.composer.create.ConceptCreator;
+import dev.ikm.tinkar.composer.create.PatternCreator;
+import dev.ikm.tinkar.composer.create.SemanticCreator;
+import dev.ikm.tinkar.composer.create.om.PatternDetail;
+import dev.ikm.tinkar.composer.create.om.PatternFieldDetail;
 import dev.ikm.tinkar.entity.transaction.Transaction;
-import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.EntityProxy.Pattern;
+import dev.ikm.tinkar.terms.EntityProxy.Semantic;
+
+import java.util.List;
 
 public class Composer {
 
@@ -29,9 +38,21 @@ public class Composer {
         this.stampId = stampId;
     }
 
-    public SemanticComposer concept(EntityProxy.Concept concept) {
-        //Create Concept
+    public SemanticComposer concept(Concept concept) {
+        // TODO: Check if concept already exists
+        ConceptCreator.write(concept.publicId(), stampId);
         return new SemanticComposer(stampId, concept);
     }
 
+    public SemanticComposer pattern(Pattern pattern, PatternDetail patternDetail, List<PatternFieldDetail> patternFieldDetails) {
+        // TODO: Check if pattern already exists
+        PatternCreator.write(pattern.publicId(), stampId, patternDetail, patternFieldDetails);
+        return new SemanticComposer(stampId, pattern);
+    }
+
+    public SemanticComposer semantic(Semantic semantic, Concept referencedComponent, Pattern pattern, List fieldValues) {
+        // TODO: Check if semantic already exists
+        SemanticCreator.write(semantic.publicId(), stampId, referencedComponent, pattern, fieldValues);
+        return new SemanticComposer(stampId, semantic);
+    }
 }

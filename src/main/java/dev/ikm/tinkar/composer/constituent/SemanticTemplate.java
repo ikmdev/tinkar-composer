@@ -16,45 +16,58 @@
 package dev.ikm.tinkar.composer.constituent;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.composer.SemanticComposer;
 import dev.ikm.tinkar.entity.*;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.MutableList;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
 
-public abstract class SemanticConstituent {
+public abstract class SemanticTemplate {
 
     private Semantic semantic;
-    private final Pattern referencedPattern;
-    private final PublicId stampId;
+    private EntityProxy referencedComponent;
+    private final Pattern pattern;
+    private final List<SemanticTemplate> descendantSemanticTemplates = Lists.mutable.empty();
 
-    public SemanticConstituent(Semantic semantic,
-                               Pattern referencedPattern,
-                               PublicId stampId) {
+    public SemanticTemplate(Semantic semantic, Pattern pattern) {
         this.semantic = semantic;
-        this.referencedPattern = referencedPattern;
-        this.stampId = stampId;
+        this.pattern = pattern;
     }
 
     public Semantic getSemantic() {
         return semantic;
     }
 
-    public abstract void create(PublicId referencedComponent);
+    public void setReferencedComponent(EntityProxy referencedComponent) {
+        this.referencedComponent = referencedComponent;
+    }
 
-    protected void save(PublicId referencedComponent, Consumer<MutableList<Object>> fieldConsumer){
+    public EntityProxy getReferencedComponent() {
+         return this.referencedComponent;
+    }
+
+    public List<SemanticTemplate> getSemanticTemplates() {
+        MutableList<SemanticTemplate> semanticTemplates = Lists.mutable.of(this);
+        semanticTemplates.addAll(descendantSemanticTemplates);
+        return semanticTemplates;
+    }
+
+    protected abstract void setFields(MutableList<Object> fields);
+
+    public void save(PublicId stampId){
         //Assign primordial UUID from PublicId
         UUID primordialUUID = semantic.asUuidArray()[0];
 
         //Assign nids for PublicIds
         int semanticNid = EntityService.get().nidForPublicId(semantic);
-        int patternNid = EntityService.get().nidForPublicId(referencedPattern);
+        int patternNid = EntityService.get().nidForPublicId(pattern);
         int referencedComponentNid = EntityService.get().nidForPublicId(referencedComponent);
         int stampNid = EntityService.get().nidForPublicId(stampId);
 
@@ -77,7 +90,7 @@ public abstract class SemanticConstituent {
 
         //Create Semantic Version
         MutableList<Object> fields = Lists.mutable.empty();
-        fieldConsumer.accept(fields);
+        setFields(fields);
         versions.add(SemanticVersionRecordBuilder.builder()
                 .chronology(semanticRecord)
                 .stampNid(stampNid)
@@ -91,9 +104,14 @@ public abstract class SemanticConstituent {
         EntityService.get().putEntity(semanticEntity);
     }
 
-    public SemanticConstituent with(SemanticConstituent constituent) {
-        constituent.create(this.semantic.publicId());
-        System.out.println(constituent.semantic.description() + " references " + this.semantic.description());
+    public SemanticTemplate with(SemanticTemplate semanticTemplate) {
+        semanticTemplate.setReferencedComponent(this.semantic);
+        descendantSemanticTemplates.addAll(semanticTemplate.getSemanticTemplates());
+        return this;
+    }
+
+    public SemanticTemplate with(SemanticTemplate... templates) {
+        Arrays.stream(templates).forEach(this::with);
         return this;
     }
 

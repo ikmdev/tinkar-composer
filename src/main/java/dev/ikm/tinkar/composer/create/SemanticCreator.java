@@ -15,18 +15,19 @@
  */
 package dev.ikm.tinkar.composer.create;
 
+import dev.ikm.tinkar.common.id.PublicId;
+import dev.ikm.tinkar.entity.*;
+import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.terms.EntityProxy.Pattern;
+import org.eclipse.collections.api.factory.Lists;
+
+import java.util.List;
+import java.util.UUID;
+
+import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
+
 public class SemanticCreator {
 
-//    private final PublicId stamp;
-//
-//    public SemanticCreator(PublicId stamp) {
-//        this.stamp = stamp;
-//    }
-//
-//    public void semantic(PublicId semantic, SemanticDetail semanticDetail){
-//        write(semantic, semanticDetail);
-//    }
-//
 //    public void description(PublicId semantic, PublicId referencedComponent, PublicId descriptionType, String text){
 //        //Assign nids to description components
 //        final int descriptionTypeNid = EntityService.get().nidForPublicId(descriptionType);
@@ -235,44 +236,45 @@ public class SemanticCreator {
 //        semantic(semantic, semanticDetail);
 //    }
 //
-//    private void write(PublicId semantic, SemanticDetail semanticDetail){
-//        //Assign primordial UUID from PublicId
-//        UUID primordialUUID = semantic.asUuidArray()[0];
-//
-//        //Assign nids for PublicIds
-//        int semanticNid = EntityService.get().nidForPublicId(semantic);
-//        int patternNid = EntityService.get().nidForPublicId(semanticDetail.pattern());
-//        int referencedComponentNid = EntityService.get().nidForPublicId(semanticDetail.referencedComponent());
-//        int stampNid = EntityService.get().nidForPublicId(stamp);
-//
-//        //Process additional UUID longs from PublicId
-//        long[] additionalLongs = createAdditionalLongs(semantic);
-//
-//        //Create empty version list
-//        RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
-//
-//        //Create Semantic Chronology
-//        SemanticRecord semanticRecord = SemanticRecordBuilder.builder()
-//                .nid(semanticNid)
-//                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
-//                .mostSignificantBits(primordialUUID.getMostSignificantBits())
-//                .additionalUuidLongs(additionalLongs)
-//                .patternNid(patternNid)
-//                .referencedComponentNid(referencedComponentNid)
-//                .versions(versions.toImmutable())
-//                .build();
-//
-//        //Create Semantic Version
-//        versions.add(SemanticVersionRecordBuilder.builder()
-//                .chronology(semanticRecord)
-//                .stampNid(stampNid)
-//                .fieldValues(semanticDetail.fieldsSupplier().get().toImmutable())
-//                .build());
-//
-//        //Rebuild the Semantic with the now populated version data
-//        SemanticEntity<? extends SemanticEntityVersion> semanticEntity = SemanticRecordBuilder
-//                .builder(semanticRecord)
-//                .versions(versions.toImmutable()).build();
-//        EntityService.get().putEntity(semanticEntity);
-//    }
+    public static void write(PublicId semantic, PublicId stampId, EntityProxy referencedComponent, Pattern pattern, List fieldValues) {
+        //Assign primordial UUID from PublicId
+        UUID primordialUUID = semantic.asUuidArray()[0];
+
+        //Assign nids for PublicIds
+        int semanticNid = EntityService.get().nidForPublicId(semantic);
+        int patternNid = EntityService.get().nidForPublicId(pattern);
+        int referencedComponentNid = EntityService.get().nidForPublicId(referencedComponent);
+        int stampNid = EntityService.get().nidForPublicId(stampId);
+
+        //Process additional UUID longs from PublicId
+        long[] additionalLongs = createAdditionalLongs(semantic);
+
+        //Create empty version list
+        RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
+
+        //Create Semantic Chronology
+        SemanticRecord semanticRecord = SemanticRecordBuilder.builder()
+                .nid(semanticNid)
+                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
+                .mostSignificantBits(primordialUUID.getMostSignificantBits())
+                .additionalUuidLongs(additionalLongs)
+                .patternNid(patternNid)
+                .referencedComponentNid(referencedComponentNid)
+                .versions(versions.toImmutable())
+                .build();
+
+        //Create Semantic Version
+        versions.add(SemanticVersionRecordBuilder.builder()
+                .chronology(semanticRecord)
+                .stampNid(stampNid)
+                .fieldValues(Lists.immutable.of(fieldValues))
+//                .fieldValues(semanticValuesDetail.fieldsSupplier().get().toImmutable())
+                .build());
+
+        //Rebuild the Semantic with the now populated version data
+        SemanticEntity<? extends SemanticEntityVersion> semanticEntity = SemanticRecordBuilder
+                .builder(semanticRecord)
+                .versions(versions.toImmutable()).build();
+        EntityService.get().putEntity(semanticEntity);
+    }
 }

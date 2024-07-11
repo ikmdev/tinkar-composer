@@ -24,13 +24,7 @@ import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
 
 public class ConceptCreator {
 
-    private final PublicId stamp;
-
-    public ConceptCreator(PublicId stamp) {
-        this.stamp = stamp;
-    }
-
-    public void write(PublicId concept){
+    public static void write(PublicId concept, PublicId stampId){
         //Create empty version list
         RecordListBuilder<ConceptVersionRecord> versions = RecordListBuilder.make();
 
@@ -42,7 +36,7 @@ public class ConceptCreator {
 
         //Assign nid for Concept
         int conceptNid = EntityService.get().nidForPublicId(concept);
-        int stampNid = EntityService.get().nidForPublicId(stamp);
+        int stampNid = EntityService.get().nidForPublicId(stampId);
 
         //Create Concept Chronology
         ConceptRecord conceptRecord = ConceptRecordBuilder.builder()

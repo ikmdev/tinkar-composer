@@ -30,13 +30,8 @@ import static dev.ikm.tinkar.composer.Utility.createAdditionalLongs;
 
 public class PatternCreator {
 
-    public final PublicId stamp;
-
-    public PatternCreator(PublicId stamp) {
-        this.stamp = stamp;
-    }
-
-    public void write(PublicId pattern,
+    public static void write(PublicId pattern,
+                      PublicId stampId,
                       PatternDetail patternDetail,
                       List<PatternFieldDetail> patternFieldDetails){
         //Create empty version list
@@ -52,7 +47,7 @@ public class PatternCreator {
         int patternNid = EntityService.get().nidForPublicId(pattern);
         int meaningConceptNid = EntityService.get().nidForPublicId(patternDetail.meaning());
         int purposeConceptNid = EntityService.get().nidForPublicId(patternDetail.purpose());
-        int stampNid = EntityService.get().nidForPublicId(stamp);
+        int stampNid = EntityService.get().nidForPublicId(stampId);
 
         //Create Pattern Chronology
         PatternRecord patternRecord = PatternRecordBuilder.builder()

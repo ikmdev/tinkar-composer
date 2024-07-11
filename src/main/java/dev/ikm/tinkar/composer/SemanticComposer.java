@@ -16,31 +16,32 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.composer.constituent.SemanticConstituent;
+import dev.ikm.tinkar.composer.constituent.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy;
-import dev.ikm.tinkar.terms.EntityProxy.Concept;
 
-import java.util.*;
+import java.util.Arrays;
 
 public class SemanticComposer {
 
     private final PublicId stampId;
-    private final Concept referencedConcept;
+    private final EntityProxy referencedComponent;
 
-    public SemanticComposer(PublicId stampId, Concept referencedConcept) {
+    public SemanticComposer(PublicId stampId, EntityProxy referencedConcept) {
         this.stampId = stampId;
-        this.referencedConcept = referencedConcept;
+        this.referencedComponent = referencedConcept;
     }
 
-    public SemanticComposer with(SemanticConstituent constituent) {
-        constituent.create(referencedConcept);
-        System.out.println(constituent.getSemantic().description() + " references " + referencedConcept.description());
+    public SemanticComposer with(SemanticTemplate templates) {
+        templates.setReferencedComponent(referencedComponent);
+        templates.getSemanticTemplates().forEach(semanticTemplate -> {
+            semanticTemplate.save(stampId);
+            System.out.println(semanticTemplate.getSemantic().description() + " references " + semanticTemplate.getReferencedComponent().description());
+        });
         return this;
     }
 
-    public SemanticComposer with(SemanticConstituent... constituents) {
-        Arrays.stream(constituents).forEach(constituent -> System.out.println(constituent.getSemantic().description() + " references " + referencedConcept.description()));
+    public SemanticComposer with(SemanticTemplate... templates) {
+        Arrays.stream(templates).forEach(this::with);
         return this;
     }
-
 }
