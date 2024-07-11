@@ -120,6 +120,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>data-ephemeral-provider</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Core Libraries       -->
         <dependency>
             <groupId>${project.groupId}</groupId>

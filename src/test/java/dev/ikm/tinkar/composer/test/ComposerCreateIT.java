@@ -25,10 +25,12 @@ import dev.ikm.tinkar.composer.Composer;
 import dev.ikm.tinkar.composer.Session;
 import dev.ikm.tinkar.composer.constituent.Comment;
 import dev.ikm.tinkar.composer.constituent.FullyQualifiedName;
+import dev.ikm.tinkar.composer.constituent.Synonym;
 import dev.ikm.tinkar.composer.constituent.USEnglishDialect;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
+import dev.ikm.tinkar.terms.TinkarTerm;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -48,10 +50,10 @@ public class ComposerCreateIT {
 
     @BeforeAll
     public void beforeAll() throws IOException {
-        Files.createDirectories(datastore);
+//        Files.createDirectories(datastore);
         CachingService.clearAll();
-        ServiceProperties.set(ServiceKeys.DATA_STORE_ROOT, datastore.toFile());
-        PrimitiveData.selectControllerByName("Open SpinedArrayStore");
+//        ServiceProperties.set(ServiceKeys.DATA_STORE_ROOT, datastore.toFile());
+        PrimitiveData.selectControllerByName("Load Ephemeral Store");
         PrimitiveData.start();
     }
 
@@ -72,16 +74,18 @@ public class ComposerCreateIT {
             Composer composer = session.makeCompose();
 
             composer.concept(Concept.make("Concept", PublicIds.newRandom()))
-                    .with(new FullyQualifiedName(EntityProxy.Semantic.make("F1", PublicIds.newRandom()), null, null, null, null)
-                            .with(new USEnglishDialect(EntityProxy.Semantic.make("D1", PublicIds.newRandom()), null, null)
-                                    .with(new Comment(EntityProxy.Semantic.make("C1", PublicIds.newRandom()), null, null)))
-                            .with(new Comment(EntityProxy.Semantic.make("C11", PublicIds.newRandom()), null, null)))
-                    .with(new Comment(EntityProxy.Semantic.make("C2", PublicIds.newRandom()), null, null))
+                    .with(new FullyQualifiedName(EntityProxy.Semantic.make("F1", PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "FQN1", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
+                            .with(new USEnglishDialect(EntityProxy.Semantic.make("D1F1", PublicIds.newRandom()), TinkarTerm.PREFERRED)
+                                    .with(new Comment(EntityProxy.Semantic.make("C1D1", PublicIds.newRandom()), "Comment on USEnglishDialect")))
+                            .with(new Comment(EntityProxy.Semantic.make("C1F1", PublicIds.newRandom()), "Comment on FQN1")))
+                    .with(new Comment(EntityProxy.Semantic.make("C1", PublicIds.newRandom()), "Comment1 on Concept"))
                     .with(
-                            new FullyQualifiedName(EntityProxy.Semantic.make("F2", PublicIds.newRandom()), null, null, null, null),
-                            new Comment(EntityProxy.Semantic.make("C3", PublicIds.newRandom()), null, null));
+                            new FullyQualifiedName(EntityProxy.Semantic.make("F2", PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "FQN2", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
+                            new Comment(EntityProxy.Semantic.make("C2", PublicIds.newRandom()), "Comment2 on Concept"))
+                    .with(new Synonym(EntityProxy.Semantic.make("S1", PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "Synonym", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
+                            .with(
+                                    new Comment(EntityProxy.Semantic.make("C1S1", PublicIds.newRandom()), "Comment1 on Synonym"),
+                                    new Comment(EntityProxy.Semantic.make("C2S1", PublicIds.newRandom()), "Comment2 on Synonym")));
         }
-
     }
-
 }
