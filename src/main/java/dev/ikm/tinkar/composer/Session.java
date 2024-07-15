@@ -19,22 +19,27 @@ import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 
 public class Session implements Closeable {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Session.class);
     private final StampEntity stampEntity;
     private final Transaction transaction;
 
     public Session(State status, long time, Concept author, Concept module, Concept path){
         this.transaction = new Transaction();
         this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
+        LOG.info("Session {} - Initializing Session with stamp: {}", transaction.hashCode(), stampEntity);
     }
 
     public Session(State status, Concept author, Concept module, Concept path) {
         this.transaction = new Transaction();
         this.stampEntity = transaction.getStamp(status, author, module, path);
+        LOG.info("Session {} - Initializing Session with stamp: {}", transaction.hashCode(), stampEntity);
     }
 
     public Composer makeCompose() {
@@ -42,11 +47,20 @@ public class Session implements Closeable {
     }
 
     public void cancel() {
+        LOG.info("Session {} - Cancelling updates to {} Entities with stamp: {}",
+                transaction.hashCode(),
+                transaction.componentsInTransactionCount(),
+                stampEntity);
         transaction.cancel();
     }
 
     @Override
     public void close() {
+        LOG.info("Session {} - Commiting updates to {} Entities with stamp: {}",
+                transaction.hashCode(),
+                transaction.componentsInTransactionCount(),
+                stampEntity);
         transaction.commit();
     }
+
 }

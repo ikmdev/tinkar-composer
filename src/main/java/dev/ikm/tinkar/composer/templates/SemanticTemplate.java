@@ -72,7 +72,7 @@ public abstract class SemanticTemplate {
     public void save(PublicId stampId){
         MutableList<Object> fieldValues = Lists.mutable.empty();
         setFields(fieldValues);
-        Write.semantic(semantic.publicId(), stampId, referencedComponent, pattern, fieldValues.toImmutable());
+        Write.semantic(semantic, stampId, referencedComponent, pattern, fieldValues.toImmutable());
     }
 
 }

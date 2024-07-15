@@ -19,11 +19,14 @@ import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.composer.templates.SemanticTemplate;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 public class SemanticComposer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SemanticComposer.class);
     private final Transaction transaction;
     private final PublicId stampId;
     private final EntityProxy referencedComponent;
@@ -37,9 +40,13 @@ public class SemanticComposer {
     public SemanticComposer with(SemanticTemplate templates) {
         templates.setReferencedComponent(referencedComponent);
         templates.getSemanticTemplates().forEach(semanticTemplate -> {
+            LOG.debug("Session {} - Saving {} Semantic: {}\n   Referencing: {}",
+                    transaction.hashCode(),
+                    semanticTemplate.getClass().getSimpleName(),
+                    semanticTemplate.getSemantic(),
+                    semanticTemplate.getReferencedComponent());
             semanticTemplate.save(stampId);
             transaction.addComponent(semanticTemplate.getSemantic());
-            System.out.println(semanticTemplate.getSemantic().description() + " references " + semanticTemplate.getReferencedComponent().description());
         });
         return this;
     }

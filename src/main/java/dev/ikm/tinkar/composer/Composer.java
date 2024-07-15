@@ -16,18 +16,21 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.composer.create.om.PatternDetail;
 import dev.ikm.tinkar.composer.create.om.PatternFieldDetail;
 import dev.ikm.tinkar.entity.transaction.Transaction;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import org.eclipse.collections.api.list.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class Composer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Composer.class);
     private final Transaction transaction;
     private final PublicId stampId;
 
@@ -37,17 +40,29 @@ public class Composer {
     }
 
     public SemanticComposer concept(Concept concept) {
-        Write.concept(concept.publicId(), stampId);
+        LOG.debug("Session {} - Composing Concept: {}",
+                transaction.hashCode(),
+                concept);
+        Write.concept(concept, stampId);
+        transaction.addComponent(concept);
         return new SemanticComposer(transaction, stampId, concept);
     }
 
-    public SemanticComposer pattern(Pattern pattern, PatternDetail patternDetail, List<PatternFieldDetail> patternFieldDetails) {
-        Write.pattern(pattern.publicId(), stampId, patternDetail, patternFieldDetails);
+    public SemanticComposer pattern(Pattern pattern, Concept meaning, Concept purpose, List<PatternFieldDetail> patternFieldDetails) {
+        LOG.debug("Session {} - Composing Pattern: {}",
+                transaction.hashCode(),
+                pattern);
+        Write.pattern(pattern, stampId, meaning, purpose, patternFieldDetails);
+        transaction.addComponent(pattern);
         return new SemanticComposer(transaction, stampId, pattern);
     }
 
-    public SemanticComposer semantic(Semantic semantic, Concept referencedComponent, Pattern pattern, ImmutableList fieldValues) {
-        Write.semantic(semantic.publicId(), stampId, referencedComponent, pattern, fieldValues);
+    public SemanticComposer semantic(Semantic semantic, EntityProxy referencedComponent, Pattern pattern, ImmutableList fieldValues) {
+        LOG.debug("Session {} - Composing Semantic: {}",
+                transaction.hashCode(),
+                semantic);
+        Write.semantic(semantic, stampId, referencedComponent, pattern, fieldValues);
+        transaction.addComponent(semantic);
         return new SemanticComposer(transaction, stampId, semantic);
     }
 
