@@ -40,7 +40,7 @@ public class SemanticComposer {
     public SemanticComposer with(SemanticTemplate templates) {
         templates.setReferencedComponent(referencedComponent);
         templates.getSemanticTemplates().forEach(semanticTemplate -> {
-            LOG.debug("Session {} - Saving {} Semantic: {}\n   Referencing: {}",
+            LOG.debug("ComposerSession {} - Saving {} Semantic: {}\n   Referencing: {}",
                     transaction.hashCode(),
                     semanticTemplate.getClass().getSimpleName(),
                     semanticTemplate.getSemantic(),

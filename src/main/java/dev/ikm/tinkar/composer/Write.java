@@ -69,7 +69,7 @@ public class Write {
                 } else {
                     throw new RuntimeException("Expecting PublicId of a ConceptEntity, but was:\n" + entity);
                 }
-            }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {]", concept));
+            }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {}", concept));
         }
 
         //Assign nids for PublicIds
@@ -118,7 +118,7 @@ public class Write {
                 } else {
                     throw new RuntimeException("Expecting PublicId of a PatternEntity, but was:\n" + entity);
                 }
-            }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {]", pattern));
+            }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {}", pattern));
         }
 
         //Assign nids for PublicIds
@@ -187,7 +187,7 @@ public class Write {
                 } else {
                     throw new RuntimeException("Expecting PublicId of a SemanticEntity, but was:\n" + entity);
                 }
-            }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {]", semantic));
+            }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {}", semantic));
         }
 
         //Assign nids for PublicIds
