@@ -21,7 +21,6 @@ import dev.ikm.tinkar.common.service.CachingService;
 import dev.ikm.tinkar.common.service.PrimitiveData;
 import dev.ikm.tinkar.common.service.ServiceKeys;
 import dev.ikm.tinkar.common.service.ServiceProperties;
-import dev.ikm.tinkar.common.util.uuid.UuidT5Generator;
 import dev.ikm.tinkar.common.util.uuid.UuidUtil;
 import dev.ikm.tinkar.composer.ComposerSession;
 import dev.ikm.tinkar.composer.ComposerSessionManager;
@@ -31,7 +30,6 @@ import dev.ikm.tinkar.composer.template.Synonym;
 import dev.ikm.tinkar.composer.template.USEnglishDialect;
 import dev.ikm.tinkar.entity.EntityCountSummary;
 import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
-import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
@@ -46,9 +44,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -110,7 +109,7 @@ public class SnomedTransformIT {
 
         ComposerSession session = COMPOSER_SESSION_MANAGER.sessionWithStamp(status, time, author, module, path);
 
-        Concept snomedAuthor = EntityProxy.Concept.make("IHTSDO SNOMED CT Author", UUID.nameUUIDFromBytes("IHTSDO SNOMED CT Author".getBytes()));
+        Concept snomedAuthor = Concept.make("IHTSDO SNOMED CT Author", UUID.nameUUIDFromBytes("IHTSDO SNOMED CT Author".getBytes()));
         session.composeConcept(snomedAuthor)
                 .with(new FullyQualifiedName(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "IHTSDO SNOMED CT Author", TinkarTerm.DESCRIPTION_CASE_SENSITIVE)
                         .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)))
@@ -119,10 +118,10 @@ public class SnomedTransformIT {
                 .with(new Definition(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "International Health Terminology Standards Development Organisation (IHTSDO) SNOMED CT Author", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
                         .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)));
 
-        Concept healthConcept = EntityProxy.Concept.make("", TinkarTerm.HEALTH_CONCEPT.publicId());
+        Concept healthConcept = Concept.make("", TinkarTerm.HEALTH_CONCEPT.publicId());
         session.composeConcept(healthConcept);
 
-//        Concept snomedModule = EntityProxy.Concept.make("IHTSDO SNOMED CT Module", UuidUtil.fromSNOMED().nameUUIDFromBytes("IHTSDO SNOMED CT Module".getBytes());
+//        Concept snomedModule = Concept.make("IHTSDO SNOMED CT Module", UuidUtil.fromSNOMED().nameUUIDFromBytes("IHTSDO SNOMED CT Module".getBytes());
 //        session.composeConcept(snomedModule)
 //                .with(new FullyQualifiedName(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "IHTSDO SNOMED CT Module", TinkarTerm.DESCRIPTION_CASE_SENSITIVE)
 //                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)))
@@ -132,61 +131,6 @@ public class SnomedTransformIT {
 //                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)));
 
         COMPOSER_SESSION_MANAGER.closeSession(session);
-    }
-
-    private class ComposerSessionManager {
-        private final Map<UUID, ComposerSession> composerSessionCache = new HashMap<>();
-
-        ComposerSession sessionWithStamp(State status, long time, Concept author, Concept module, Concept path) {
-            UUID sessionKey = keyValue(status, time, author, module, path);
-            composerSessionCache.computeIfAbsent(sessionKey, (key) -> {
-               return new ComposerSession(status, time, author, module, path);
-            });
-//            composerSessionCache.putIfAbsent(key, new ComposerSession(status, time, author, module, path));
-            return composerSessionCache.get(sessionKey);
-        }
-
-        boolean closeSession(ComposerSession session) {
-            AtomicReference<UUID> closeKey = new AtomicReference<>();
-            composerSessionCache.forEach((key, value) -> {
-                if(value.equals(session)) {
-                    closeKey.set(key);
-                }
-            });
-            return closeSession(closeKey.get());
-        }
-
-        private boolean closeSession(UUID closeKey) {
-            AtomicBoolean isClosed = new AtomicBoolean(false);
-            composerSessionCache.computeIfPresent(closeKey, (key, value) -> {
-                System.out.println("CLOSING SESSION: " + value);
-                value.close();
-                isClosed.set(true);
-                return null; // removes key
-            });
-            return isClosed.get();
-        }
-
-        void closeAllSessions() {
-            Set<UUID> keySet = new HashSet<>(composerSessionCache.keySet());
-            for (UUID key : keySet) {
-                closeSession(key);
-            }
-        }
-
-        void cancelAllSessions() {
-            composerSessionCache.forEach((key, value) -> {
-                System.out.println("CANCELLING SESSION: " + value);
-                value.cancel();
-            });
-        }
-
-        private static UUID keyValue(State status, long time, Concept author, Concept module, Concept path) {
-            UUID uuidKey = UuidT5Generator.fromPublicIds(UUID.nameUUIDFromBytes(String.valueOf(time).getBytes()),
-                    status.publicId(), author, module, path);
-//            String stampKeyString = String.valueOf(status) + String.valueOf(time) + String.valueOf(author) + String.valueOf(module) + String.valueOf(path);
-            return uuidKey;
-        }
     }
 
     private enum SnomedFileType {
