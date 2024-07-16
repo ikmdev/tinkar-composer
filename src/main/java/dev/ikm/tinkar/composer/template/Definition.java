@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.templates;
+package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.list.MutableList;
 
-public class FullyQualifiedName extends SemanticTemplate {
+public class Definition extends SemanticTemplate {
 
     private final Concept language;
-    private final String fqn;
+    private final String synonym;
     private final Concept caseSensitivity;
     private final Concept type;
 
-    public FullyQualifiedName(Semantic semantic, Concept language, String fqn, Concept caseSensitivity) {
+    public Definition(Semantic semantic, Concept language, String synonym, Concept caseSensitivity) {
         super(semantic, TinkarTerm.DESCRIPTION_PATTERN);
         this.language = language;
-        this.fqn = fqn;
+        this.synonym = synonym;
         this.caseSensitivity = caseSensitivity;
-        this.type = TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE;
+        this.type = TinkarTerm.DEFINITION_DESCRIPTION_TYPE;
     }
 
     @Override
     public void setFields(MutableList<Object> fields) {
         fields.add(language);
-        fields.add(fqn);
+        fields.add(synonym);
         fields.add(caseSensitivity);
         fields.add(type);
     }

@@ -17,7 +17,6 @@ package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.service.PrimitiveData;
-import dev.ikm.tinkar.composer.create.om.PatternFieldDetail;
 import dev.ikm.tinkar.entity.*;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;

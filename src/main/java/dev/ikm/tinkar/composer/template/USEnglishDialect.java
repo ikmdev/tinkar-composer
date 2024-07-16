@@ -13,33 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.templates;
+package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.list.MutableList;
 
-public class Definition extends SemanticTemplate {
+public class USEnglishDialect extends SemanticTemplate {
 
-    private final Concept language;
-    private final String synonym;
-    private final Concept caseSensitivity;
-    private final Concept type;
+    private final Concept dialectAcceptability;
 
-    public Definition(Semantic semantic, Concept language, String synonym, Concept caseSensitivity) {
-        super(semantic, TinkarTerm.DESCRIPTION_PATTERN);
-        this.language = language;
-        this.synonym = synonym;
-        this.caseSensitivity = caseSensitivity;
-        this.type = TinkarTerm.DEFINITION_DESCRIPTION_TYPE;
+    public USEnglishDialect(Semantic semantic, Concept dialectAcceptability) {
+        super(semantic, TinkarTerm.US_DIALECT_PATTERN);
+        this.dialectAcceptability = dialectAcceptability;
     }
 
     @Override
     public void setFields(MutableList<Object> fields) {
-        fields.add(language);
-        fields.add(synonym);
-        fields.add(caseSensitivity);
-        fields.add(type);
+        fields.add(dialectAcceptability);
     }
 }

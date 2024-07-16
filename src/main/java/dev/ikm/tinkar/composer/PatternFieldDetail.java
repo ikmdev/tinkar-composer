@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.create.om;
+package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
 

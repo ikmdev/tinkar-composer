@@ -20,6 +20,5 @@ module dev.ikm.tinkar.composer {
     requires org.eclipse.collections.api;
     requires org.slf4j;
     exports dev.ikm.tinkar.composer;
-    exports dev.ikm.tinkar.composer.create.om;
-    exports dev.ikm.tinkar.composer.templates;
+    exports dev.ikm.tinkar.composer.template;
 }

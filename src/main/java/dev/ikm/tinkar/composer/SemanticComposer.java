@@ -16,7 +16,7 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
-import dev.ikm.tinkar.composer.templates.SemanticTemplate;
+import dev.ikm.tinkar.composer.template.SemanticTemplate;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
 import org.slf4j.Logger;
@@ -37,9 +37,9 @@ public class SemanticComposer {
         this.referencedComponent = referencedConcept;
     }
 
-    public SemanticComposer with(SemanticTemplate templates) {
-        templates.setReferencedComponent(referencedComponent);
-        templates.getSemanticTemplates().forEach(semanticTemplate -> {
+    public SemanticComposer with(SemanticTemplate template) {
+        template.setReferencedComponent(referencedComponent);
+        template.getSemanticTemplates().forEach(semanticTemplate -> {
             LOG.debug("ComposerSession {} - Saving {} Semantic: {}\n   Referencing: {}",
                     transaction.hashCode(),
                     semanticTemplate.getClass().getSimpleName(),

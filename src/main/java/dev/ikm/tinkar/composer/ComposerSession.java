@@ -15,7 +15,7 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.composer.create.om.PatternFieldDetail;
+import dev.ikm.tinkar.composer.template.SemanticTemplate;
 import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
