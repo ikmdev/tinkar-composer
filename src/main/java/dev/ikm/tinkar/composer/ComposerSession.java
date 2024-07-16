@@ -20,6 +20,7 @@ import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.slf4j.Logger;
@@ -65,10 +66,24 @@ public class ComposerSession implements Closeable {
     }
 
     public SemanticComposer composeSemantic(EntityProxy.Semantic semantic, EntityProxy referencedComponent, EntityProxy.Pattern pattern, ImmutableList fieldValues) {
-        LOG.debug("ComposerSession {} - Composing Semantic: {}",
+        LOG.debug("ComposerSession {} - Composing Semantic: {}\n   Referencing: {}",
                 transaction.hashCode(),
-                semantic);
+                semantic,
+                referencedComponent);
         Write.semantic(semantic, stampEntity, referencedComponent, pattern, fieldValues);
+        transaction.addComponent(semantic);
+        return new SemanticComposer(transaction, stampEntity, semantic);
+    }
+
+    public SemanticComposer composeSemantic(SemanticTemplate template, EntityProxy referencedComponent) {
+        template.setReferencedComponent(referencedComponent);
+        Semantic semantic = template.getSemantic();
+        LOG.debug("ComposerSession {} - Composing {} Semantic: {}\n   Referencing: {}",
+                transaction.hashCode(),
+                template.getClass().getSimpleName(),
+                semantic,
+                referencedComponent);
+        template.save(stampEntity);
         transaction.addComponent(semantic);
         return new SemanticComposer(transaction, stampEntity, semantic);
     }
