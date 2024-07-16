@@ -121,7 +121,7 @@ public class ComposerCreateIT {
         ComposerSession appendSession = new ComposerSession(status, System.currentTimeMillis(), author, module, path);
 
         appendSession.composeSemantic(EntityProxy.Semantic.make("FQN Version Test", fqnId),
-                Concept.make("Concept", conceptId),
+                Concept.make("Concept Version Test", conceptId),
                 TinkarTerm.DESCRIPTION_PATTERN,
                 Lists.immutable.of(
                         TinkarTerm.ENGLISH_LANGUAGE,
@@ -132,6 +132,66 @@ public class ComposerCreateIT {
         appendSession.close();
 
         int expectedVersionCount = 2;
+        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
+
+        assertEquals(expectedVersionCount, actualVersionCount,
+                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+    @Test
+    @Order(3)
+    public void appendVersionFromTemplateTest() {
+        State status = State.ACTIVE;
+        long updated_time = System.currentTimeMillis();
+        Concept author = TinkarTerm.USER;
+        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
+        Concept path = TinkarTerm.DEVELOPMENT_PATH;
+
+        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
+        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
+
+        ComposerSession appendSession = new ComposerSession(status, System.currentTimeMillis(), author, module, path);
+
+        appendSession.composeSemantic(
+                new FullyQualifiedName(EntityProxy.Semantic.make("FQN Version from Template Test", fqnId), TinkarTerm.ENGLISH_LANGUAGE, "FQN1 Version from Template Test", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
+                Concept.make("Concept Version from Template Test", conceptId))
+                    .with(new USEnglishDialect(EntityProxy.Semantic.make("Dialect Version from Template Test", PublicIds.newRandom()), TinkarTerm.ACCEPTABLE));
+
+        appendSession.close();
+
+        int expectedVersionCount = 3;
+        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
+
+        assertEquals(expectedVersionCount, actualVersionCount,
+                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+
+
+    @Test
+    @Order(4)
+    public void retireSemanticTest() {
+        State status = State.WITHDRAWN;
+        long updated_time = System.currentTimeMillis();
+        Concept author = TinkarTerm.USER;
+        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
+        Concept path = TinkarTerm.DEVELOPMENT_PATH;
+
+        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
+        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
+
+        ComposerSession appendSession = new ComposerSession(status, System.currentTimeMillis(), author, module, path);
+
+        appendSession.composeSemantic(EntityProxy.Semantic.make("FQN Retire Test", fqnId),
+                Concept.make("Concept", conceptId),
+                TinkarTerm.DESCRIPTION_PATTERN,
+                Lists.immutable.of(
+                        TinkarTerm.ENGLISH_LANGUAGE,
+                        "FQN1 Retire Test",
+                        TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
+                        TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
+
+        appendSession.close();
+
+        int expectedVersionCount = 4;
         int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
 
         assertEquals(expectedVersionCount, actualVersionCount,
