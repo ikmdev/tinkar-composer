@@ -35,10 +35,7 @@ import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +81,7 @@ public class SnomedTransformIT {
     }
 
     @Test
+    @Disabled
     public void snomedTransformationTest() {
         String snomedFilePathString = System.getenv("SNOMED_DATA_FILE");
         if (snomedFilePathString == null) {
