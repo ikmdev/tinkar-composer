@@ -61,8 +61,8 @@ public class Write {
         if(PrimitiveData.get().hasPublicId(concept)) {
             EntityService.get().getEntity(concept.asUuidArray()).ifPresentOrElse((entity) -> {
                 if (entity instanceof ConceptEntity conceptEntity) {
+                    LOG.debug("Appending version to existing Concept: {}", conceptEntity);
                     conceptEntity.versions().forEach((version) -> {
-                        LOG.debug("Appending version to existing Concept: {}", conceptEntity);
                         versions.add(ConceptVersionRecordBuilder.builder((ConceptVersionRecord) version).build());
                     });
                 } else {
@@ -110,8 +110,8 @@ public class Write {
         if(PrimitiveData.get().hasPublicId(pattern)) {
             EntityService.get().getEntity(pattern.asUuidArray()).ifPresentOrElse((entity) -> {
                 if (entity instanceof PatternEntity patternEntity) {
+                    LOG.debug("Appending version to existing Pattern: {}", patternEntity);
                     patternEntity.versions().forEach((version) -> {
-                        LOG.debug("Appending version to existing Pattern: {}", patternEntity);
                         versions.add(PatternVersionRecordBuilder.builder((PatternVersionRecord) version).build());
                     });
                 } else {
@@ -179,8 +179,8 @@ public class Write {
         if(PrimitiveData.get().hasPublicId(semantic)) {
             EntityService.get().getEntity(semantic.asUuidArray()).ifPresentOrElse((entity) -> {
                 if (entity instanceof SemanticEntity semanticEntity) {
+                    LOG.debug("Appending version to existing Semantic: {}", semanticEntity);
                     semanticEntity.versions().forEach((version) -> {
-                        LOG.debug("Appending version to existing Semantic: {}", semanticEntity);
                         versions.add(SemanticVersionRecordBuilder.builder((SemanticVersionRecord) version).build());
                     });
                 } else {
