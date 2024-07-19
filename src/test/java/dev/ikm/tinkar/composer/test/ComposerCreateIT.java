@@ -388,12 +388,12 @@ public class ComposerCreateIT {
     // ### START: Miscellaneous Tests
     @Test
     @Disabled
-    public void writeConceptWithMultipleUuids() throws InterruptedException {
+    public void writeConceptWithMultipleUuids() {
         PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
         Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
         Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
 
-        // Create Concept with multiple Uuids (i.e., Health Concept)
+        // Create Concept with multiple Uuids
         ComposerSession previousSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         previousSession.composeConcept(conceptWithSingleUuid); // Concept with [ UUID1 ]
         previousSession.close();
@@ -405,6 +405,72 @@ public class ComposerCreateIT {
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
+        assertEquals(expectedVersionCount, actualVersionCount,
+                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+
+
+    @Test
+    @Disabled
+    public void writeHealthConceptRecords() {
+        // Create Concept with multiple UUIDs (i.e., Health Concept)
+        ComposerSession healthConceptSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        healthConceptSession.composeConcept(TinkarTerm.HEALTH_CONCEPT);
+        healthConceptSession.close();
+
+        // Create Concept version for a single UUID in the PublicId from the Concept above
+        ComposerSession snomedRootConceptSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        snomedRootConceptSession.composeConcept(Concept.make(PublicIds.of(TinkarTerm.HEALTH_CONCEPT.asUuidArray()[0])));
+        snomedRootConceptSession.close();
+
+        int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
+        int actualVersionCount = EntityService.get().getEntityFast(TinkarTerm.HEALTH_CONCEPT).versions().size();
+        assertEquals(expectedVersionCount, actualVersionCount,
+                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+
+    @Test
+    @Disabled
+    public void writeFullyQualifiedNameConceptRecords() {
+        // Create Concept with multiple UUIDs (i.e., FullyQualifiedName)
+        ComposerSession healthConceptSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        healthConceptSession.composeConcept(Concept.make(PublicIds.of(TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.asUuidArray()[0])));
+        healthConceptSession.close();
+
+        // Create Concept version for a single UUID in the PublicId from the Concept above
+        ComposerSession snomedRootConceptSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        snomedRootConceptSession.composeConcept(TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE);
+        snomedRootConceptSession.close();
+
+        int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
+        int actualVersionCount = EntityService.get().getEntityFast(TinkarTerm.HEALTH_CONCEPT).versions().size();
+        assertEquals(expectedVersionCount, actualVersionCount,
+                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+
+    @Test
+    @Disabled
+    public void writeSemanticWithMergableVersions() {
+        PublicId conceptId = PublicIds.newRandom();
+        PublicId initialSemanticId = PublicIds.newRandom();
+        Concept referencedConcept = Concept.make(conceptId);
+        // Create Initial Semantic Version from Template
+        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        initSession.composeSemantic(new Synonym(Semantic.make(initialSemanticId), TinkarTerm.ENGLISH_LANGUAGE,
+                        "Synonym Version with single UUID", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
+                referencedConcept);
+        initSession.close();
+
+        PublicId semanticIdWithExtraUuid = PublicIds.of(initialSemanticId.asUuidArray()[0], PublicIds.newRandom().asUuidArray()[0]);
+        // Append Semantic Version from Template
+        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        appendSession.composeSemantic(new Synonym(Semantic.make(semanticIdWithExtraUuid), TinkarTerm.ENGLISH_LANGUAGE,
+                        "Synonym Version with multiple UUIDs", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
+                referencedConcept);
+        appendSession.close();
+
+        int expectedVersionCount = 2;
+        int actualVersionCount = EntityService.get().getEntityFast(semanticIdWithExtraUuid.asUuidArray()).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
