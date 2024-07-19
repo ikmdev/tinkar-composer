@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.id.PublicId;
+import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.common.service.PrimitiveData;
 import dev.ikm.tinkar.entity.*;
 import dev.ikm.tinkar.terms.EntityProxy;
@@ -28,7 +29,9 @@ import org.eclipse.collections.api.list.MutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,21 +50,34 @@ public class Write {
         return additionalLongs.length == 0 ? null : additionalLongs;
     }
 
+    // Writing PublicId Cases:
+    //   Case 1:
+    //      Existing PublicId: [ Uuid1, Uuid2 ]
+    //      Composing PublicId: [ Uuid1 ]
+    //      PublicId to Write: [ Uuid1, Uuid2 ]
+    //   Case 2:
+    //      Existing PublicId: [ Uuid1 ]
+    //      Composing PublicId: [ Uuid1, Uuid2 ]
+    //      PublicId to Write: [ Uuid1, Uuid2 ]
+    //   Case 3:
+    //      Existing PublicId: [ Uuid1, Uuid2 ]
+    //      Composing PublicId: [ Uuid2, Uuid3 ]
+    //      PublicId to Write: [ Uuid1, Uuid2, Uuid3 ]
+
     public static void concept(Concept concept, PublicId stampId) {
-        //Pull out primordial UUID from PublicId
-        UUID primordialUUID = concept.asUuidArray()[0];
-
-        //Process additional UUID longs from PublicId
-        long[] additionalLongs = createAdditionalLongs(concept);
-
-        //Create empty version list
+        //Initialize Concept PublicId and version list to prepare for potential merging
+        PublicId conceptId = concept.publicId();
         RecordListBuilder<ConceptVersionRecord> versions = RecordListBuilder.make();
 
-        //Populate version list with existing versions if present
+        //If Concept exists, merge PublicIds and get existing versions
         if(PrimitiveData.get().hasPublicId(concept)) {
+            Set<UUID> mergedUuids = new HashSet<>();
+            mergedUuids.addAll(concept.asUuidList().castToList());
+            //Merge Versions and IDs
             EntityService.get().getEntity(concept.asUuidArray()).ifPresentOrElse((entity) -> {
                 if (entity instanceof ConceptEntity conceptEntity) {
                     LOG.debug("Appending version to existing Concept: {}", conceptEntity);
+                    mergedUuids.addAll(conceptEntity.asUuidList().castToList());
                     conceptEntity.versions().forEach((version) -> {
                         versions.add(ConceptVersionRecordBuilder.builder((ConceptVersionRecord) version).build());
                     });
@@ -69,7 +85,13 @@ public class Write {
                     throw new RuntimeException("Expecting PublicId of a ConceptEntity, but was:\n" + entity);
                 }
             }, () -> LOG.warn("Nid has been allocated but Entity does not exist for {}", concept));
+            conceptId = PublicIds.of(mergedUuids.stream().toList());
         }
+
+        //Pull out primordial UUID from PublicId
+        UUID primordialUUID = conceptId.asUuidArray()[0];
+        //Process additional UUID longs from PublicId
+        long[] additionalLongs = createAdditionalLongs(conceptId);
 
         //Assign nids for PublicIds
         int stampNid = EntityService.get().nidForPublicId(stampId);
