@@ -29,6 +29,7 @@ module dev.ikm.tinkar.composer.test {
     requires org.eclipse.collections.api;
 
 
+
     exports dev.ikm.tinkar.composer.test;
 
     uses CachingService;

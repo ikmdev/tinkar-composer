@@ -16,23 +16,42 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.common.util.uuid.UuidT5Generator;
-import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.entity.transaction.Transaction;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ComposerSessionManager {
-    private final Map<UUID, ComposerSession> composerSessionCache = new HashMap<>();
+public class Composer {
+    private final Map<UUID, Session> composerSessionCache = new HashMap<>();
+    private StampEntity stampEntity;
+    private Transaction transaction;
+    private final String name;
 
-    public ComposerSession sessionWithStamp(State status, long time, EntityProxy.Concept author, EntityProxy.Concept module, EntityProxy.Concept path) {
+    public Composer(String name) {
+        this.name = name;
+    }
+
+    public Session open(State status, long time, Concept author, Concept module, Concept path) {
+        this.transaction = new Transaction(name);
+        this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
         UUID sessionKey = keyValue(status, time, author, module, path);
-        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new ComposerSession(status, time, author, module, path));
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
         return composerSessionCache.get(sessionKey);
     }
 
-    public boolean closeSession(ComposerSession session) {
+    public Session open(State status, Concept author, Concept module, Concept path) {
+        this.transaction = new Transaction(name);
+        this.stampEntity = transaction.getStamp(status, author, module, path);
+        UUID sessionKey = keyValue(status, System.currentTimeMillis(), author, module, path);
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
+        return composerSessionCache.get(sessionKey);
+    }
+
+    public boolean closeSession(Session session) {
         AtomicReference<UUID> closeKey = new AtomicReference<>();
         composerSessionCache.forEach((key, value) -> {
             if(value.equals(session)) {
@@ -65,7 +84,7 @@ public class ComposerSessionManager {
         return isClosed.get();
     }
 
-    private static UUID keyValue(State status, long time, EntityProxy.Concept author, EntityProxy.Concept module, EntityProxy.Concept path) {
+    private static UUID keyValue(State status, long time, Concept author, Concept module, Concept path) {
         UUID uuidKey = UuidT5Generator.fromPublicIds(UUID.nameUUIDFromBytes(String.valueOf(time).getBytes()),
                 status.publicId(), author, module, path);
         return uuidKey;
