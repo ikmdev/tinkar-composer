@@ -5,6 +5,7 @@ import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class SemanticComposer {
@@ -21,7 +22,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(AxiomSyntaxConsumer axiomSyntaxConsumer) {
         AxiomSyntax axiomSyntax = new AxiomSyntax();
-        axiomSyntax.setSemanticComposer(this);
+        axiomSyntax.semanticComposer(this);
         axiomSyntaxConsumer.accept(axiomSyntax);
         attach(axiomSyntax);
         return this;
@@ -34,7 +35,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(CommentConsumer commentConsumer) {
         Comment comment = new Comment();
-        comment.setSemanticComposer(this);
+        comment.semanticComposer(this);
         commentConsumer.accept(comment);
         attach(comment);
         return this;
@@ -47,7 +48,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(DefinitionConsumer definitionConsumer) {
         Definition definition = new Definition();
-        definition.setSemanticComposer(this);
+        definition.semanticComposer(this);
         definitionConsumer.accept(definition);
         attach(definition);
         return this;
@@ -60,7 +61,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(FullyQualifiedNameConsumer fullyQualifiedNameConsumer) {
         FullyQualifiedName fullyQualifiedName = new FullyQualifiedName();
-        fullyQualifiedName.setSemanticComposer(this);
+        fullyQualifiedName.semanticComposer(this);
         fullyQualifiedNameConsumer.accept(fullyQualifiedName);
         attach(fullyQualifiedName);
         return this;
@@ -73,7 +74,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(GBDialectConsumer gbDialectConsumer) {
         GBDialect gbDialect = new GBDialect();
-        gbDialect.setSemanticComposer(this);
+        gbDialect.semanticComposer(this);
         gbDialectConsumer.accept(gbDialect);
         attach(gbDialect);
         return this;
@@ -86,7 +87,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(IdentifierConsumer identifierConsumer) {
         Identifier identifier = new Identifier();
-        identifier.setSemanticComposer(this);
+        identifier.semanticComposer(this);
         identifierConsumer.accept(identifier);
         attach(identifier);
         return this;
@@ -99,7 +100,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(StatedAxiomConsumer statedAxiomConsumer) {
         StatedAxiom statedAxiom = new StatedAxiom();
-        statedAxiom.setSemanticComposer(this);
+        statedAxiom.semanticComposer(this);
         statedAxiomConsumer.accept(statedAxiom);
         attach(statedAxiom);
         return this;
@@ -112,7 +113,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(SynonymConsumer synonymConsumer) {
         Synonym synonym = new Synonym();
-        synonym.setSemanticComposer(this);
+        synonym.semanticComposer(this);
         synonymConsumer.accept(synonym);
         attach(synonym);
         return this;
@@ -125,7 +126,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(USDialectConsumer usDialectConsumer) {
         USDialect usDialect = new USDialect();
-        usDialect.setSemanticComposer(this);
+        usDialect.semanticComposer(this);
         usDialectConsumer.accept(usDialect);
         attach(usDialect);
         return this;
@@ -138,7 +139,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(TinkarBaseModelConsumer tinkarBaseModelConsumer) {
         TinkarBaseModel tinkarBaseModel = new TinkarBaseModel();
-        tinkarBaseModel.setSemanticComposer(this);
+        tinkarBaseModel.semanticComposer(this);
         tinkarBaseModelConsumer.accept(tinkarBaseModel);
         attach(tinkarBaseModel);
         return this;
@@ -151,7 +152,7 @@ public class SemanticComposer {
 
     public SemanticComposer attach(KometBaseModelConsumer kometBaseModelConsumer) {
         KometBaseModel kometBaseModel = new KometBaseModel();
-        kometBaseModel.setSemanticComposer(this);
+        kometBaseModel.semanticComposer(this);
         kometBaseModelConsumer.accept(kometBaseModel);
         attach(kometBaseModel);
         return this;
@@ -173,11 +174,11 @@ public class SemanticComposer {
     }
 
     private void writeSemanticTemplate(SemanticTemplate semanticTemplate) {
-        sessionTransaction.addComponent(semanticTemplate.getSemantic());
-        Write.semantic(semanticTemplate.getSemantic(),
+        sessionTransaction.addComponent(semanticTemplate.semantic());
+        Write.semantic(semanticTemplate.semantic(),
                 sessionStamp,
                 reference,
-                semanticTemplate.getPattern(),
+                semanticTemplate.pattern(),
                 semanticTemplate.assignFields());
     }
 }

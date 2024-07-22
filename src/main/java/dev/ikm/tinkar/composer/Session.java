@@ -55,7 +55,7 @@ public class Session implements Closeable {
         return new SemanticComposer(concept, transaction, stampEntity);
     }
 
-    public SemanticBuilder compose(Semantic semantic) {
+    public SemanticBuilder create(Semantic semantic) {
         return new SemanticBuilder(semantic, transaction, stampEntity);
     }
 
@@ -68,7 +68,7 @@ public class Session implements Closeable {
         return new SemanticComposer(semantic, transaction, stampEntity);
     }
 
-    public PatternBuilder compose(Pattern pattern) {
+    public PatternBuilder create(Pattern pattern) {
         return new PatternBuilder(pattern, transaction, stampEntity);
     }
 

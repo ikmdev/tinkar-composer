@@ -8,6 +8,8 @@ import dev.ikm.tinkar.common.service.ServiceProperties;
 import dev.ikm.tinkar.composer.Composer;
 import dev.ikm.tinkar.composer.Session;
 import dev.ikm.tinkar.composer.template.*;
+import dev.ikm.tinkar.composer.test.template.CustomSemantic;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
 import org.junit.jupiter.api.AfterAll;
@@ -67,14 +69,38 @@ public class ConceptComposerIT {
                 .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE)
                         .text("Color")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        // .attach()
                         .compose()
                         .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED))
                         .attach((GBDialect gbDialect) -> gbDialect.acceptability(ACCEPTABLE)
                                 .compose()
-                                .attach((Comment comment) -> comment.text("They spell things weird")
+                                .attach((Comment comment) -> comment.text("Comment 1")
                                         .compose()
-                                        .attach((Comment comment2) -> comment2.text("really really true!")))))
-                .attach((Comment comment) -> comment.text("They spell things weird"));
+                                        .attach((Comment comment2) -> comment2.text("Comment 2"))
+                                        .attach(() -> new CustomSemantic().text("Custom Semantic"))))
+                        .attach(new Comment().text("Comment 3")))
+                .attach((Comment comment) -> comment.text("They spell things weird"))
+                .attach(() -> new CustomSemantic().text("Custom Comments"));
+
+        EntityProxy.Semantic semantic = EntityProxy.Semantic.make(PublicIds.newRandom());
+        session.create(semantic)
+                .pattern(DESCRIPTION_PATTERN)
+                .reference(null)
+                .fields(null)
+                .build()
+                .attach((USDialect usDialect) -> {
+                    usDialect.acceptability(PREFERRED);
+                    usDialect.compose()
+                            .attach((Comment comment) -> comment.text("Comment 1"));
+                });
+
+        EntityProxy.Pattern pattern = EntityProxy.Pattern.make(PublicIds.newRandom());
+        session.create(pattern)
+                .meaning(null)
+                .purpose(null)
+                .field(null, null, null, 0)
+                .build()
+                .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE).text("FQN").assemble() );
 
         session.close();
     }

@@ -2,6 +2,7 @@ package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -11,10 +12,6 @@ public class FullyQualifiedName extends SemanticTemplate {
     private Concept language;
     private String text;
     private Concept caseSignificance;
-
-    public FullyQualifiedName() {
-        super(TinkarTerm.DESCRIPTION_PATTERN);
-    }
 
     public FullyQualifiedName language(Concept language) {
         this.language = language;
@@ -29,6 +26,11 @@ public class FullyQualifiedName extends SemanticTemplate {
     public FullyQualifiedName caseSignificance(Concept caseSignificance) {
         this.caseSignificance = caseSignificance;
         return this;
+    }
+
+    @Override
+    protected Pattern assignPattern() {
+        return TinkarTerm.DESCRIPTION_PATTERN;
     }
 
     @Override

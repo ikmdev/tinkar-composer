@@ -26,26 +26,23 @@ public abstract class SemanticTemplate {
     private Transaction sessionTransaction;
     private StampEntity sessionStampEntity;
     private Semantic semantic;
-    private final Pattern pattern;
+    private Pattern pattern;
     private SemanticComposer semanticComposer;
 
-    public SemanticTemplate(Pattern pattern) {
-        this.pattern = pattern;
-    }
 
     public void semantic(Semantic semantic) {
         this.semantic = semantic;
     }
 
-    public Semantic getSemantic() {
+    public Semantic semantic() {
         return semantic;
     }
 
-    public Pattern getPattern() {
-        return pattern;
+    public Pattern pattern() {
+        return assignPattern();
     }
 
-    protected void setSemanticComposer(SemanticComposer semanticComposer) {
+    protected void semanticComposer(SemanticComposer semanticComposer) {
         this.semanticComposer = semanticComposer;
     }
 
@@ -55,8 +52,10 @@ public abstract class SemanticTemplate {
 
     public SemanticComposer compose() {
         assemble();
-        return new SemanticComposer(semantic, sessionTransaction, sessionStampEntity);
+        return semanticComposer;
     }
+
+    protected abstract Pattern assignPattern();
 
     protected abstract ImmutableList<Object> assignFields();
 

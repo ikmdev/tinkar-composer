@@ -2,6 +2,7 @@ package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -11,10 +12,6 @@ public class Synonym extends SemanticTemplate {
     private EntityProxy.Concept language;
     private String text;
     private EntityProxy.Concept caseSignificance;
-
-    public Synonym() {
-        super(TinkarTerm.DESCRIPTION_PATTERN);
-    }
 
     public Synonym language(EntityProxy.Concept language) {
         this.language = language;
@@ -29,6 +26,11 @@ public class Synonym extends SemanticTemplate {
     public Synonym caseSignificance(EntityProxy.Concept caseSignificance) {
         this.caseSignificance = caseSignificance;
         return this;
+    }
+
+    @Override
+    protected Pattern assignPattern() {
+        return TinkarTerm.DESCRIPTION_PATTERN;
     }
 
     @Override

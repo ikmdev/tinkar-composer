@@ -31,6 +31,7 @@ module dev.ikm.tinkar.composer.test {
 
 
     exports dev.ikm.tinkar.composer.test;
+    exports dev.ikm.tinkar.composer.test.template;
 
     uses CachingService;
     uses DataServiceController;

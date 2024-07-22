@@ -35,6 +35,10 @@ public class Composer {
         this.name = name;
     }
 
+//    public Session open() {
+//          TODO - contain defaults for free with no time
+//    }
+
     public Session open(State status, long time, Concept author, Concept module, Concept path) {
         this.transaction = new Transaction(name);
         this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
