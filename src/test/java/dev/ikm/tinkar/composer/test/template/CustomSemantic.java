@@ -25,4 +25,9 @@ public class CustomSemantic extends SemanticTemplate {
         return Lists.immutable.of(text);
     }
 
+    @Override
+    protected void validate() {
+
+    }
+
 }

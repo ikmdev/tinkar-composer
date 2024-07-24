@@ -24,4 +24,11 @@ public class AxiomSyntax extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.of(text);
     }
+
+    @Override
+    protected void validate() {
+        if (text == null || text.isEmpty()) {
+            throw new IllegalArgumentException("Axiom syntax requires a text");
+        }
+    }
 }

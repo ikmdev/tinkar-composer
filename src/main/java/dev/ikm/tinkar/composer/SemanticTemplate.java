@@ -15,48 +15,37 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.entity.StampEntity;
-import dev.ikm.tinkar.entity.transaction.Transaction;
+import dev.ikm.tinkar.common.id.PublicIds;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import org.eclipse.collections.api.list.ImmutableList;
 
-public abstract class SemanticTemplate {
+public abstract class SemanticTemplate extends Attachable {
 
-    private Transaction sessionTransaction;
-    private StampEntity sessionStampEntity;
     private Semantic semantic;
     private Pattern pattern;
-    private SemanticComposer semanticComposer;
-
 
     public void semantic(Semantic semantic) {
         this.semantic = semantic;
     }
 
     public Semantic semantic() {
+        if (semantic == null) {
+            semantic = Semantic.make(PublicIds.newRandom());
+        }
         return semantic;
     }
 
-    public Pattern pattern() {
-        return assignPattern();
-    }
-
-    protected void semanticComposer(SemanticComposer semanticComposer) {
-        this.semanticComposer = semanticComposer;
-    }
-
-    public void assemble(){
-        Write.semantic(semantic, null, null, pattern, assignFields());
-    }
-
-    public SemanticComposer compose() {
-        assemble();
-        return semanticComposer;
+    @Override
+    public EntityProxy asReference() {
+        return semantic();
     }
 
     protected abstract Pattern assignPattern();
 
     protected abstract ImmutableList<Object> assignFields();
+
+    protected abstract void validate();
 
 }

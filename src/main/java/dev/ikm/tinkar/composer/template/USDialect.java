@@ -25,4 +25,9 @@ public class USDialect extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.of(acceptability);
     }
+
+    @Override
+    protected void validate() {
+
+    }
 }

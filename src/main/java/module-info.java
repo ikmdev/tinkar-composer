@@ -21,4 +21,5 @@ module dev.ikm.tinkar.composer {
     requires org.slf4j;
     exports dev.ikm.tinkar.composer;
     exports dev.ikm.tinkar.composer.template;
+    exports dev.ikm.tinkar.composer.assembler;
 }

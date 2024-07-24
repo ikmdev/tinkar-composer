@@ -15,6 +15,10 @@ public class Comment extends SemanticTemplate {
         return this;
     }
 
+    public String getText() {
+        return text;
+    }
+
     @Override
     protected Pattern assignPattern() {
         return TinkarTerm.COMMENT_PATTERN;
@@ -24,4 +28,10 @@ public class Comment extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.of(text);
     }
+
+    @Override
+    protected void validate() {
+
+    }
+
 }

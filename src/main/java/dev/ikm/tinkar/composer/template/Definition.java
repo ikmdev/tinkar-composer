@@ -37,4 +37,9 @@ public class Definition extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.DEFINITION_DESCRIPTION_TYPE);
     }
+
+    @Override
+    protected void validate() {
+
+    }
 }

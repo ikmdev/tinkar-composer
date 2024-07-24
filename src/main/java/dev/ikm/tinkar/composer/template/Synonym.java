@@ -37,4 +37,9 @@ public class Synonym extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE);
     }
+
+    @Override
+    protected void validate() {
+
+    }
 }

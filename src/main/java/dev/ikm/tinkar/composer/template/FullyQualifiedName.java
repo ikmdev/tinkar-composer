@@ -37,4 +37,9 @@ public class FullyQualifiedName extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE);
     }
+
+    @Override
+    protected void validate() {
+
+    }
 }

@@ -15,18 +15,14 @@
  */
 package dev.ikm.tinkar.composer;
 
+import dev.ikm.tinkar.composer.assembler.*;
 import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
-import dev.ikm.tinkar.terms.EntityProxy.Concept;
-import dev.ikm.tinkar.terms.EntityProxy.Pattern;
-import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
-import org.eclipse.collections.api.list.MutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.util.function.Consumer;
 
 public class Session implements Closeable {
 
@@ -51,25 +47,35 @@ public class Session implements Closeable {
         LOG.info("ComposerSession {} - Initializing Session with stamp: {}", transaction.hashCode(), stampEntity);
     }
 
-    public SemanticComposer compose(Concept concept) {
-        return new SemanticComposer(concept, transaction, stampEntity);
+    public Attachable compose(ConceptAssemblerConsumer conceptAssemblerConsumer) {
+        ConceptAssembler conceptAssembler = new ConceptAssembler();
+        conceptAssemblerConsumer.accept(conceptAssembler);
+        conceptAssembler.setSessionTransaction(transaction);
+        conceptAssembler.setSessionStampEntity(stampEntity);
+
+        transaction.addComponent(conceptAssembler.concept());
+        Write.concept(conceptAssembler.concept(), stampEntity);
+
+        return conceptAssembler;
     }
 
-    public SemanticBuilder create(Semantic semantic) {
-        return new SemanticBuilder(semantic, transaction, stampEntity);
+    public Attachable compose(SemanticAssemblerConsumer semanticAssemblerConsumer) {
+        SemanticAssembler semanticAssembler = new SemanticAssembler();
+        semanticAssemblerConsumer.accept(semanticAssembler);
+        semanticAssembler.setSessionTransaction(transaction);
+        semanticAssembler.setSessionStampEntity(stampEntity);
+
+        transaction.addComponent(semanticAssembler.semantic());
+        Write.semantic(semanticAssembler.semantic(), stampEntity, semanticAssembler.reference(), semanticAssembler.pattern(), semanticAssembler.fields());
+        return semanticAssembler;
     }
 
-    public SemanticComposer compose(Semantic semantic, Concept reference, Pattern pattern, Consumer<MutableList<Object>> fieldsConsumer) {
-        SemanticBuilder semanticBuilder = new SemanticBuilder(semantic, transaction, stampEntity);
-        semanticBuilder.reference(reference);
-        semanticBuilder.pattern(pattern);
-        semanticBuilder.fields(fieldsConsumer);
-        semanticBuilder.build();
-        return new SemanticComposer(semantic, transaction, stampEntity);
-    }
-
-    public PatternBuilder create(Pattern pattern) {
-        return new PatternBuilder(pattern, transaction, stampEntity);
+    public Attachable compose(PatternAssemblerConsumer patternAssemblerConsumer) {
+        PatternAssembler patternAssembler = new PatternAssembler();
+        patternAssemblerConsumer.accept(patternAssembler);
+        transaction.addComponent(patternAssembler.pattern());
+        Write.pattern(patternAssembler.pattern(), stampEntity, patternAssembler.meaning(), patternAssembler.purpose(), patternAssembler.fields());
+        return patternAssembler;
     }
 
     /**

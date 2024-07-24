@@ -17,4 +17,9 @@ public class TinkarBaseModel extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return Lists.immutable.empty();
     }
+
+    @Override
+    protected void validate() {
+
+    }
 }

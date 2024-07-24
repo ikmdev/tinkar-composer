@@ -19,4 +19,9 @@ public class StatedAxiom extends SemanticTemplate {
     protected ImmutableList<Object> assignFields() {
         return null;
     }
+
+    @Override
+    protected void validate() {
+
+    }
 }
