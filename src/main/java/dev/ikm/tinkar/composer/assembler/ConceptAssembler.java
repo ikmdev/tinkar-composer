@@ -26,7 +26,6 @@ import java.util.UUID;
 public class ConceptAssembler extends Attachable {
 
     private Concept concept;
-    private PublicId publicId;
 
     public ConceptAssembler concept(Concept concept) {
         this.concept = concept;
@@ -35,27 +34,27 @@ public class ConceptAssembler extends Attachable {
 
     public Concept concept() {
         if (concept == null) {
-            concept = Concept.make(publicId());
+            concept = Concept.make(PublicIds.newRandom());
         }
         return concept;
     }
 
     public ConceptAssembler publicId(PublicId publicId) {
-        this.publicId = publicId;
+        concept = Concept.make(publicId);
         return this;
     }
 
-    public PublicId publicId() {
-        if (publicId == null) {
-            publicId = PublicIds.newRandom();
-        }
-        return publicId;
-    }
-
     public ConceptAssembler uuid(UUID uuid) {
-        UUID[] uuids = new UUID[publicId.uuidCount() + 1];
-        uuids[publicId.uuidCount()] = uuid;
-        publicId = PublicIds.of(uuids);
+        if (concept==null) {
+            concept = Concept.make(PublicIds.of(uuid));
+        } else {
+            UUID[] oldUuids = concept.publicId().asUuidArray();
+            UUID[] newUuids = new UUID[oldUuids.length + 1];
+            System.arraycopy(oldUuids, 0, newUuids, 0, oldUuids.length);
+            newUuids[newUuids.length-1] = uuid;
+            PublicId newPublicId = PublicIds.of(newUuids);
+            concept = Concept.make(concept.description(), newPublicId);
+        }
         return this;
     }
 
