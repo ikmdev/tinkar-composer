@@ -48,7 +48,9 @@ public class Identifier extends SemanticTemplate {
     }
 
     @Override
-    protected void validate() {
-
+    protected void validate() throws IllegalArgumentException {
+        if (source==null || identifier==null) {
+            throw new IllegalArgumentException("Identifier requires a source and identifier");
+        }
     }
 }

@@ -60,7 +60,14 @@ public class ConceptAssembler extends Attachable {
     }
 
     @Override
-    EntityProxy asReference() {
+    protected EntityProxy asReference() {
         return concept();
     }
+
+    @Override
+    protected void validate() throws IllegalArgumentException {
+        // Nothing to validate
+        // If a PublicId is not supplied, the default behavior is to generate one
+    }
+
 }

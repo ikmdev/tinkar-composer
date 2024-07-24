@@ -41,7 +41,7 @@ public class AxiomSyntax extends SemanticTemplate {
     }
 
     @Override
-    protected void validate() {
+    protected void validate() throws IllegalArgumentException {
         if (text == null || text.isEmpty()) {
             throw new IllegalArgumentException("Axiom syntax requires a text");
         }

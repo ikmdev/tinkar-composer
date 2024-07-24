@@ -52,10 +52,12 @@ public abstract class Attachable {
         this.reference = reference;
     }
 
-    abstract EntityProxy asReference();
+    protected abstract EntityProxy asReference();
+
+    protected abstract void validate() throws IllegalArgumentException;
 
     private void initializeAttachable(Attachable childAttachable) {
-        childAttachable.setReference(childAttachable.asReference());
+        childAttachable.setReference(this.asReference());
         childAttachable.setSessionTransaction(sessionTransaction);
         childAttachable.setSessionStampEntity(sessionStampEntity);
     }

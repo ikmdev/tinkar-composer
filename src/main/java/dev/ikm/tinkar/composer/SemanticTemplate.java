@@ -38,14 +38,12 @@ public abstract class SemanticTemplate extends Attachable {
     }
 
     @Override
-    public EntityProxy asReference() {
+    protected EntityProxy asReference() {
         return semantic();
     }
 
     protected abstract Pattern assignPattern();
 
     protected abstract ImmutableList<Object> assignFields();
-
-    protected abstract void validate();
 
 }

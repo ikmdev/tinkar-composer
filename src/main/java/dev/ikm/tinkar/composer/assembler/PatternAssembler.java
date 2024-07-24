@@ -38,6 +38,7 @@ public class PatternAssembler extends Attachable {
 
     public PatternAssembler pattern(Pattern pattern) {
         this.pattern = pattern;
+        return this;
     }
 
     public Pattern pattern() {
@@ -75,7 +76,14 @@ public class PatternAssembler extends Attachable {
     }
 
     @Override
-    EntityProxy asReference() {
+    protected EntityProxy asReference() {
         return pattern();
+    }
+
+    @Override
+    protected void validate() throws IllegalArgumentException {
+        if (meaning==null || purpose==null) {
+            throw new IllegalArgumentException("Pattern requires a meaning and purpose");
+        }
     }
 }

@@ -35,6 +35,6 @@ public class TinkarBaseModel extends SemanticTemplate {
 
     @Override
     protected void validate() {
-
+        // Nothing to validate
     }
 }

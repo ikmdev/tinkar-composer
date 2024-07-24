@@ -78,7 +78,15 @@ public class SemanticAssembler extends Attachable {
     }
 
     @Override
-    EntityProxy asReference() {
+    protected EntityProxy asReference() {
         return semantic();
     }
+
+    @Override
+    protected void validate() throws IllegalArgumentException {
+        if (reference==null || pattern==null || fieldsConsumer==null) {
+            throw new IllegalArgumentException("Semantic requires a reference, pattern, and field values");
+        }
+    }
+
 }

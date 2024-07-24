@@ -35,6 +35,6 @@ public class KometBaseModel extends SemanticTemplate {
 
     @Override
     protected void validate() {
-
+        // Nothing to validate
     }
 }
