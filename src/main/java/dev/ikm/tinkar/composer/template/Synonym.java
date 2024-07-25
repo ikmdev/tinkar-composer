@@ -56,7 +56,7 @@ public class Synonym extends SemanticTemplate {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (language==null || text == null || text.isEmpty() || caseSignificance==null) {
-            throw new IllegalArgumentException("Synonym requires a language, text, and case significance");
+            throw new IllegalArgumentException("Synonym requires language, text, and case significance");
         }
     }
 }

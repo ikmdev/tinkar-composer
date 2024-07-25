@@ -47,7 +47,7 @@ public class Comment extends SemanticTemplate {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("Comment requires a text");
+            throw new IllegalArgumentException("Comment requires text");
         }
     }
 

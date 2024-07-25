@@ -85,7 +85,7 @@ public class SemanticAssembler extends Attachable {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (reference==null || pattern==null || fieldsConsumer==null) {
-            throw new IllegalArgumentException("Semantic requires a reference, pattern, and field values");
+            throw new IllegalArgumentException("Semantic requires reference, pattern, and field values");
         }
     }
 

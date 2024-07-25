@@ -44,7 +44,7 @@ public class USDialect extends SemanticTemplate {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (acceptability==null) {
-            throw new IllegalArgumentException("USDialect requires an acceptability");
+            throw new IllegalArgumentException("USDialect requires acceptability");
         }
     }
 }

@@ -56,7 +56,7 @@ public class Definition extends SemanticTemplate {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (language==null || text == null || text.isEmpty() || caseSignificance==null) {
-            throw new IllegalArgumentException("Definition requires a language, text, and case significance");
+            throw new IllegalArgumentException("Definition requires language, text, and case significance");
         }
     }
 }

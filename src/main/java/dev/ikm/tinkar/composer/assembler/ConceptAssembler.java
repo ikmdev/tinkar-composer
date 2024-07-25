@@ -44,7 +44,7 @@ public class ConceptAssembler extends Attachable {
         return this;
     }
 
-    public ConceptAssembler uuid(UUID uuid) {
+    public ConceptAssembler addUuid(UUID uuid) {
         if (concept==null) {
             concept = Concept.make(PublicIds.of(uuid));
         } else {

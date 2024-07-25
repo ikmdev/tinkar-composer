@@ -44,7 +44,7 @@ public class GBDialect extends SemanticTemplate {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (acceptability==null) {
-            throw new IllegalArgumentException("GBDialect requires an acceptability");
+            throw new IllegalArgumentException("GBDialect requires acceptability");
         }
     }
 }
