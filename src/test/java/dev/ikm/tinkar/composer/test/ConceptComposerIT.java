@@ -23,12 +23,16 @@ import dev.ikm.tinkar.common.service.ServiceProperties;
 import dev.ikm.tinkar.composer.Composer;
 import dev.ikm.tinkar.composer.Session;
 import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
+import dev.ikm.tinkar.composer.assembler.PatternAssembler;
+import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
 import dev.ikm.tinkar.composer.template.Comment;
 import dev.ikm.tinkar.composer.template.FullyQualifiedName;
 import dev.ikm.tinkar.composer.template.GBDialect;
 import dev.ikm.tinkar.composer.template.USDialect;
 import dev.ikm.tinkar.composer.test.template.CustomSemantic;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.EntityProxy.Pattern;
+import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -107,24 +111,22 @@ public class ConceptComposerIT {
                 .attach((Comment comment) -> comment.text("They spell things weird"))
                 .attach(() -> new CustomSemantic().text("Custom Comments"));
 
-//        EntityProxy.Semantic semantic = EntityProxy.Semantic.make(PublicIds.newRandom());
-//        session.create(semantic)
-//                .pattern(DESCRIPTION_PATTERN)
-//                .reference(myConcept)
-//                .fields(fieldValue -> System.out.println(fieldValue))
-//                .build() //Need to change this to a consumer with a BuilderTemplate for the fields
-//                .attach((USDialect usDialect) -> {
-//                    usDialect.acceptability(PREFERRED);
-//                    usDialect.attach((Comment comment) -> comment.text("Comment 1"));
-//                });
+        Semantic semantic = Semantic.make(PublicIds.newRandom());
+        session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler.semantic(semantic)
+                    .pattern(DESCRIPTION_PATTERN)
+                    .reference(myConcept)
+                    .fields(fieldValue -> System.out.println(fieldValue))
+                    .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED)
+                        .attach((Comment comment) -> comment.text("Comment 1"))));
 
-//        EntityProxy.Pattern pattern = EntityProxy.Pattern.make(PublicIds.newRandom());
-//        session.create(pattern)
-//                .meaning(null)
-//                .purpose(null)
-//                .field(null, null, null, 0)
-//                .build()
-//                .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE).text("FQN").assemble() );
+        Pattern pattern = Pattern.make(PublicIds.newRandom());
+        session.compose((PatternAssembler patternAssembler) -> patternAssembler.pattern(pattern)
+                .meaning(MEANING)
+                .purpose(PURPOSE)
+                .field(MEANING, PURPOSE, STRING)
+                .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE)
+                        .text("FQN")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 
         session.close();
     }
