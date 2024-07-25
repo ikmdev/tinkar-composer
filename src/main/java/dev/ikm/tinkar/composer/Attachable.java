@@ -230,6 +230,7 @@ public abstract class Attachable {
 
     protected void writeSemanticTemplate(SemanticTemplate semanticTemplate) {
         System.out.println(semanticTemplate.semantic());
+        semanticTemplate.validate();
         sessionTransaction.addComponent(semanticTemplate.semantic());
         Write.semantic(semanticTemplate.semantic(),
                 sessionStampEntity,

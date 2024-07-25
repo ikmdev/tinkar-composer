@@ -48,31 +48,42 @@ public class Session implements Closeable {
     }
 
     public Attachable compose(ConceptAssemblerConsumer conceptAssemblerConsumer) {
+        //Setup
         ConceptAssembler conceptAssembler = new ConceptAssembler();
-        conceptAssemblerConsumer.accept(conceptAssembler);
         conceptAssembler.setSessionTransaction(transaction);
         conceptAssembler.setSessionStampEntity(stampEntity);
-
+        //Process
+        conceptAssemblerConsumer.accept(conceptAssembler);
+        ((Attachable) conceptAssembler).validate();
+        //Write
         transaction.addComponent(conceptAssembler.concept());
         Write.concept(conceptAssembler.concept(), stampEntity);
-
         return conceptAssembler;
     }
 
     public Attachable compose(SemanticAssemblerConsumer semanticAssemblerConsumer) {
+        //Setup
         SemanticAssembler semanticAssembler = new SemanticAssembler();
-        semanticAssemblerConsumer.accept(semanticAssembler);
         semanticAssembler.setSessionTransaction(transaction);
         semanticAssembler.setSessionStampEntity(stampEntity);
-
+        //Process
+        semanticAssemblerConsumer.accept(semanticAssembler);
+        ((Attachable) semanticAssembler).validate();
+        //Write
         transaction.addComponent(semanticAssembler.semantic());
         Write.semantic(semanticAssembler.semantic(), stampEntity, semanticAssembler.reference(), semanticAssembler.pattern(), semanticAssembler.fields());
         return semanticAssembler;
     }
 
     public Attachable compose(PatternAssemblerConsumer patternAssemblerConsumer) {
+        //Setup
         PatternAssembler patternAssembler = new PatternAssembler();
+        patternAssembler.setSessionTransaction(transaction);
+        patternAssembler.setSessionStampEntity(stampEntity);
+        //Process
         patternAssemblerConsumer.accept(patternAssembler);
+        ((Attachable) patternAssembler).validate();
+        //Write
         transaction.addComponent(patternAssembler.pattern());
         Write.pattern(patternAssembler.pattern(), stampEntity, patternAssembler.meaning(), patternAssembler.purpose(), patternAssembler.fields());
         return patternAssembler;

@@ -71,6 +71,12 @@ public class PatternAssembler extends Attachable {
         return this;
     }
 
+    public PatternAssembler field(Concept meaning, Concept purpose, Concept datatype) {
+        int index = patternDefinitions.size();
+        patternDefinitions.add(new Write.PatternDefinition(meaning, purpose, datatype, index));
+        return this;
+    }
+
     public List<Write.PatternDefinition> fields() {
         return patternDefinitions;
     }
@@ -83,7 +89,22 @@ public class PatternAssembler extends Attachable {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (meaning==null || purpose==null) {
-            throw new IllegalArgumentException("Pattern requires a meaning and purpose");
+            throw new IllegalArgumentException("Pattern requires meaning and purpose");
+        }
+        List<Integer> indexes = new ArrayList<>();
+        patternDefinitions.forEach(patternDefinition -> {
+            if (patternDefinition.meaning()==null || patternDefinition.purpose()==null || patternDefinition.datatype()==null) {
+                throw new IllegalArgumentException("Pattern Definition requires meaning, purpose, and datatype");
+            }
+            if (indexes.contains(patternDefinition.index())) {
+                throw new IllegalArgumentException("Pattern Definitions cannot have the same index");
+            }
+            indexes.add(patternDefinition.index());
+        });
+        int actualIndexSum = indexes.stream().mapToInt(Integer::intValue).sum();
+        int sequentialIndexSum = (indexes.size() * (indexes.size() -1))/2;
+        if (actualIndexSum != sequentialIndexSum) {
+            throw new IllegalArgumentException("Pattern Definition indexes must be ordered sequentially starting from zero");
         }
     }
 }
