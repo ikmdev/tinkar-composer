@@ -16,24 +16,25 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
-import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
+import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
 public class Synonym extends SemanticTemplate {
 
-    private EntityProxy.Concept language;
+    private Concept language;
     private String text;
-    private EntityProxy.Concept caseSignificance;
+    private Concept caseSignificance;
 
     /**
      * Sets the language for the Synonym Semantic.
      * @param language the Synonym language
      * @return the Synonym SemanticTemplate for further method chaining
      */
-    public Synonym language(EntityProxy.Concept language) {
+    public Synonym language(Concept language) {
         this.language = language;
         return this;
     }
@@ -53,13 +54,13 @@ public class Synonym extends SemanticTemplate {
      * @param caseSignificance the Synonym case significance value
      * @return the Synonym SemanticTemplate for further method chaining
      */
-    public Synonym caseSignificance(EntityProxy.Concept caseSignificance) {
+    public Synonym caseSignificance(Concept caseSignificance) {
         this.caseSignificance = caseSignificance;
         return this;
     }
 
     @Override
-    public Synonym semantic(EntityProxy.Semantic semantic) {
+    public Synonym semantic(Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }

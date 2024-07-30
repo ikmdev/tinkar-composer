@@ -25,6 +25,13 @@ public abstract class SemanticTemplate extends Attachable {
 
     private Semantic semantic;
 
+    /**
+     * Sets the Semantic Proxy containing the PublicId for the Semantic.
+     * <br />
+     * If not supplied, a random PublicId will be assigned.
+     * @param semantic
+     * @return the SemanticTemplate for further method chaining
+     */
     protected void setSemantic(Semantic semantic) {
         this.semantic = semantic;
     }
@@ -55,6 +62,9 @@ public abstract class SemanticTemplate extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
+        if (super.getReference()==null) {
+            throw new IllegalArgumentException("Semantic requires a reference");
+        }
         super.getSessionTransaction().addComponent(semantic());
         Write.semantic(semantic(),
                 super.getSessionStampEntity(),

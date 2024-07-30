@@ -16,9 +16,9 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
-import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
+import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -38,7 +38,7 @@ public class GBDialect extends SemanticTemplate {
     }
 
     @Override
-    public GBDialect semantic(EntityProxy.Semantic semantic) {
+    public GBDialect semantic(Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }
