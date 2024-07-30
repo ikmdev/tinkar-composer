@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
@@ -26,18 +27,29 @@ public class USDialect extends SemanticTemplate {
 
     private Concept acceptability;
 
-    @Override
-    protected Pattern assignPattern() {
-        return TinkarTerm.US_DIALECT_PATTERN;
-    }
-
+    /**
+     * Sets the acceptability value for the USDialect Semantic.
+     * @param acceptability the USDialect acceptability value
+     * @return the USDialect SemanticTemplate for further method chaining
+     */
     public USDialect acceptability(Concept acceptability) {
         this.acceptability = acceptability;
         return this;
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    public USDialect semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
+        return this;
+    }
+
+    @Override
+    protected Pattern assignPattern() {
+        return TinkarTerm.US_DIALECT_PATTERN;
+    }
+
+    @Override
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(acceptability);
     }
 

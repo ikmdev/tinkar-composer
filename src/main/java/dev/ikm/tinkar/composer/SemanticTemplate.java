@@ -24,26 +24,43 @@ import org.eclipse.collections.api.list.ImmutableList;
 public abstract class SemanticTemplate extends Attachable {
 
     private Semantic semantic;
-    private Pattern pattern;
 
-    public void semantic(Semantic semantic) {
+    protected void setSemantic(Semantic semantic) {
         this.semantic = semantic;
     }
 
-    public Semantic semantic() {
+    protected Semantic semantic() {
         if (semantic == null) {
             semantic = Semantic.make(PublicIds.newRandom());
         }
         return semantic;
     }
 
-    @Override
-    protected EntityProxy asReference() {
-        return semantic();
-    }
+    /**
+     * Sets the Semantic for the SemanticTemplate
+     * @param semantic
+     * @return this SemanticTemplate as the same SubType that called it
+     */
+    public abstract <T extends SemanticTemplate> T semantic(Semantic semantic);
 
     protected abstract Pattern assignPattern();
 
-    protected abstract ImmutableList<Object> assignFields();
+    protected abstract ImmutableList<Object> assignFieldValues();
+
+    @Override
+    protected EntityProxy asReferenceComponent() {
+        return semantic();
+    }
+
+    @Override
+    protected void validateAndWrite() {
+        validate();
+        super.getSessionTransaction().addComponent(semantic());
+        Write.semantic(semantic(),
+                super.getSessionStampEntity(),
+                getReference(),
+                assignPattern(),
+                assignFieldValues());
+    }
 
 }

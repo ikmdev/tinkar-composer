@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
@@ -25,8 +26,19 @@ public class AxiomSyntax extends SemanticTemplate {
 
     private String text;
 
+    /**
+     * Sets the text for the AxiomSyntax Semantic.
+     * @param text the AxiomSyntax text in OWL format
+     * @return the AxiomSyntax SemanticTemplate for further method chaining
+     */
     public AxiomSyntax text(String text) {
         this.text = text;
+        return this;
+    }
+
+    @Override
+    public AxiomSyntax semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
         return this;
     }
 
@@ -36,7 +48,7 @@ public class AxiomSyntax extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(text);
     }
 

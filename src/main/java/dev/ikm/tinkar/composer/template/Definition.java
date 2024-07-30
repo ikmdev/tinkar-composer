@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
@@ -28,18 +29,39 @@ public class Definition extends SemanticTemplate {
     private String text;
     private Concept caseSignificance;
 
+    /**
+     * Sets the language for the Definition Semantic.
+     * @param language the Definition language
+     * @return the Definition SemanticTemplate for further method chaining
+     */
     public Definition language(Concept language) {
         this.language = language;
         return this;
     }
 
+    /**
+     * Sets the text for the Definition Semantic.
+     * @param text the Definition text
+     * @return the Definition SemanticTemplate for further method chaining
+     */
     public Definition text(String text) {
         this.text = text;
         return this;
     }
 
+    /**
+     * Sets the case significance value for the Definition Semantic.
+     * @param caseSignificance the Definition case significance value
+     * @return the Definition SemanticTemplate for further method chaining
+     */
     public Definition caseSignificance(Concept caseSignificance) {
         this.caseSignificance = caseSignificance;
+        return this;
+    }
+
+    @Override
+    public Definition semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
         return this;
     }
 
@@ -49,7 +71,7 @@ public class Definition extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.DEFINITION_DESCRIPTION_TYPE);
     }
 

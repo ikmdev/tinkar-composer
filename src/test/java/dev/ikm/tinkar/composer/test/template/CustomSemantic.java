@@ -31,12 +31,18 @@ public class CustomSemantic extends SemanticTemplate {
     }
 
     @Override
+    public CustomSemantic semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
+        return this;
+    }
+
+    @Override
     protected EntityProxy.Pattern assignPattern() {
         return TinkarTerm.COMMENT_PATTERN;
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(text);
     }
 

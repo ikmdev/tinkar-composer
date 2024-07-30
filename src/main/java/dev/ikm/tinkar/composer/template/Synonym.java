@@ -28,18 +28,39 @@ public class Synonym extends SemanticTemplate {
     private String text;
     private EntityProxy.Concept caseSignificance;
 
+    /**
+     * Sets the language for the Synonym Semantic.
+     * @param language the Synonym language
+     * @return the Synonym SemanticTemplate for further method chaining
+     */
     public Synonym language(EntityProxy.Concept language) {
         this.language = language;
         return this;
     }
 
+    /**
+     * Sets the text for the Synonym Semantic.
+     * @param text the Synonym text
+     * @return the Synonym SemanticTemplate for further method chaining
+     */
     public Synonym text(String text) {
         this.text = text;
         return this;
     }
 
+    /**
+     * Sets the case significance value for the Synonym Semantic.
+     * @param caseSignificance the Synonym case significance value
+     * @return the Synonym SemanticTemplate for further method chaining
+     */
     public Synonym caseSignificance(EntityProxy.Concept caseSignificance) {
         this.caseSignificance = caseSignificance;
+        return this;
+    }
+
+    @Override
+    public Synonym semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
         return this;
     }
 
@@ -49,7 +70,7 @@ public class Synonym extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE);
     }
 

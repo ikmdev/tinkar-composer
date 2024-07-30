@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
@@ -28,18 +29,39 @@ public class FullyQualifiedName extends SemanticTemplate {
     private String text;
     private Concept caseSignificance;
 
+    /**
+     * Sets the language for the FullyQualifiedName Semantic.
+     * @param language the FullyQualifiedName language
+     * @return the FullyQualifiedName SemanticTemplate for further method chaining
+     */
     public FullyQualifiedName language(Concept language) {
         this.language = language;
         return this;
     }
 
+    /**
+     * Sets the text for the FullyQualifiedName Semantic.
+     * @param text the FullyQualifiedName text
+     * @return the FullyQualifiedName SemanticTemplate for further method chaining
+     */
     public FullyQualifiedName text(String text) {
         this.text = text;
         return this;
     }
 
+    /**
+     * Sets the case significance value for the FullyQualifiedName Semantic.
+     * @param caseSignificance the FullyQualifiedName case significance value
+     * @return the FullyQualifiedName SemanticTemplate for further method chaining
+     */
     public FullyQualifiedName caseSignificance(Concept caseSignificance) {
         this.caseSignificance = caseSignificance;
+        return this;
+    }
+
+    @Override
+    public FullyQualifiedName semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
         return this;
     }
 
@@ -49,7 +71,7 @@ public class FullyQualifiedName extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE);
     }
 

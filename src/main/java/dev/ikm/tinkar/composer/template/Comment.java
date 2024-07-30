@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
@@ -25,13 +26,27 @@ public class Comment extends SemanticTemplate {
 
     private String text;
 
+    /**
+     * Sets the text for the Comment Semantic.
+     * @param text the Comment text
+     * @return the Comment SemanticTemplate for further method chaining
+     */
     public Comment text(String text) {
         this.text = text;
         return this;
     }
 
+    /**
+     * Gets the text for the Comment Semantic.
+     */
     public String getText() {
         return text;
+    }
+
+    @Override
+    public Comment semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
+        return this;
     }
 
     @Override
@@ -40,7 +55,7 @@ public class Comment extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(text);
     }
 

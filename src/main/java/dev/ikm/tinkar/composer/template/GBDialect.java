@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
@@ -26,8 +27,19 @@ public class GBDialect extends SemanticTemplate {
 
     private Concept acceptability;
 
+    /**
+     * Sets the acceptability value for the GBDialect Semantic.
+     * @param acceptability the GBDialect acceptability value
+     * @return the GBDialect SemanticTemplate for further method chaining
+     */
     public GBDialect acceptability(Concept acceptability) {
         this.acceptability = acceptability;
+        return this;
+    }
+
+    @Override
+    public GBDialect semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
         return this;
     }
 
@@ -37,7 +49,7 @@ public class GBDialect extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(acceptability);
     }
 

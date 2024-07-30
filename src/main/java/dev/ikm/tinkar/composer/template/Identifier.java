@@ -16,6 +16,7 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.TinkarTerm;
@@ -27,13 +28,29 @@ public class Identifier extends SemanticTemplate {
     private Concept source;
     private String identifier;
 
+    /**
+     * Sets the identifier source for the Identifier Semantic.
+     * @param source the Identifier source
+     * @return the Identifier SemanticTemplate for further method chaining
+     */
     public Identifier source(Concept source) {
         this.source = source;
         return this;
     }
 
+    /**
+     * Sets the identifier value for the Identifier Semantic.
+     * @param identifier the Identifier value
+     * @return the Identifier SemanticTemplate for further method chaining
+     */
     public Identifier identifier(String identifier) {
         this.identifier = identifier;
+        return this;
+    }
+
+    @Override
+    public Identifier semantic(EntityProxy.Semantic semantic) {
+        this.setSemantic(semantic);
         return this;
     }
 
@@ -43,7 +60,7 @@ public class Identifier extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFields() {
+    protected ImmutableList<Object> assignFieldValues() {
         return Lists.immutable.of(source, identifier);
     }
 
