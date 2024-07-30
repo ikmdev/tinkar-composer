@@ -17,6 +17,7 @@ package dev.ikm.tinkar.composer.assembler;
 
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
+import dev.ikm.tinkar.composer.Write;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
@@ -29,62 +30,83 @@ import java.util.function.Consumer;
 public class SemanticAssembler extends Attachable {
 
     private Semantic semantic;
-    private EntityProxy reference;
     private Pattern pattern;
-    private Consumer<MutableList<Object>> fieldsConsumer;
+    private Consumer<MutableList<Object>> fieldValuesConsumer;
 
-    public SemanticAssembler reference(EntityProxy reference) {
-        this.reference = reference;
-        return this;
-    }
-
+    /**
+     * Sets the Semantic Proxy containing the PublicId for the Semantic Entity being assembled.
+     * <br />
+     * If not supplied, a random PublicId will be assigned.
+     * @param semantic
+     * @return the SemanticAssembler for further method chaining
+     */
     public SemanticAssembler semantic(Semantic semantic) {
         this.semantic = semantic;
         return this;
     }
 
-    public Semantic semantic() {
+    /**
+     * Sets the reference - the Component to which the Semantic information applies.
+     * @param reference
+     * @return the SemanticAssembler for further method chaining
+     */
+    public SemanticAssembler reference(EntityProxy reference) {
+        super.setReference(reference);
+        return this;
+    }
+
+    protected Semantic semantic() {
         if (semantic == null) {
             semantic = Semantic.make(PublicIds.newRandom());
         }
         return semantic;
     }
 
-    public EntityProxy reference() {
-        if (reference == null) {
-            throw new IllegalStateException("Reference not set");
-        }
-        return reference;
-    }
-
+    /**
+     * Sets the pattern which defines the fields for the Semantic.
+     * @param pattern
+     * @return the SemanticAssembler for further method chaining
+     */
     public SemanticAssembler pattern(Pattern pattern) {
         this.pattern = pattern;
         return this;
     }
 
-    public Pattern pattern() {
+    protected Pattern pattern() {
         return pattern;
     }
 
-    public SemanticAssembler fields(Consumer<MutableList<Object>> fieldsConsumer) {
-        this.fieldsConsumer = fieldsConsumer;
+    /**
+     * Sets a consumer that defines the field values for the Semantic.
+     * @param fieldValuesConsumer
+     * @return the SemanticAssembler for further method chaining
+     */
+    public SemanticAssembler fieldValues(Consumer<MutableList<Object>> fieldValuesConsumer) {
+        this.fieldValuesConsumer = fieldValuesConsumer;
         return this;
     }
 
-    public ImmutableList<Object> fields() {
+    protected ImmutableList<Object> fieldValues() {
         MutableList<Object> mutableList = Lists.mutable.empty();
-        fieldsConsumer.accept(mutableList);
+        fieldValuesConsumer.accept(mutableList);
         return mutableList.toImmutable();
     }
 
     @Override
-    protected EntityProxy asReference() {
+    protected EntityProxy asReferenceComponent() {
         return semantic();
     }
 
     @Override
+    protected void validateAndWrite() {
+        validate();
+        super.getSessionTransaction().addComponent(semantic());
+        Write.semantic(semantic(), super.getSessionStampEntity(), getReference(), pattern(), fieldValues());
+    }
+
+    @Override
     protected void validate() throws IllegalArgumentException {
-        if (reference==null || pattern==null || fieldsConsumer==null) {
+        if (super.getReference()==null || pattern==null || fieldValuesConsumer==null) {
             throw new IllegalArgumentException("Semantic requires reference, pattern, and field values");
         }
     }

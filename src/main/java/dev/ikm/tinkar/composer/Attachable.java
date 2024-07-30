@@ -20,8 +20,6 @@ import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
 
-import java.util.function.Supplier;
-
 public abstract class Attachable {
 
     private Transaction sessionTransaction;
@@ -32,214 +30,194 @@ public abstract class Attachable {
         this.sessionTransaction = sessionTransaction;
     }
 
-    protected void setSessionStampEntity(StampEntity sessionStampEntity) {
-        this.sessionStampEntity = sessionStampEntity;
-    }
-
     protected Transaction getSessionTransaction() {
         return sessionTransaction;
+    }
+
+    protected void setSessionStampEntity(StampEntity sessionStampEntity) {
+        this.sessionStampEntity = sessionStampEntity;
     }
 
     protected StampEntity getSessionStampEntity() {
         return sessionStampEntity;
     }
 
-    public EntityProxy getReference() {
-        return reference;
-    }
-
-    public void setReference(EntityProxy reference) {
+    protected void setReference(EntityProxy reference) {
         this.reference = reference;
     }
 
-    protected abstract EntityProxy asReference();
+    protected EntityProxy getReference() {
+        if (reference == null) {
+            throw new IllegalStateException("Reference not set");
+        }
+        return reference;
+    }
+
+    protected abstract EntityProxy asReferenceComponent();
+
+    protected abstract void validateAndWrite();
 
     protected abstract void validate() throws IllegalArgumentException;
 
     private void initializeAttachable(Attachable childAttachable) {
-        childAttachable.setReference(this.asReference());
+        childAttachable.setReference(this.asReferenceComponent());
         childAttachable.setSessionTransaction(sessionTransaction);
         childAttachable.setSessionStampEntity(sessionStampEntity);
     }
 
+    //### START: Attach Options
+    /**
+     * Creates a Semantic which references this Component.
+     * @param semanticTemplate
+     * @return this Component as an Attachable
+     */
+    public Attachable attach(SemanticTemplate semanticTemplate) {
+        initializeAttachable(semanticTemplate);
+        semanticTemplate.validateAndWrite();
+        return this;
+    }
+
+    /**
+     * Creates an AxiomSyntax Semantic which references this Component.
+     * @param axiomSyntaxConsumer
+     * @return this Component as an Attachable
+     */
     public Attachable attach(AxiomSyntaxConsumer axiomSyntaxConsumer) {
         AxiomSyntax axiomSyntax = new AxiomSyntax();
         initializeAttachable(axiomSyntax);
         axiomSyntaxConsumer.accept(axiomSyntax);
-        writeSemanticTemplate(axiomSyntax);
+        axiomSyntax.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(AxiomSyntax axiomSyntax) {
-        initializeAttachable(axiomSyntax);
-		writeSemanticTemplate(axiomSyntax);
-        return this;
-    }
-
+    /**
+     * Creates an Comment Semantic which references this Component.
+     * @param commentConsumer
+     * @return this Component as an Attachable
+     */
     public Attachable attach(CommentConsumer commentConsumer) {
         Comment comment = new Comment();
         initializeAttachable(comment);
         commentConsumer.accept(comment);
-        writeSemanticTemplate(comment);
+        comment.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(Comment comment) {
-        initializeAttachable(comment);
-        writeSemanticTemplate(comment);
-        return this;
-    }
-
+    /**
+     * Creates an Definition Semantic which references this Component.
+     * @param definitionConsumer
+     * @return this Component as an Attachable
+     */
     public Attachable attach(DefinitionConsumer definitionConsumer) {
         Definition definition = new Definition();
         initializeAttachable(definition);
         definitionConsumer.accept(definition);
-        writeSemanticTemplate(definition);
+        definition.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(Definition definition) {
-        initializeAttachable(definition);
-		writeSemanticTemplate(definition);
-        return this;
-    }
-
+    /**
+     * Creates an FullyQualifiedName Semantic which references this Component.
+     * @param fullyQualifiedNameConsumer
+     * @return this Component as an Attachable
+     */
     public Attachable attach(FullyQualifiedNameConsumer fullyQualifiedNameConsumer) {
         FullyQualifiedName fullyQualifiedName = new FullyQualifiedName();
         initializeAttachable(fullyQualifiedName);
         fullyQualifiedNameConsumer.accept(fullyQualifiedName);
-		writeSemanticTemplate(fullyQualifiedName);
+		fullyQualifiedName.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(FullyQualifiedName fullyQualifiedName) {
-        initializeAttachable(fullyQualifiedName);
-		writeSemanticTemplate(fullyQualifiedName);
-        return this;
-    }
-
+    /**
+      * Creates an GBDialect Semantic which references this Component.
+      * @param gbDialectConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(GBDialectConsumer gbDialectConsumer) {
         GBDialect gbDialect = new GBDialect();
         initializeAttachable(gbDialect);
         gbDialectConsumer.accept(gbDialect);
-		writeSemanticTemplate(gbDialect);
+		gbDialect.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(GBDialect gbDialect) {
-        initializeAttachable(gbDialect);
-		writeSemanticTemplate(gbDialect);
-        return this;
-    }
-
+    /**
+      * Creates an Identifier Semantic which references this Component.
+      * @param identifierConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(IdentifierConsumer identifierConsumer) {
         Identifier identifier = new Identifier();
         initializeAttachable(identifier);
         identifierConsumer.accept(identifier);
-		writeSemanticTemplate(identifier);
+		identifier.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(Identifier identifier) {
-        initializeAttachable(identifier);
-		writeSemanticTemplate(identifier);
-        return this;
-    }
-
+    /**
+      * Creates an StatedAxiom Semantic which references this Component.
+      * @param statedAxiomConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(StatedAxiomConsumer statedAxiomConsumer) {
         StatedAxiom statedAxiom = new StatedAxiom();
         initializeAttachable(statedAxiom);
         statedAxiomConsumer.accept(statedAxiom);
-		writeSemanticTemplate(statedAxiom);
+		statedAxiom.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(StatedAxiom statedAxiom) {
-        initializeAttachable(statedAxiom);
-		writeSemanticTemplate(statedAxiom);
-        return this;
-    }
-
+    /**
+      * Creates an Synonym Semantic which references this Component.
+      * @param synonymConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(SynonymConsumer synonymConsumer) {
         Synonym synonym = new Synonym();
         initializeAttachable(synonym);
         synonymConsumer.accept(synonym);
-		writeSemanticTemplate(synonym);
+		synonym.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(Synonym synonym) {
-        initializeAttachable(synonym);
-		writeSemanticTemplate(synonym);
-        return this;
-    }
-
+    /**
+      * Creates an USDialect Semantic which references this Component.
+      * @param usDialectConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(USDialectConsumer usDialectConsumer) {
         USDialect usDialect = new USDialect();
         initializeAttachable(usDialect);
         usDialectConsumer.accept(usDialect);
-		writeSemanticTemplate(usDialect);
+		usDialect.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(USDialect usDialect) {
-        initializeAttachable(usDialect);
-		writeSemanticTemplate(usDialect);
-        return this;
-    }
-
+    /**
+      * Creates an TinkarBaseModel Semantic which references this Component.
+      * @param tinkarBaseModelConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(TinkarBaseModelConsumer tinkarBaseModelConsumer) {
         TinkarBaseModel tinkarBaseModel = new TinkarBaseModel();
         initializeAttachable(tinkarBaseModel);
         tinkarBaseModelConsumer.accept(tinkarBaseModel);
-		writeSemanticTemplate(tinkarBaseModel);
+		tinkarBaseModel.validateAndWrite();
         return this;
     }
 
-    public Attachable attach(TinkarBaseModel tinkarBaseModel) {
-        initializeAttachable(tinkarBaseModel);
-		writeSemanticTemplate(tinkarBaseModel);
-        return this;
-    }
-
+    /**
+      * Creates an KometBaseModel Semantic which references this Component.
+      * @param kometBaseModelConsumer
+      * @return this Component as an Attachable
+      */
     public Attachable attach(KometBaseModelConsumer kometBaseModelConsumer) {
         KometBaseModel kometBaseModel = new KometBaseModel();
         initializeAttachable(kometBaseModel);
         kometBaseModelConsumer.accept(kometBaseModel);
-		writeSemanticTemplate(kometBaseModel);
+		kometBaseModel.validateAndWrite();
         return this;
-    }
-
-    public Attachable attach(KometBaseModel kometBaseModel) {
-        initializeAttachable(kometBaseModel);
-		writeSemanticTemplate(kometBaseModel);
-        return this;
-    }
-
-    // TODO: Is this appropriate now that we have to propogate parameters?
-    public Attachable attach(Supplier<SemanticTemplate> semanticTemplateSupplier) {
-        attach(semanticTemplateSupplier.get());
-        return this;
-    }
-
-    public Attachable attach(SemanticTemplate semanticTemplate) {
-        initializeAttachable(semanticTemplate);
-		writeSemanticTemplate(semanticTemplate);
-        return this;
-    }
-
-    protected void writeSemanticTemplate(SemanticTemplate semanticTemplate) {
-        System.out.println(semanticTemplate.semantic());
-        semanticTemplate.validate();
-        sessionTransaction.addComponent(semanticTemplate.semantic());
-        Write.semantic(semanticTemplate.semantic(),
-                sessionStampEntity,
-                this.asReference(),
-                semanticTemplate.assignPattern(),
-                semanticTemplate.assignFields());
     }
 
 }
-
-
-

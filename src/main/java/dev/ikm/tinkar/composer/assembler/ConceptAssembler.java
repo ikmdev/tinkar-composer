@@ -18,6 +18,7 @@ package dev.ikm.tinkar.composer.assembler;
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
+import dev.ikm.tinkar.composer.Write;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 
@@ -27,23 +28,40 @@ public class ConceptAssembler extends Attachable {
 
     private Concept concept;
 
+    /**
+     * Sets the Concept Proxy containing the PublicId for the Concept Entity being assembled.
+     * <br />
+     * If not supplied, a random PublicId will be assigned.
+     * @param concept
+     * @return the ConceptAssembler for further method chaining
+     */
     public ConceptAssembler concept(Concept concept) {
         this.concept = concept;
         return this;
     }
 
-    public Concept concept() {
+    protected Concept concept() {
         if (concept == null) {
             concept = Concept.make(PublicIds.newRandom());
         }
         return concept;
     }
 
+    /**
+     * Sets the PublicId for the Concept Entity being assembled.
+     * @param publicId
+     * @return the ConceptAssembler for further method chaining
+     */
     public ConceptAssembler publicId(PublicId publicId) {
         concept = Concept.make(publicId);
         return this;
     }
 
+    /**
+     * Adds a UUID to the current PublicId for the Concept Entity being assembled.
+     * @param uuid
+     * @return the ConceptAssembler for further method chaining
+     */
     public ConceptAssembler addUuid(UUID uuid) {
         if (concept==null) {
             concept = Concept.make(PublicIds.of(uuid));
@@ -59,14 +77,26 @@ public class ConceptAssembler extends Attachable {
     }
 
     @Override
-    protected EntityProxy asReference() {
+    protected EntityProxy asReferenceComponent() {
         return concept();
+    }
+
+    @Override
+    protected void validateAndWrite() {
+        validate();
+        super.getSessionTransaction().addComponent(concept());
+        Write.concept(concept(), super.getSessionStampEntity());
     }
 
     @Override
     protected void validate() throws IllegalArgumentException {
         // Nothing to validate
         // If a PublicId is not supplied, the default behavior is to generate one
+    }
+
+    @Override
+    protected EntityProxy getReference() {
+        throw new UnsupportedOperationException("ConceptAssembler does not have a reference");
     }
 
 }

@@ -36,54 +36,93 @@ public class PatternAssembler extends Attachable {
         this.patternDefinitions = new ArrayList<>();
     }
 
+    /**
+     * Sets the Pattern Proxy containing the PublicId for the Pattern Entity being assembled.
+     * <br />
+     * If not supplied, a random PublicId will be assigned.
+     * @param pattern
+     * @return the PatternAssembler for further method chaining
+     */
     public PatternAssembler pattern(Pattern pattern) {
         this.pattern = pattern;
         return this;
     }
 
-    public Pattern pattern() {
+    protected Pattern pattern() {
         if (pattern == null) {
             pattern = Pattern.make(PublicIds.newRandom());
         }
         return pattern;
     }
 
+    /**
+     * Sets the meaning of the Pattern.
+     * @param meaning
+     * @return the SemanticAssembler for further method chaining
+     */
     public PatternAssembler meaning(Concept meaning) {
         this.meaning = meaning;
         return this;
     }
 
-    public Concept meaning() {
+    protected Concept meaning() {
         return meaning;
     }
 
+    /**
+     * Sets the purpose of the Pattern.
+     * @param purpose
+     * @return the SemanticAssembler for further method chaining
+     */
     public PatternAssembler purpose(Concept purpose) {
         this.purpose = purpose;
         return this;
     }
 
-    public Concept purpose() {
+    protected Concept purpose() {
         return purpose;
     }
 
-    public PatternAssembler field(Concept meaning, Concept purpose, Concept datatype, int index) {
+    /**
+     * Adds a field definition with a predefined index to the Pattern.
+     * @param meaning the meaning of the field definition
+     * @param purpose the purpose of the field definition
+     * @param datatype the datatyupe of the field definition
+     * @param index the index of the field definition
+     * @return the SemanticAssembler for further method chaining
+     */
+    public PatternAssembler fieldDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {
         patternDefinitions.add(new Write.PatternDefinition(meaning, purpose, datatype, index));
         return this;
     }
 
-    public PatternAssembler field(Concept meaning, Concept purpose, Concept datatype) {
+    /**
+     * Appends a field definition with incremented index to the Pattern.
+     * @param meaning the meaning of the field definition
+     * @param purpose the purpose of the field definition
+     * @param datatype the datatyupe of the field definition
+     * @return the SemanticAssembler for further method chaining
+     */
+    public PatternAssembler fieldDefinition(Concept meaning, Concept purpose, Concept datatype) {
         int index = patternDefinitions.size();
         patternDefinitions.add(new Write.PatternDefinition(meaning, purpose, datatype, index));
         return this;
     }
 
-    public List<Write.PatternDefinition> fields() {
+    protected List<Write.PatternDefinition> fieldDefinitions() {
         return patternDefinitions;
     }
 
     @Override
-    protected EntityProxy asReference() {
+    protected EntityProxy asReferenceComponent() {
         return pattern();
+    }
+
+    @Override
+    protected void validateAndWrite() {
+        validate();
+        super.getSessionTransaction().addComponent(pattern());
+        Write.pattern(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
     }
 
     @Override
@@ -104,7 +143,13 @@ public class PatternAssembler extends Attachable {
         int actualIndexSum = indexes.stream().mapToInt(Integer::intValue).sum();
         int sequentialIndexSum = (indexes.size() * (indexes.size() -1))/2;
         if (actualIndexSum != sequentialIndexSum) {
-            throw new IllegalArgumentException("Pattern Definition indexes must be ordered sequentially starting from zero");
+            throw new IllegalArgumentException("Pattern Definition index value out of bounds for field definition array of size " + indexes.size());
         }
     }
+
+    @Override
+    protected EntityProxy getReference() {
+        throw new UnsupportedOperationException("PatternAssembler does not have a reference");
+    }
+
 }
