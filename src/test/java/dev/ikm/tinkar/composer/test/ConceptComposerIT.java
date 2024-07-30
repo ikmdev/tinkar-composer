@@ -135,6 +135,6 @@ public class ConceptComposerIT {
                         .text("FQN")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 
-        session.close();
+        composer.commitSession(session);
     }
 }

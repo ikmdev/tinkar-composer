@@ -92,7 +92,7 @@ public class TemplateCreateIT {
                 .text("FQN from Template")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -110,7 +110,7 @@ public class TemplateCreateIT {
                 .text("Synonym from Template")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -128,7 +128,7 @@ public class TemplateCreateIT {
                 .text("Definition from Template")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -144,7 +144,7 @@ public class TemplateCreateIT {
         session.compose(new AxiomSyntax()
                 .text("Insert OWL String"), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -160,7 +160,7 @@ public class TemplateCreateIT {
         session.compose(new Comment()
                 .text("Comment from Template"), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -176,7 +176,7 @@ public class TemplateCreateIT {
         session.compose(new USDialect()
                 .acceptability(PREFERRED), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -192,7 +192,7 @@ public class TemplateCreateIT {
         session.compose(new GBDialect()
                 .acceptability(PREFERRED), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -210,7 +210,7 @@ public class TemplateCreateIT {
                         .source(UNIVERSALLY_UNIQUE_IDENTIFIER)
                         .identifier(UUID.randomUUID().toString()), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -226,7 +226,7 @@ public class TemplateCreateIT {
         session.compose(new StatedAxiom()
                         .isA(ROOT_VERTEX), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -241,7 +241,7 @@ public class TemplateCreateIT {
 
         session.compose(new KometBaseModel(), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -256,7 +256,7 @@ public class TemplateCreateIT {
 
         session.compose(new TinkarBaseModel(), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -272,7 +272,7 @@ public class TemplateCreateIT {
         session.compose(new CustomSemantic()
                 .text("Custom Semantic from Template"), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,

@@ -27,7 +27,10 @@ import dev.ikm.tinkar.composer.Session;
 import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
 import dev.ikm.tinkar.composer.assembler.PatternAssembler;
 import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
-import dev.ikm.tinkar.composer.template.*;
+import dev.ikm.tinkar.composer.template.Comment;
+import dev.ikm.tinkar.composer.template.FullyQualifiedName;
+import dev.ikm.tinkar.composer.template.Synonym;
+import dev.ikm.tinkar.composer.template.USDialect;
 import dev.ikm.tinkar.composer.test.template.CustomSemantic;
 import dev.ikm.tinkar.entity.EntityCountSummary;
 import dev.ikm.tinkar.entity.EntityService;
@@ -36,13 +39,11 @@ import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
-import org.eclipse.collections.api.factory.Lists;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -91,7 +92,7 @@ public class ComposerCreateIT {
 
         session.compose((ConceptAssembler conceptAssembler) -> {});
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -108,7 +109,7 @@ public class ComposerCreateIT {
                         .purpose(PURPOSE)
                         .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -130,7 +131,7 @@ public class ComposerCreateIT {
                                 .with(DESCRIPTION_NOT_CASE_SENSITIVE)
                                 .with(REGULAR_NAME_DESCRIPTION_TYPE)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -148,7 +149,7 @@ public class ComposerCreateIT {
                 .text("Synonym from Template")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -163,12 +164,12 @@ public class ComposerCreateIT {
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-                .attach((FullyQualifiedName fqn) -> fqn.semantic(Semantic.make(PublicIds.newRandom()))
+                .attach((FullyQualifiedName fqn) -> fqn
                         .language(ENGLISH_LANGUAGE)
                         .text("FQN for Concept")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -184,11 +185,12 @@ public class ComposerCreateIT {
                 .meaning(MEANING)
                 .purpose(PURPOSE)
                 .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING)
-                .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE)
+                .attach((FullyQualifiedName fqn) -> fqn
+                        .language(ENGLISH_LANGUAGE)
                         .text("FQN for Pattern")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -213,7 +215,7 @@ public class ComposerCreateIT {
                         .semantic(Semantic.make("Dialect for Synonym", PublicIds.newRandom()))
                         .acceptability(PREFERRED)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -241,7 +243,7 @@ public class ComposerCreateIT {
                                 .semantic(Semantic.make("Comment for Synonym", PublicIds.newRandom()))
                                 .text("Comment for Synonym"))));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 3;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -269,7 +271,7 @@ public class ComposerCreateIT {
                                 .semantic(Semantic.make("Comment for Custom1", PublicIds.newRandom()))
                                 .text("Comment for Custom1")));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 3;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -289,7 +291,7 @@ public class ComposerCreateIT {
                         .semantic(Semantic.make("Dialect for Synonym from Template", PublicIds.newRandom()))
                         .acceptability(ACCEPTABLE));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -301,17 +303,17 @@ public class ComposerCreateIT {
     @Test
     public void appendVersionConceptTest() {
         PublicId conceptId = PublicIds.newRandom();
-        Composer Composer = new Composer("appendVersionConceptTest");
+        Composer composer = new Composer("appendVersionConceptTest");
 
         // Create Initial Concept Version
-        Session initSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         initSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
-        initSession.close();
+        composer.commitSession(initSession);
 
         // Append Concept Version
-        Session appendSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         appendSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
-        appendSession.close();
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
@@ -322,25 +324,25 @@ public class ComposerCreateIT {
     @Test
     public void appendVersionPatternTest() {
         PublicId patternId = PublicIds.newRandom();
-        Composer Composer = new Composer("appendVersionPatternTest");
+        Composer composer = new Composer("appendVersionPatternTest");
 
         // Create Initial Pattern Version
-        Session initSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         initSession.compose((PatternAssembler patternAssembler) -> patternAssembler
                 .pattern(Pattern.make(patternId))
                 .meaning(MEANING)
                 .purpose(PURPOSE)
                 .fieldDefinition(MEANING, PURPOSE, STRING));
-        initSession.close();
+        composer.commitSession(initSession);
 
         // Append Pattern Version
-        Session appendSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         appendSession.compose((PatternAssembler patternAssembler) -> patternAssembler
                 .pattern(Pattern.make(patternId))
                 .meaning(ACTION_PROPERTIES)
                 .purpose(ACTION_PROPERTIES)
                 .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING));
-        appendSession.close();
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(patternId.asUuidArray()).versions().size();
@@ -353,10 +355,10 @@ public class ComposerCreateIT {
         PublicId semanticId = PublicIds.newRandom();
         PublicId conceptId = PublicIds.newRandom();
         Concept referencedConcept = Concept.make(conceptId);
-        Composer Composer = new Composer("appendVersionSemanticTest");
+        Composer composer = new Composer("appendVersionSemanticTest");
 
         // Create Initial Semantic Version
-        Session initSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         initSession.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
                 .semantic(Semantic.make(semanticId))
                 .reference(referencedConcept)
@@ -366,10 +368,10 @@ public class ComposerCreateIT {
                         .with("Synonym V1")
                         .with(DESCRIPTION_NOT_CASE_SENSITIVE)
                         .with(REGULAR_NAME_DESCRIPTION_TYPE)));
-        initSession.close();
+        composer.commitSession(initSession);
 
         // Append Semantic Version
-        Session appendSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         appendSession.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
                 .semantic(Semantic.make(semanticId))
                 .reference(referencedConcept)
@@ -379,7 +381,7 @@ public class ComposerCreateIT {
                         .with("Synonym V2")
                         .with(DESCRIPTION_NOT_CASE_SENSITIVE)
                         .with(REGULAR_NAME_DESCRIPTION_TYPE)));
-        appendSession.close();
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
@@ -393,23 +395,23 @@ public class ComposerCreateIT {
         PublicId conceptId = PublicIds.newRandom();
         Concept referencedConcept = Concept.make(conceptId);
         // Create Initial Semantic Version from Template
-        Composer Composer = new Composer("appendVersionSemanticFromTemplateTest");
-        Session initSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Composer composer = new Composer("appendVersionSemanticFromTemplateTest");
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         initSession.compose(new Synonym()
                 .semantic(Semantic.make(semanticId))
                         .language(ENGLISH_LANGUAGE)
                 .text("Synonym from Template V1")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referencedConcept);
-        initSession.close();
+        composer.commitSession(initSession);
 
         // Append Semantic Version from Template
-        Session appendSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         appendSession.compose(new Synonym()
                 .semantic(Semantic.make(semanticId))
                 .language(ENGLISH_LANGUAGE)
                 .text("Synonym from Template V2")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referencedConcept);
-        appendSession.close();
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
@@ -430,7 +432,7 @@ public class ComposerCreateIT {
                         .language(ENGLISH_LANGUAGE)
                         .text("Synonym from Template V1")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
-        initSession.close();
+        initComposer.commitSession(initSession);
 
         // Append Concept Version
         Composer appendComposer = new Composer("appendSemanticVersionFromWithTest");
@@ -441,7 +443,7 @@ public class ComposerCreateIT {
                         .language(ENGLISH_LANGUAGE)
                         .text("Synonym from Template V2")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
-        appendSession.close();
+        appendComposer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
@@ -454,19 +456,19 @@ public class ComposerCreateIT {
     @Test
     public void writeOrderTest() {
         PublicId conceptId = PublicIds.newRandom();
-        Composer Composer = new Composer("writeOrderTest");
+        Composer composer = new Composer("writeOrderTest");
 
         // Create Initial Concept Version
-        Session firstSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session firstSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         firstSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
 
         // Append Concept Version
-        Session secondSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session secondSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         secondSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
 
         // Commit Transactions out of order
-        secondSession.close();
-        firstSession.close();
+        composer.commitSession(secondSession);
+        composer.commitSession(firstSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
@@ -477,22 +479,41 @@ public class ComposerCreateIT {
     @Test
     public void writeVersionsOutOfOrderTest() {
         PublicId conceptId = PublicIds.newRandom();
-        Composer Composer = new Composer("writeVersionsOutOfOrderTest");
+        Composer composer = new Composer("writeVersionsOutOfOrderTest");
 
         // Create Version with later time first
-        Session laterSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session laterSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         laterSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
-        laterSession.close();
+        composer.commitSession(laterSession);
 
         // Create Version with previous time next
-        Session previousSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session previousSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         previousSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
-        previousSession.close();
+        composer.commitSession(previousSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+
+    @Test
+    public void sessionDoubleCloseTest() {
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createFullyQualifiedNameTemplateTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        session.compose(new FullyQualifiedName()
+                .language(ENGLISH_LANGUAGE)
+                .text("FQN from Template")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
+
+        composer.commitSession(session);
+        composer.commitSession(session);
+        int expectedComponentsUpdatedCount = 1;
+        int actualComponentsUpdatedCount = session.componentsInSessionCount();
+        assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
+                String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
     }
     // ### END: Write / Commit Ordering Tests
 
@@ -503,17 +524,17 @@ public class ComposerCreateIT {
         PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
         Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
         Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
-        Composer Composer = new Composer("writeConceptWithOneThenMultipleUuids");
+        Composer composer = new Composer("writeConceptWithOneThenMultipleUuids");
 
         // Create Concept with one Uuids
-        Session previousSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session previousSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         previousSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithSingleUuid)); // Concept with [ UUID1 ]
-        previousSession.close();
+        composer.commitSession(previousSession);
 
         // Create Concept version for multiple Uuid
-        Session laterSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session laterSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         laterSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithMultipleUuids)); // Concept with [ UUID1, UUID2 ]
-        laterSession.close();
+        composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
@@ -526,17 +547,17 @@ public class ComposerCreateIT {
         PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
         Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
         Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
-        Composer Composer = new Composer("writeConceptWithMultipleThenOneUuids");
+        Composer composer = new Composer("writeConceptWithMultipleThenOneUuids");
 
         // Create Concept with multiple Uuids
-        Session previousSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session previousSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         previousSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithMultipleUuids)); // Concept with [ UUID1 ]
-        previousSession.close();
+        composer.commitSession(previousSession);
 
         // Create Concept version for one Uuid
-        Session laterSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session laterSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         laterSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithSingleUuid)); // Concept with [ UUID1, UUID2 ]
-        laterSession.close();
+        composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
@@ -548,19 +569,19 @@ public class ComposerCreateIT {
     @Test
     @Disabled
     public void writeHealthConceptRecords() {
-        Composer Composer = new Composer("writeHealthConceptRecords");
+        Composer composer = new Composer("writeHealthConceptRecords");
 
         // Create Concept with multiple UUIDs (i.e., Health Concept)
-        Session healthConceptSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         healthConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .concept(HEALTH_CONCEPT));
-        healthConceptSession.close();
+        composer.commitSession(healthConceptSession);
 
         // Create Concept version for a single UUID in the PublicId from the Concept above
-        Session snomedRootConceptSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session snomedRootConceptSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         snomedRootConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .concept(Concept.make(PublicIds.of(HEALTH_CONCEPT.asUuidArray()[0]))));
-        snomedRootConceptSession.close();
+        composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
         int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
@@ -571,19 +592,19 @@ public class ComposerCreateIT {
     @Test
     @Disabled
     public void writeFullyQualifiedNameConceptRecords() {
-        Composer Composer = new Composer("writeFullyQualifiedNameConceptRecords");
+        Composer composer = new Composer("writeFullyQualifiedNameConceptRecords");
 
         // Create Concept with multiple UUIDs (i.e., FullyQualifiedName)
-        Session healthConceptSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         healthConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .concept(Concept.make(PublicIds.of(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.asUuidArray()[0]))));
-        healthConceptSession.close();
+        composer.commitSession(healthConceptSession);
 
         // Create Concept version for a single UUID in the PublicId from the Concept above
-        Session snomedRootConceptSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session snomedRootConceptSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         snomedRootConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .concept(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
-        snomedRootConceptSession.close();
+        composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
         int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
@@ -598,21 +619,21 @@ public class ComposerCreateIT {
 //        PublicId initialSemanticId = PublicIds.newRandom();
 //        PublicId semanticIdWithExtraUuid = PublicIds.of(initialSemanticId.asUuidArray()[0], PublicIds.newRandom().asUuidArray()[0]);
 //        Concept referencedConcept = Concept.make(conceptId);
-//        Composer Composer = new Composer("writeSemanticWithMergableVersions");
+//        Composer composer = new Composer("writeSemanticWithMergableVersions");
 //
 //        // Create Initial Semantic Version from Template
-//        Session initSession = Composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 //        initSession.compose(new Synonym(Semantic.make(initialSemanticId), ENGLISH_LANGUAGE,
 //                        "Synonym Version with single UUID", DESCRIPTION_NOT_CASE_SENSITIVE),
 //                referencedConcept);
-//        initSession.close();
+//        composer.commitSession(initSession);
 //
 //        // Append Semantic Version from Template
-//        Session appendSession = Composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 //        appendSession.compose(new Synonym(Semantic.make(semanticIdWithExtraUuid), ENGLISH_LANGUAGE,
 //                        "Synonym Version with multiple UUIDs", DESCRIPTION_NOT_CASE_SENSITIVE),
 //                referencedConcept);
-//        appendSession.close();
+//        composer.commitSession(appendSession);
 //
 //        int expectedVersionCount = 2;
 //        int actualVersionCount = EntityService.get().getEntityFast(semanticIdWithExtraUuid.asUuidArray()).versions().size();
@@ -667,7 +688,7 @@ public class ComposerCreateIT {
                                 .semantic(Semantic.make("C2S1", PublicIds.newRandom()))
                                 .text("Comment2 on Synonym")));
 
-        session.close();
+        composer.commitSession(session);
 
         int expectedComponentsUpdatedCount = 11;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
@@ -700,7 +721,7 @@ public class ComposerCreateIT {
 //                        DESCRIPTION_NOT_CASE_SENSITIVE,
 //                        FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
 //
-//        appendSession.close();
+//        composer.commitSession(appendSession);
 //
 //        int expectedVersionCount = 2;
 //        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
@@ -729,7 +750,7 @@ public class ComposerCreateIT {
 //                Concept.make("Concept Version from Template Test", conceptId))
 //                    .with(new USEnglishDialect(Semantic.make("Dialect Version from Template Test", PublicIds.newRandom()), ACCEPTABLE));
 //
-//        appendSession.close();
+//        composer.commitSession(appendSession);
 //
 //        int expectedVersionCount = 3;
 //        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
@@ -763,7 +784,7 @@ public class ComposerCreateIT {
 //                        DESCRIPTION_NOT_CASE_SENSITIVE,
 //                        FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
 //
-//        appendSession.close();
+//        composer.commitSession(appendSession);
 //
 //        int expectedVersionCount = 4;
 //        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
