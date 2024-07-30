@@ -83,7 +83,7 @@ public class StatedAxiom extends SemanticTemplate {
     @Override
     protected void validate() {
         if (originVertexList.isEmpty()) {
-            throw new IllegalArgumentException("StatedAxiom requires ");
+            throw new IllegalArgumentException("StatedAxiom requires at least one origin vertex");
         }
     }
 
