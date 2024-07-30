@@ -44,7 +44,7 @@ public class StatedAxiom extends SemanticTemplate {
     private final MutableList<EntityVertex> originVertexList = Lists.mutable.empty();
 
     /**
-     * Adds a relationship denoting the Concept provided as a parent of the referenced Component for the StatedAxiom Semantic.
+     * Adds a isA relationship denoting the Concept provided as a parent of the referenced Component for the StatedAxiom Semantic.
      * @param originConcept the parent Concept
      * @return the StatedAxiom SemanticTemplate for further method chaining
      */

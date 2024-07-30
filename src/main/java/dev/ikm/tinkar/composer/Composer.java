@@ -20,11 +20,9 @@ import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
-import dev.ikm.tinkar.terms.TinkarTerm;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Composer {
     private final Map<UUID, Session> composerSessionCache = new HashMap<>();
@@ -46,7 +44,7 @@ public class Composer {
      *    Session session = composer.open(status, time, author, module, path);
      *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
      *              .concept(Concept.make("Example Concept with predefined time", PublicIds.newRandom())));
-     *    session.close();
+     *    composer.commitSession(session);
      * }</pre>
      * @param status the status set for Components composed in the Session
      * @param time the timestamp (in epoch milliseconds) set for Components composed in the Session
@@ -59,7 +57,7 @@ public class Composer {
         this.transaction = new Transaction(name);
         this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
         UUID sessionKey = keyValue(status, time, author, module, path);
-        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity, sessionKey));
         return composerSessionCache.get(sessionKey);
     }
 
@@ -73,7 +71,7 @@ public class Composer {
      *    Session session = composer.open(status, author, module, path);
      *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
      *              .concept((Concept.make("Example Concept with commit time", PublicIds.newRandom()));
-     *    session.close();
+     *    composer.commitSession(session);
      * }</pre>
      * @param status the status set for Components composed in the Session
      * @param author the author set for Components composed in the Session
@@ -85,59 +83,30 @@ public class Composer {
         this.transaction = new Transaction(name);
         this.stampEntity = transaction.getStamp(status, author, module, path);
         UUID sessionKey = keyValue(status, transaction.commitTime(), author, module, path);
-        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity, sessionKey));
         return composerSessionCache.get(sessionKey);
     }
 
     /**
-     * Provides a Session for creating Components with <strong>default STAMP values</strong>.
-     * <br /><br />
-     * <pre>{@code
-     *    Composer composer = new Composer("name");
-     *    Session session = composer.open();
-     *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-     *              .concept((Concept.make("Example Concept with default STAMP values", PublicIds.newRandom()));
-     *    session.close();
-     * }</pre>
-     */
-    public Session open() {
-        State status = State.ACTIVE;
-        Concept author = TinkarTerm.USER;
-        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
-        Concept path = TinkarTerm.DEVELOPMENT_PATH;
-        this.transaction = new Transaction(name);
-        this.stampEntity = transaction.getStamp(status, author, module, path);
-        UUID sessionKey = keyValue(status, transaction.commitTime(), author, module, path);
-        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
-        return composerSessionCache.get(sessionKey);
-    }
-
-    /**
-     * Closes a Session opened by this Composer.
+     * Commits a Session opened by this Composer.
      * <br />
-     * {@link Session#close()} <strong>commits</strong> the Components and STAMPs in the session transaction.
+     * {@link Session#commit()} <strong>commits</strong> the Components and STAMPs in the session transaction.
      * @param session
      * @return boolean representing whether the Session was closed. A Composer can only close a Session it opened.
      */
-    public boolean closeSession(Session session) {
-        AtomicReference<UUID> closeKey = new AtomicReference<>();
-        composerSessionCache.forEach((key, value) -> {
-            if(value.equals(session)) {
-                closeKey.set(key);
-            }
-        });
-        return closeSession(closeKey.get());
+    public boolean commitSession(Session session) {
+        return commitSession(session.getId());
     }
 
     /**
-     * Closes all Sessions opened by this Composer.
+     * Commits all Sessions opened by this Composer.
      * <br />
-     * {@link Session#close()} <strong>commits</strong> the Components and STAMPs in the session transaction.
+     * {@link Session#commit()} <strong>commits</strong> the Components and STAMPs in the session transaction.
      */
-    public void closeAllSessions() {
+    public void commitAllSessions() {
         Set<UUID> keySet = new HashSet<>(composerSessionCache.keySet());
         for (UUID key : keySet) {
-            closeSession(key);
+            commitSession(key);
         }
     }
 
@@ -152,10 +121,10 @@ public class Composer {
         });
     }
 
-    private boolean closeSession(UUID closeKey) {
+    private boolean commitSession(UUID closeKey) {
         AtomicBoolean isClosed = new AtomicBoolean(false);
         composerSessionCache.computeIfPresent(closeKey, (key, value) -> {
-            value.close();
+            value.commit();
             isClosed.set(true);
             return null; // removes key
         });

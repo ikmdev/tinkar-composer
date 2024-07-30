@@ -22,20 +22,22 @@ import dev.ikm.tinkar.terms.EntityProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
+import java.util.UUID;
 
-public class Session implements Closeable {
+public class Session {
 
     private static final Logger LOG = LoggerFactory.getLogger(Session.class);
     private final StampEntity stampEntity;
     private final Transaction transaction;
+    private final UUID id;
 
     /**
      * Provides a Session for creating Components using the Transaction and STAMP provided.
      */
-    protected Session(Transaction transaction, StampEntity stampEntity){
+    protected Session(Transaction transaction, StampEntity stampEntity, UUID id){
         this.transaction = transaction;
         this.stampEntity = stampEntity;
+        this.id = id;
         LOG.info("Session {} - Initializing with stamp: {}", transaction.hashCode(), stampEntity);
     }
 
@@ -125,13 +127,16 @@ public class Session implements Closeable {
      * Commits the Transaction and STAMP associated with this Session. If the Session
      * was not Constructed with a timestamp, then the timestamp will be set to the time of commit.
      */
-    @Override
-    public void close() {
+    protected void commit() {
         LOG.info("Session {} - Commiting updates to {} Entities with stamp: {}",
                 transaction.hashCode(),
                 transaction.componentsInTransactionCount(),
                 stampEntity);
         transaction.commit();
+    }
+
+    protected UUID getId() {
+        return this.id;
     }
 
 }
