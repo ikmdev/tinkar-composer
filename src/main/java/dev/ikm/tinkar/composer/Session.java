@@ -18,7 +18,7 @@ package dev.ikm.tinkar.composer;
 import dev.ikm.tinkar.composer.assembler.*;
 import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
-import dev.ikm.tinkar.terms.State;
+import dev.ikm.tinkar.terms.EntityProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,77 +31,90 @@ public class Session implements Closeable {
     private final Transaction transaction;
 
     /**
-     * Provides a ComposerSession for creating Components with a <strong>predefined timestamp</strong>.
-     * <br /><br />
-     * Example use case: ingesting a file with previously defined data definitions.
-     * <pre>{@code
-     *    ComposerSession session = new ComposerSession(status, time, author, module, path);
-     *    session.composeConcept(Concept.make("Example Concept with predefined time", PublicIds.newRandom()));
-     *    session.close();
-     * }</pre>
-     * @see State
+     * Provides a Session for creating Components using the Transaction and STAMP provided.
      */
-    public Session(Transaction transaction, StampEntity stampEntity){
+    protected Session(Transaction transaction, StampEntity stampEntity){
         this.transaction = transaction;
         this.stampEntity = stampEntity;
-        LOG.info("ComposerSession {} - Initializing Session with stamp: {}", transaction.hashCode(), stampEntity);
+        LOG.info("Session {} - Initializing with stamp: {}", transaction.hashCode(), stampEntity);
     }
 
+    /**
+     * Creates a Concept and provides a ConceptAssembler as an Attachable for attaching Semantics.
+     * @param conceptAssemblerConsumer Consumer that defines the Concept
+     * @return {@link ConceptAssembler} which can be referred to by {@link Attachable} implementations.
+     * @see ConceptAssemblerConsumer
+     */
     public Attachable compose(ConceptAssemblerConsumer conceptAssemblerConsumer) {
-        //Setup
         ConceptAssembler conceptAssembler = new ConceptAssembler();
         conceptAssembler.setSessionTransaction(transaction);
         conceptAssembler.setSessionStampEntity(stampEntity);
-        //Process
+
         conceptAssemblerConsumer.accept(conceptAssembler);
-        ((Attachable) conceptAssembler).validate();
-        //Write
-        transaction.addComponent(conceptAssembler.concept());
-        Write.concept(conceptAssembler.concept(), stampEntity);
+        ((Attachable) conceptAssembler).validateAndWrite();
         return conceptAssembler;
     }
 
-    public Attachable compose(SemanticAssemblerConsumer semanticAssemblerConsumer) {
-        //Setup
-        SemanticAssembler semanticAssembler = new SemanticAssembler();
-        semanticAssembler.setSessionTransaction(transaction);
-        semanticAssembler.setSessionStampEntity(stampEntity);
-        //Process
-        semanticAssemblerConsumer.accept(semanticAssembler);
-        ((Attachable) semanticAssembler).validate();
-        //Write
-        transaction.addComponent(semanticAssembler.semantic());
-        Write.semantic(semanticAssembler.semantic(), stampEntity, semanticAssembler.reference(), semanticAssembler.pattern(), semanticAssembler.fields());
-        return semanticAssembler;
-    }
-
+    /**
+     * Creates a Pattern and provides a PatternAssembler as an Attachable for attaching Semantics.
+     * @param patternAssemblerConsumer Consumer that defines the Pattern
+     * @return {@link PatternAssembler} which can be referred to by {@link Attachable} implementations.
+     * @see PatternAssemblerConsumer
+     */
     public Attachable compose(PatternAssemblerConsumer patternAssemblerConsumer) {
-        //Setup
         PatternAssembler patternAssembler = new PatternAssembler();
         patternAssembler.setSessionTransaction(transaction);
         patternAssembler.setSessionStampEntity(stampEntity);
-        //Process
+
         patternAssemblerConsumer.accept(patternAssembler);
-        ((Attachable) patternAssembler).validate();
-        //Write
-        transaction.addComponent(patternAssembler.pattern());
-        Write.pattern(patternAssembler.pattern(), stampEntity, patternAssembler.meaning(), patternAssembler.purpose(), patternAssembler.fields());
+        ((Attachable) patternAssembler).validateAndWrite();
         return patternAssembler;
     }
 
     /**
-     * Provides the number of Components written by the ComposerSession.
-     * This count does not include the STAMP associated with the ComposerSession.
+     * Creates a Semantic and provides a SemanticAssembler as an Attachable for attaching Semantics.
+     * @param semanticAssemblerConsumer Consumer that defines the Semantic
+     * @return {@link SemanticAssembler} which can be referred to by {@link Attachable} implementations.
+     * @see SemanticAssemblerConsumer
+     */
+    public Attachable compose(SemanticAssemblerConsumer semanticAssemblerConsumer) {
+        SemanticAssembler semanticAssembler = new SemanticAssembler();
+        semanticAssembler.setSessionTransaction(transaction);
+        semanticAssembler.setSessionStampEntity(stampEntity);
+
+        semanticAssemblerConsumer.accept(semanticAssembler);
+        ((Attachable) semanticAssembler).validateAndWrite();
+        return semanticAssembler;
+    }
+
+    /**
+     * Creates a Semantic from a SemanticTemplate and provides a SemanticTemplate as an Attachable for attaching Semantics.
+     * @param semanticTemplate SemanticTemplate that defines the Semantic
+     * @param reference referencedComponent for the Semantic
+     * @return {@link SemanticTemplate} which can be referred to by {@link Attachable} implementations.
+     * @see SemanticTemplate
+     */
+    public Attachable compose(SemanticTemplate semanticTemplate, EntityProxy reference) {
+        semanticTemplate.setSessionTransaction(transaction);
+        semanticTemplate.setSessionStampEntity(stampEntity);
+        semanticTemplate.setReference(reference);
+
+        semanticTemplate.validateAndWrite();
+        return semanticTemplate;
+    }
+
+    /**
+     * Provides the number of Components written by the Session. This count does not include the STAMP associated with the Session.
      */
     public int componentsInSessionCount() {
         return transaction.componentsInTransactionCount();
     }
 
     /**
-     * Cancels the Transaction and STAMP associated with this ComposerSession so that they will not be committed.
+     * Cancels the Transaction and STAMP associated with this Session so that they will not be committed.
      */
     public void cancel() {
-        LOG.info("ComposerSession {} - Cancelling updates to {} Entities with stamp: {}",
+        LOG.info("Session {} - Cancelling updates to {} Entities with stamp: {}",
                 transaction.hashCode(),
                 transaction.componentsInTransactionCount(),
                 stampEntity);
@@ -109,12 +122,12 @@ public class Session implements Closeable {
     }
 
     /**
-     * Commits the Transaction and STAMP associated with this ComposerSession. If the ComposerSession
+     * Commits the Transaction and STAMP associated with this Session. If the Session
      * was not Constructed with a timestamp, then the timestamp will be set to the time of commit.
      */
     @Override
     public void close() {
-        LOG.info("ComposerSession {} - Commiting updates to {} Entities with stamp: {}",
+        LOG.info("Session {} - Commiting updates to {} Entities with stamp: {}",
                 transaction.hashCode(),
                 transaction.componentsInTransactionCount(),
                 stampEntity);

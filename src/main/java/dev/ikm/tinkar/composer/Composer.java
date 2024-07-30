@@ -20,6 +20,7 @@ import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
+import dev.ikm.tinkar.terms.TinkarTerm;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,10 +36,25 @@ public class Composer {
         this.name = name;
     }
 
-//    public Session open() {
-//          TODO - contain defaults for free with no time
-//    }
-
+    /**
+     * Provides a Session for creating Components with a <strong>predefined timestamp</strong>.
+     * <br /><br />
+     * Example use case: ingesting a file with previously defined data definitions.
+     * <pre>{@code
+     *
+     *    Composer composer = new Composer("name");
+     *    Session session = composer.open(status, time, author, module, path);
+     *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+     *              .concept(Concept.make("Example Concept with predefined time", PublicIds.newRandom())));
+     *    session.close();
+     * }</pre>
+     * @param status the status set for Components composed in the Session
+     * @param time the timestamp (in epoch milliseconds) set for Components composed in the Session
+     * @param author the author set for Components composed in the Session
+     * @param module the module set for Components composed in the Session
+     * @param path the path set for Components composed in the Session
+     * @see State
+     */
     public Session open(State status, long time, Concept author, Concept module, Concept path) {
         this.transaction = new Transaction(name);
         this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
@@ -47,14 +63,62 @@ public class Composer {
         return composerSessionCache.get(sessionKey);
     }
 
+    /**
+     * Provides a Session for creating Components with a <strong>current timestamp</strong>.
+     * Timestamp will be defined as the time of close / commit.
+     * <br /><br />
+     * Example use case: creating or editing Components resulting in net new Components / Versions.
+     * <pre>{@code
+     *    Composer composer = new Composer("name");
+     *    Session session = composer.open(status, author, module, path);
+     *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+     *              .concept((Concept.make("Example Concept with commit time", PublicIds.newRandom()));
+     *    session.close();
+     * }</pre>
+     * @param status the status set for Components composed in the Session
+     * @param author the author set for Components composed in the Session
+     * @param module the module set for Components composed in the Session
+     * @param path the path set for Components composed in the Session
+     * @see State
+     */
     public Session open(State status, Concept author, Concept module, Concept path) {
         this.transaction = new Transaction(name);
         this.stampEntity = transaction.getStamp(status, author, module, path);
-        UUID sessionKey = keyValue(status, System.currentTimeMillis(), author, module, path);
+        UUID sessionKey = keyValue(status, transaction.commitTime(), author, module, path);
         composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
         return composerSessionCache.get(sessionKey);
     }
 
+    /**
+     * Provides a Session for creating Components with <strong>default STAMP values</strong>.
+     * <br /><br />
+     * <pre>{@code
+     *    Composer composer = new Composer("name");
+     *    Session session = composer.open();
+     *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+     *              .concept((Concept.make("Example Concept with default STAMP values", PublicIds.newRandom()));
+     *    session.close();
+     * }</pre>
+     */
+    public Session open() {
+        State status = State.ACTIVE;
+        Concept author = TinkarTerm.USER;
+        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
+        Concept path = TinkarTerm.DEVELOPMENT_PATH;
+        this.transaction = new Transaction(name);
+        this.stampEntity = transaction.getStamp(status, author, module, path);
+        UUID sessionKey = keyValue(status, transaction.commitTime(), author, module, path);
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity));
+        return composerSessionCache.get(sessionKey);
+    }
+
+    /**
+     * Closes a Session opened by this Composer.
+     * <br />
+     * {@link Session#close()} <strong>commits</strong> the Components and STAMPs in the session transaction.
+     * @param session
+     * @return boolean representing whether the Session was closed. A Composer can only close a Session it opened.
+     */
     public boolean closeSession(Session session) {
         AtomicReference<UUID> closeKey = new AtomicReference<>();
         composerSessionCache.forEach((key, value) -> {
@@ -65,6 +129,11 @@ public class Composer {
         return closeSession(closeKey.get());
     }
 
+    /**
+     * Closes all Sessions opened by this Composer.
+     * <br />
+     * {@link Session#close()} <strong>commits</strong> the Components and STAMPs in the session transaction.
+     */
     public void closeAllSessions() {
         Set<UUID> keySet = new HashSet<>(composerSessionCache.keySet());
         for (UUID key : keySet) {
@@ -72,6 +141,11 @@ public class Composer {
         }
     }
 
+    /**
+     * Cancels all Sessions opened by this Composer.
+     * <br />
+     * {@link Session#cancel()} <strong>cancels</strong> the Components and STAMPs in the session transaction.
+     */
     public void cancelAllSessions() {
         composerSessionCache.forEach((key, value) -> {
             value.cancel();
