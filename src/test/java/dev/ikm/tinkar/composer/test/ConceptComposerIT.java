@@ -59,7 +59,7 @@ public class ConceptComposerIT {
 
     private final Path datastore = Path.of(System.getProperty("user.dir"))
             .resolve("target")
-            .resolve(ComposerCreateIT.class.getSimpleName())
+            .resolve(ConceptComposerIT.class.getSimpleName())
             .resolve("datastore");
 
 
@@ -82,7 +82,7 @@ public class ConceptComposerIT {
 
     @Test
     public void ConceptComposerTest() {
-        Composer composer = new Composer("ConceptComposer Test");
+        Composer composer = new Composer("ConceptComposerTest");
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
         Concept myConcept = Concept.make(PublicIds.newRandom());
@@ -106,24 +106,31 @@ public class ConceptComposerIT {
                                 .acceptability(ACCEPTABLE)
                                 .attach((Comment comment) -> comment.text("Comment 1")
                                         .attach((Comment comment2) -> comment2.text("Comment 2"))
-                                                .attach(() -> new CustomSemantic().text("Custom Semantic"))))
+                                                .attach(new CustomSemantic().text("Custom Semantic"))))
                         .attach(new Comment().text("Comment 3")))
                 .attach((Comment comment) -> comment.text("They spell things weird"))
-                .attach(() -> new CustomSemantic().text("Custom Comments"));
+                .attach(new CustomSemantic().text("Custom Comments"));
 
         Semantic semantic = Semantic.make(PublicIds.newRandom());
         session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler.semantic(semantic)
                     .pattern(DESCRIPTION_PATTERN)
                     .reference(myConcept)
-                    .fields(fieldValue -> System.out.println(fieldValue))
+                    .fieldValues(fieldValue -> System.out.println(fieldValue))
                     .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED)
                         .attach((Comment comment) -> comment.text("Comment 1"))));
+
+        session.compose(new FullyQualifiedName()
+                .language(ENGLISH_LANGUAGE)
+                .text("Color")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), myConcept)
+                .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED)
+                        .attach((Comment comment) -> comment.text("Comment 1")));
 
         Pattern pattern = Pattern.make(PublicIds.newRandom());
         session.compose((PatternAssembler patternAssembler) -> patternAssembler.pattern(pattern)
                 .meaning(MEANING)
                 .purpose(PURPOSE)
-                .field(MEANING, PURPOSE, STRING)
+                .fieldDefinition(MEANING, PURPOSE, STRING)
                 .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE)
                         .text("FQN")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
