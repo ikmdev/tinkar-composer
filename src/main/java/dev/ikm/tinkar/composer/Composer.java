@@ -63,7 +63,7 @@ public class Composer {
 
     /**
      * Provides a Session for creating Components with a <strong>current timestamp</strong>.
-     * Timestamp will be defined as the time of close / commit.
+     * Timestamp will be defined as the time of commit.
      * <br /><br />
      * Example use case: creating or editing Components resulting in net new Components / Versions.
      * <pre>{@code
@@ -92,7 +92,7 @@ public class Composer {
      * <br />
      * {@link Session#commit()} <strong>commits</strong> the Components and STAMPs in the session transaction.
      * @param session
-     * @return boolean representing whether the Session was closed. A Composer can only close a Session it opened.
+     * @return boolean representing whether the Session was committed. A Composer can only close a Session it opened.
      */
     public boolean commitSession(Session session) {
         return commitSession(session.getId());
@@ -111,6 +111,17 @@ public class Composer {
     }
 
     /**
+     * Cancels a Session opened by this Composer.
+     * <br />
+     * {@link Session#cancel()} <strong>cancels</strong> the Components and STAMPs in the session transaction.
+     * @param session
+     * @return boolean representing whether the Session was cancelled. A Composer can only close a Session it opened.
+     */
+    public boolean cancelSession(Session session) {
+        return cancelSession(session.getId());
+    }
+
+    /**
      * Cancels all Sessions opened by this Composer.
      * <br />
      * {@link Session#cancel()} <strong>cancels</strong> the Components and STAMPs in the session transaction.
@@ -121,14 +132,24 @@ public class Composer {
         });
     }
 
-    private boolean commitSession(UUID closeKey) {
+    private boolean commitSession(UUID sessionKey) {
         AtomicBoolean isClosed = new AtomicBoolean(false);
-        composerSessionCache.computeIfPresent(closeKey, (key, value) -> {
+        composerSessionCache.computeIfPresent(sessionKey, (key, value) -> {
             value.commit();
             isClosed.set(true);
             return null; // removes key
         });
         return isClosed.get();
+    }
+
+    private boolean cancelSession(UUID sessionKey) {
+        AtomicBoolean isCancelled = new AtomicBoolean(false);
+        composerSessionCache.computeIfPresent(sessionKey, (key, value) -> {
+            value.cancel();
+            isCancelled.set(true);
+            return null; // removes key
+        });
+        return isCancelled.get();
     }
 
     private static UUID keyValue(State status, long time, Concept author, Concept module, Concept path) {
