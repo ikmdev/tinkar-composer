@@ -15,31 +15,70 @@
  */
 package dev.ikm.tinkar.composer.template;
 
+import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
+import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
-import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.ImmutableList;
 
 public class Definition extends SemanticTemplate {
 
-    private final Concept language;
-    private final String synonym;
-    private final Concept caseSensitivity;
-    private final Concept type;
+    private Concept language;
+    private String text;
+    private Concept caseSignificance;
 
-    public Definition(Semantic semantic, Concept language, String synonym, Concept caseSensitivity) {
-        super(semantic, TinkarTerm.DESCRIPTION_PATTERN);
+    /**
+     * Sets the language for the Definition Semantic.
+     * @param language the Definition language
+     * @return the Definition SemanticTemplate for further method chaining
+     */
+    public Definition language(Concept language) {
         this.language = language;
-        this.synonym = synonym;
-        this.caseSensitivity = caseSensitivity;
-        this.type = TinkarTerm.DEFINITION_DESCRIPTION_TYPE;
+        return this;
+    }
+
+    /**
+     * Sets the text for the Definition Semantic.
+     * @param text the Definition text
+     * @return the Definition SemanticTemplate for further method chaining
+     */
+    public Definition text(String text) {
+        this.text = text;
+        return this;
+    }
+
+    /**
+     * Sets the case significance value for the Definition Semantic.
+     * @param caseSignificance the Definition case significance value
+     * @return the Definition SemanticTemplate for further method chaining
+     */
+    public Definition caseSignificance(Concept caseSignificance) {
+        this.caseSignificance = caseSignificance;
+        return this;
     }
 
     @Override
-    public void setFields(MutableList<Object> fields) {
-        fields.add(language);
-        fields.add(synonym);
-        fields.add(caseSensitivity);
-        fields.add(type);
+    public Definition semantic(Semantic semantic) {
+        this.setSemantic(semantic);
+        return this;
+    }
+
+    @Override
+    protected Pattern assignPattern() {
+        return TinkarTerm.DESCRIPTION_PATTERN;
+    }
+
+    @Override
+    protected ImmutableList<Object> assignFieldValues() {
+        return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.DEFINITION_DESCRIPTION_TYPE);
+    }
+
+    @Override
+    protected void validate() throws IllegalArgumentException {
+        if (language==null || text == null || text.isEmpty() || caseSignificance==null) {
+            throw new IllegalArgumentException("Definition requires language, text, and case significance");
+        }
     }
 }

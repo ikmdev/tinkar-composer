@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module dev.ikm.tinkar.composer {
-    requires dev.ikm.tinkar.common;
-    requires dev.ikm.tinkar.terms;
-    requires dev.ikm.tinkar.entity;
-    requires org.eclipse.collections.api;
-    requires org.slf4j;
-    exports dev.ikm.tinkar.composer;
-    exports dev.ikm.tinkar.composer.template;
-    exports dev.ikm.tinkar.composer.assembler;
+package dev.ikm.tinkar.composer.template;
+
+@FunctionalInterface
+public interface AxiomSyntaxConsumer {
+    void accept(AxiomSyntax axiomSyntax);
 }

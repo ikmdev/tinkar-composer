@@ -23,62 +23,51 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
-public class Synonym extends SemanticTemplate {
+public class Identifier extends SemanticTemplate {
 
-    private Concept language;
-    private String text;
-    private Concept caseSignificance;
+    private Concept source;
+    private String identifier;
 
     /**
-     * Sets the language for the Synonym Semantic.
-     * @param language the Synonym language
-     * @return the Synonym SemanticTemplate for further method chaining
+     * Sets the identifier source for the Identifier Semantic.
+     * @param source the Identifier source
+     * @return the Identifier SemanticTemplate for further method chaining
      */
-    public Synonym language(Concept language) {
-        this.language = language;
+    public Identifier source(Concept source) {
+        this.source = source;
         return this;
     }
 
     /**
-     * Sets the text for the Synonym Semantic.
-     * @param text the Synonym text
-     * @return the Synonym SemanticTemplate for further method chaining
+     * Sets the identifier value for the Identifier Semantic.
+     * @param identifier the Identifier value
+     * @return the Identifier SemanticTemplate for further method chaining
      */
-    public Synonym text(String text) {
-        this.text = text;
-        return this;
-    }
-
-    /**
-     * Sets the case significance value for the Synonym Semantic.
-     * @param caseSignificance the Synonym case significance value
-     * @return the Synonym SemanticTemplate for further method chaining
-     */
-    public Synonym caseSignificance(Concept caseSignificance) {
-        this.caseSignificance = caseSignificance;
+    public Identifier identifier(String identifier) {
+        this.identifier = identifier;
         return this;
     }
 
     @Override
-    public Synonym semantic(Semantic semantic) {
+    public Identifier semantic(Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.DESCRIPTION_PATTERN;
+        return TinkarTerm.IDENTIFIER_PATTERN;
     }
 
     @Override
     protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE);
+        return Lists.immutable.of(source, identifier);
     }
 
     @Override
     protected void validate() throws IllegalArgumentException {
-        if (language==null || text == null || text.isEmpty() || caseSignificance==null) {
-            throw new IllegalArgumentException("Synonym requires language, text, and case significance");
+        if (source==null || identifier==null) {
+            throw new IllegalArgumentException("Identifier requires source and identifier");
         }
     }
 }

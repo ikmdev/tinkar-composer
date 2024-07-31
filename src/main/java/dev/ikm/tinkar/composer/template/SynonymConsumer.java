@@ -15,22 +15,7 @@
  */
 package dev.ikm.tinkar.composer.template;
 
-import dev.ikm.tinkar.terms.EntityProxy.Concept;
-import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import dev.ikm.tinkar.terms.TinkarTerm;
-import org.eclipse.collections.api.list.MutableList;
-
-public class USEnglishDialect extends SemanticTemplate {
-
-    private final Concept dialectAcceptability;
-
-    public USEnglishDialect(Semantic semantic, Concept dialectAcceptability) {
-        super(semantic, TinkarTerm.US_DIALECT_PATTERN);
-        this.dialectAcceptability = dialectAcceptability;
-    }
-
-    @Override
-    public void setFields(MutableList<Object> fields) {
-        fields.add(dialectAcceptability);
-    }
+@FunctionalInterface
+public interface SynonymConsumer {
+    void accept(Synonym synonym);
 }

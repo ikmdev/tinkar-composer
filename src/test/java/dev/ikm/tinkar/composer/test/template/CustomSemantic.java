@@ -13,44 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer.template;
+package dev.ikm.tinkar.composer.test.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
-import dev.ikm.tinkar.terms.EntityProxy.Pattern;
-import dev.ikm.tinkar.terms.EntityProxy.Semantic;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
-public class Comment extends SemanticTemplate {
+public class CustomSemantic extends SemanticTemplate {
 
     private String text;
 
-    /**
-     * Sets the text for the Comment Semantic.
-     * @param text the Comment text
-     * @return the Comment SemanticTemplate for further method chaining
-     */
-    public Comment text(String text) {
+    public CustomSemantic text(String text) {
         this.text = text;
         return this;
     }
 
-    /**
-     * Gets the text for the Comment Semantic.
-     */
-    public String getText() {
-        return text;
-    }
-
     @Override
-    public Comment semantic(Semantic semantic) {
+    public CustomSemantic semantic(EntityProxy.Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }
 
     @Override
-    protected Pattern assignPattern() {
+    protected EntityProxy.Pattern assignPattern() {
         return TinkarTerm.COMMENT_PATTERN;
     }
 
@@ -60,10 +47,8 @@ public class Comment extends SemanticTemplate {
     }
 
     @Override
-    protected void validate() throws IllegalArgumentException {
-        if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("Comment requires text");
-        }
+    protected void validate() {
+
     }
 
 }
