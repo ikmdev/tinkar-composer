@@ -22,42 +22,43 @@ import dev.ikm.tinkar.common.service.CachingService;
 import dev.ikm.tinkar.common.service.PrimitiveData;
 import dev.ikm.tinkar.common.service.ServiceKeys;
 import dev.ikm.tinkar.common.service.ServiceProperties;
-import dev.ikm.tinkar.composer.ComposerSession;
-import dev.ikm.tinkar.composer.PatternFieldDetail;
+import dev.ikm.tinkar.composer.Composer;
+import dev.ikm.tinkar.composer.Session;
+import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
+import dev.ikm.tinkar.composer.assembler.PatternAssembler;
+import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
 import dev.ikm.tinkar.composer.template.Comment;
 import dev.ikm.tinkar.composer.template.FullyQualifiedName;
 import dev.ikm.tinkar.composer.template.Synonym;
-import dev.ikm.tinkar.composer.template.USEnglishDialect;
+import dev.ikm.tinkar.composer.template.USDialect;
+import dev.ikm.tinkar.composer.test.template.CustomSemantic;
 import dev.ikm.tinkar.entity.EntityCountSummary;
 import dev.ikm.tinkar.entity.EntityService;
 import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
-import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
-import dev.ikm.tinkar.terms.TinkarTerm;
-import org.eclipse.collections.api.factory.Lists;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
+import static dev.ikm.tinkar.terms.TinkarTerm.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ComposerCreateIT {
-    public static final Function<String,File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
+    public static final Function<String, File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
     public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-1.0.0-pb.zip");
     public static State DEFAULT_STATUS = State.ACTIVE;
     public static long DEFAULT_TIME = System.currentTimeMillis();
-    public static Concept DEFAULT_AUTHOR = TinkarTerm.USER;
-    public static Concept DEFAULT_MODULE = TinkarTerm.DEVELOPMENT_MODULE;
-    public static Concept DEFAULT_PATH = TinkarTerm.DEVELOPMENT_PATH;
+    public static Concept DEFAULT_AUTHOR = USER;
+    public static Concept DEFAULT_MODULE = DEVELOPMENT_MODULE;
+    public static Concept DEFAULT_PATH = DEVELOPMENT_PATH;
     public static final File DATASTORE = createFilePathInTarget.apply("generated-data/" + ComposerCreateIT.class.getSimpleName());
 
 
@@ -86,11 +87,12 @@ public class ComposerCreateIT {
     // ### START: Creation Tests Basic
     @Test
     public void createConceptTest() {
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Composer composer = new Composer("createConceptTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeConcept(Concept.make(PublicIds.newRandom()));
+        session.compose((ConceptAssembler conceptAssembler) -> {});
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -99,12 +101,15 @@ public class ComposerCreateIT {
 
     @Test
     public void createPatternTest() {
-        PatternFieldDetail testFieldDefinition = new PatternFieldDetail(TinkarTerm.ACTION_NAME, TinkarTerm.ACTION_PURPOSE, TinkarTerm.STRING, 0);
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Composer composer = new Composer("createPatternTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composePattern(Pattern.make(PublicIds.newRandom()), TinkarTerm.MEANING, TinkarTerm.PURPOSE, List.of(testFieldDefinition));
+        session.compose((PatternAssembler patternAssembler) -> patternAssembler
+                        .meaning(MEANING)
+                        .purpose(PURPOSE)
+                        .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -113,18 +118,20 @@ public class ComposerCreateIT {
 
     @Test
     public void createSemanticTest() {
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createSemanticTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeSemantic(EntityProxy.Semantic.make(PublicIds.newRandom()),
-                Concept.make(PublicIds.newRandom()),
-                TinkarTerm.DESCRIPTION_PATTERN,
-                Lists.immutable.of(
-                        TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym",
-                        TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
-                        TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE));
+        session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
+                        .reference(referenceConcept)
+                        .pattern(DESCRIPTION_PATTERN)
+                        .fieldValues(fieldValues -> fieldValues
+                                .with(ENGLISH_LANGUAGE)
+                                .with("Synonym")
+                                .with(DESCRIPTION_NOT_CASE_SENSITIVE)
+                                .with(REGULAR_NAME_DESCRIPTION_TYPE)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -133,13 +140,16 @@ public class ComposerCreateIT {
 
     @Test
     public void createSemanticFromTemplateTest() {
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createSemanticFromTemplateTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeSemantic(new Synonym(EntityProxy.Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE,
-                                "Synonym from Template", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                        Concept.make(PublicIds.newRandom()));
+        session.compose(new Synonym()
+                .language(ENGLISH_LANGUAGE)
+                .text("Synonym from Template")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -150,12 +160,16 @@ public class ComposerCreateIT {
     // ### START: Creation Tests with Semantics
     @Test
     public void createConceptWithSemanticTest() {
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Composer composer = new Composer("createConceptWithSemanticTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeConcept(Concept.make(PublicIds.newRandom()))
-                .with(new FullyQualifiedName(EntityProxy.Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "FQN for Concept", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE));
+        session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .attach((FullyQualifiedName fqn) -> fqn
+                        .language(ENGLISH_LANGUAGE)
+                        .text("FQN for Concept")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -164,13 +178,19 @@ public class ComposerCreateIT {
 
     @Test
     public void createPatternWithSemanticTest() {
-        PatternFieldDetail testFieldDefinition = new PatternFieldDetail(TinkarTerm.ACTION_NAME, TinkarTerm.ACTION_PURPOSE, TinkarTerm.STRING, 0);
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Composer composer = new Composer("createPatternWithSemanticTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composePattern(Pattern.make(PublicIds.newRandom()), TinkarTerm.MEANING, TinkarTerm.PURPOSE, List.of(testFieldDefinition))
-                .with(new FullyQualifiedName(EntityProxy.Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "FQN for Pattern", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE));
+        session.compose((PatternAssembler patternAssembler) -> patternAssembler
+                .meaning(MEANING)
+                .purpose(PURPOSE)
+                .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING)
+                .attach((FullyQualifiedName fqn) -> fqn
+                        .language(ENGLISH_LANGUAGE)
+                        .text("FQN for Pattern")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -179,19 +199,23 @@ public class ComposerCreateIT {
 
     @Test
     public void createSemanticWithSemanticTest() {
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createSemanticWithSemanticTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeSemantic(EntityProxy.Semantic.make(PublicIds.newRandom()),
-                        Concept.make(PublicIds.newRandom()),
-                        TinkarTerm.DESCRIPTION_PATTERN,
-                        Lists.immutable.of(
-                                TinkarTerm.ENGLISH_LANGUAGE,
-                                "Synonym with Dialect Semantic",
-                                TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
-                                TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE))
-                .with(new USEnglishDialect(EntityProxy.Semantic.make("Dialect for Synonym", PublicIds.newRandom()), TinkarTerm.PREFERRED));
+        session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
+                .reference(referenceConcept)
+                .pattern(DESCRIPTION_PATTERN)
+                .fieldValues(fieldValues -> fieldValues
+                        .with(ENGLISH_LANGUAGE)
+                        .with("Synonym with Dialect Semantic")
+                        .with(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .with(REGULAR_NAME_DESCRIPTION_TYPE))
+                .attach((USDialect dialect) -> dialect
+                        .semantic(Semantic.make("Dialect for Synonym", PublicIds.newRandom()))
+                        .acceptability(PREFERRED)));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -199,16 +223,75 @@ public class ComposerCreateIT {
     }
 
     @Test
+    public void createThreeLayerTest() {
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createThreeLayerTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
+                .reference(referenceConcept)
+                .pattern(DESCRIPTION_PATTERN)
+                .fieldValues(fieldValues -> fieldValues
+                        .with(ENGLISH_LANGUAGE)
+                        .with("Synonym with Dialect Semantic")
+                        .with(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .with(REGULAR_NAME_DESCRIPTION_TYPE))
+                .attach((USDialect dialect) -> dialect
+                        .semantic(Semantic.make("Dialect for Synonym", PublicIds.newRandom()))
+                        .acceptability(PREFERRED)
+                        .attach((Comment comment) -> comment
+                                .semantic(Semantic.make("Comment for Synonym", PublicIds.newRandom()))
+                                .text("Comment for Synonym"))));
+
+        composer.commitSession(session);
+        int expectedComponentsUpdatedCount = 3;
+        int actualComponentsUpdatedCount = session.componentsInSessionCount();
+        assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
+                String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
+    }
+
+    @Test
+    public void createThreeLayerWithCustomTemplatesTest() {
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createThreeLayerWithCustomTemplatesTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
+                .reference(referenceConcept)
+                .pattern(DESCRIPTION_PATTERN)
+                .fieldValues(fieldValues -> fieldValues
+                        .with(ENGLISH_LANGUAGE)
+                        .with("Synonym with Dialect Semantic")
+                        .with(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .with(REGULAR_NAME_DESCRIPTION_TYPE))
+                .attach(new CustomSemantic()
+                        .semantic(Semantic.make("Custom1 for Synonym", PublicIds.newRandom()))
+                        .text("Custom1"))
+                        .attach((Comment comment) -> comment
+                                .semantic(Semantic.make("Comment for Custom1", PublicIds.newRandom()))
+                                .text("Comment for Custom1")));
+
+        composer.commitSession(session);
+        int expectedComponentsUpdatedCount = 3;
+        int actualComponentsUpdatedCount = session.componentsInSessionCount();
+        assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
+                String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
+    }
+
+    @Test
     public void createSemanticFromTemplateWithSemanticTest() {
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Composer composer = new Composer("createSemanticFromTemplateWithSemanticTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeSemantic(
-                        new Synonym(EntityProxy.Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE,
-                                "Synonym from Template with Dialect Semantic", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                        Concept.make(PublicIds.newRandom()))
-                .with(new USEnglishDialect(EntityProxy.Semantic.make("Dialect for Synonym from Template", PublicIds.newRandom()), TinkarTerm.ACCEPTABLE));
+        session.compose(new Synonym()
+                .language(ENGLISH_LANGUAGE)
+                .text("Synonym from Template with Dialect Semantic")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), Concept.make(PublicIds.newRandom()))
+                .attach(new USDialect()
+                        .semantic(Semantic.make("Dialect for Synonym from Template", PublicIds.newRandom()))
+                        .acceptability(ACCEPTABLE));
 
-        session.close();
+        composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
@@ -220,15 +303,17 @@ public class ComposerCreateIT {
     @Test
     public void appendVersionConceptTest() {
         PublicId conceptId = PublicIds.newRandom();
+        Composer composer = new Composer("appendVersionConceptTest");
+
         // Create Initial Concept Version
-        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        initSession.composeConcept(Concept.make(conceptId));
-        initSession.close();
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        initSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
+        composer.commitSession(initSession);
 
         // Append Concept Version
-        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        appendSession.composeConcept(Concept.make(conceptId));
-        appendSession.close();
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        appendSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
@@ -238,18 +323,26 @@ public class ComposerCreateIT {
 
     @Test
     public void appendVersionPatternTest() {
-        PatternFieldDetail initFieldDefinition = new PatternFieldDetail(TinkarTerm.MEANING, TinkarTerm.PURPOSE, TinkarTerm.STRING, 0);
-        PatternFieldDetail appendFieldDefinition = new PatternFieldDetail(TinkarTerm.ACTION_NAME, TinkarTerm.ACTION_PURPOSE, TinkarTerm.STRING, 0);
         PublicId patternId = PublicIds.newRandom();
+        Composer composer = new Composer("appendVersionPatternTest");
+
         // Create Initial Pattern Version
-        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        initSession.composePattern(Pattern.make(patternId), TinkarTerm.MEANING, TinkarTerm.PURPOSE, List.of(initFieldDefinition));
-        initSession.close();
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        initSession.compose((PatternAssembler patternAssembler) -> patternAssembler
+                .pattern(Pattern.make(patternId))
+                .meaning(MEANING)
+                .purpose(PURPOSE)
+                .fieldDefinition(MEANING, PURPOSE, STRING));
+        composer.commitSession(initSession);
 
         // Append Pattern Version
-        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        appendSession.composePattern(Pattern.make(patternId), TinkarTerm.ACTION_PROPERTIES, TinkarTerm.ACTION_PROPERTIES, List.of(appendFieldDefinition));
-        appendSession.close();
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        appendSession.compose((PatternAssembler patternAssembler) -> patternAssembler
+                .pattern(Pattern.make(patternId))
+                .meaning(ACTION_PROPERTIES)
+                .purpose(ACTION_PROPERTIES)
+                .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING));
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(patternId.asUuidArray()).versions().size();
@@ -262,29 +355,33 @@ public class ComposerCreateIT {
         PublicId semanticId = PublicIds.newRandom();
         PublicId conceptId = PublicIds.newRandom();
         Concept referencedConcept = Concept.make(conceptId);
+        Composer composer = new Composer("appendVersionSemanticTest");
+
         // Create Initial Semantic Version
-        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        initSession.composeSemantic(Semantic.make(semanticId),
-                referencedConcept,
-                TinkarTerm.DESCRIPTION_PATTERN,
-                Lists.immutable.of(
-                        TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym V1",
-                        TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
-                        TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE));
-        initSession.close();
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        initSession.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
+                .semantic(Semantic.make(semanticId))
+                .reference(referencedConcept)
+                .pattern(DESCRIPTION_PATTERN)
+                .fieldValues((fieldValues) -> fieldValues
+                        .with(ENGLISH_LANGUAGE)
+                        .with("Synonym V1")
+                        .with(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .with(REGULAR_NAME_DESCRIPTION_TYPE)));
+        composer.commitSession(initSession);
 
         // Append Semantic Version
-        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        appendSession.composeSemantic(Semantic.make(semanticId),
-                referencedConcept,
-                TinkarTerm.DESCRIPTION_PATTERN,
-                Lists.immutable.of(
-                        TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym V2",
-                        TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
-                        TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE));
-        appendSession.close();
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        appendSession.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
+                .semantic(Semantic.make(semanticId))
+                .reference(referencedConcept)
+                .pattern(DESCRIPTION_PATTERN)
+                .fieldValues((fieldValues) -> fieldValues
+                        .with(ENGLISH_LANGUAGE)
+                        .with("Synonym V2")
+                        .with(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .with(REGULAR_NAME_DESCRIPTION_TYPE)));
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
@@ -298,18 +395,23 @@ public class ComposerCreateIT {
         PublicId conceptId = PublicIds.newRandom();
         Concept referencedConcept = Concept.make(conceptId);
         // Create Initial Semantic Version from Template
-        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        initSession.composeSemantic(new Synonym(Semantic.make(semanticId), TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym from Template V1", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                referencedConcept);
-        initSession.close();
+        Composer composer = new Composer("appendVersionSemanticFromTemplateTest");
+        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        initSession.compose(new Synonym()
+                .semantic(Semantic.make(semanticId))
+                        .language(ENGLISH_LANGUAGE)
+                .text("Synonym from Template V1")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referencedConcept);
+        composer.commitSession(initSession);
 
         // Append Semantic Version from Template
-        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        appendSession.composeSemantic(new Synonym(Semantic.make(semanticId), TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym from Template V2", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                referencedConcept);
-        appendSession.close();
+        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        appendSession.compose(new Synonym()
+                .semantic(Semantic.make(semanticId))
+                .language(ENGLISH_LANGUAGE)
+                .text("Synonym from Template V2")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referencedConcept);
+        composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
@@ -321,20 +423,27 @@ public class ComposerCreateIT {
     public void appendSemanticVersionFromWithTest() {
         PublicId semanticId = PublicIds.newRandom();
         PublicId conceptId = PublicIds.newRandom();
-        Concept referencedConcept = Concept.make(conceptId);
         // Create Initial Semantic Version from Template
-        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        initSession.composeSemantic(new Synonym(Semantic.make(semanticId), TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym from Template V1", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                referencedConcept);
-        initSession.close();
+        Composer initComposer = new Composer("appendSemanticVersionFromWithTest");
+        Session initSession = initComposer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        initSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(Concept.make(conceptId))
+                .attach(new Synonym().semantic(Semantic.make(semanticId))
+                        .language(ENGLISH_LANGUAGE)
+                        .text("Synonym from Template V1")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
+        initComposer.commitSession(initSession);
 
         // Append Concept Version
-        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        appendSession.composeConcept(referencedConcept)
-                .with(new Synonym(Semantic.make(semanticId), TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym from Template V2", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE));
-        appendSession.close();
+        Composer appendComposer = new Composer("appendSemanticVersionFromWithTest");
+        Session appendSession = appendComposer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        appendSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(Concept.make(conceptId))
+                .attach(new Synonym().semantic(Semantic.make(semanticId))
+                        .language(ENGLISH_LANGUAGE)
+                        .text("Synonym from Template V2")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
+        appendComposer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
@@ -347,17 +456,19 @@ public class ComposerCreateIT {
     @Test
     public void writeOrderTest() {
         PublicId conceptId = PublicIds.newRandom();
+        Composer composer = new Composer("writeOrderTest");
+
         // Create Initial Concept Version
-        ComposerSession firstSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        firstSession.composeConcept(Concept.make(conceptId));
+        Session firstSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        firstSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
 
         // Append Concept Version
-        ComposerSession secondSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        secondSession.composeConcept(Concept.make(conceptId));
+        Session secondSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        secondSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
 
         // Commit Transactions out of order
-        secondSession.close();
-        firstSession.close();
+        composer.commitSession(secondSession);
+        composer.commitSession(firstSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
@@ -368,40 +479,85 @@ public class ComposerCreateIT {
     @Test
     public void writeVersionsOutOfOrderTest() {
         PublicId conceptId = PublicIds.newRandom();
+        Composer composer = new Composer("writeVersionsOutOfOrderTest");
+
         // Create Version with later time first
-        ComposerSession laterSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        laterSession.composeConcept(Concept.make(conceptId));
-        laterSession.close();
+        Session laterSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        laterSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
+        composer.commitSession(laterSession);
 
         // Create Version with previous time next
-        ComposerSession previousSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        previousSession.composeConcept(Concept.make(conceptId));
-        previousSession.close();
+        Session previousSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        previousSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(Concept.make(conceptId)));
+        composer.commitSession(previousSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
+
+    @Test
+    public void sessionDoubleCloseTest() {
+        Concept referenceConcept = Concept.make(PublicIds.newRandom());
+        Composer composer = new Composer("createFullyQualifiedNameTemplateTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        session.compose(new FullyQualifiedName()
+                .language(ENGLISH_LANGUAGE)
+                .text("FQN from Template")
+                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), referenceConcept);
+
+        composer.commitSession(session);
+        composer.commitSession(session);
+        int expectedComponentsUpdatedCount = 1;
+        int actualComponentsUpdatedCount = session.componentsInSessionCount();
+        assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
+                String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
+    }
     // ### END: Write / Commit Ordering Tests
 
     // ### START: Miscellaneous Tests
     @Test
     @Disabled
-    public void writeConceptWithMultipleUuids() {
+    public void writeConceptWithOneThenMultipleUuids() {
         PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
-        Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
         Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
+        Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
+        Composer composer = new Composer("writeConceptWithOneThenMultipleUuids");
+
+        // Create Concept with one Uuids
+        Session previousSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        previousSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithSingleUuid)); // Concept with [ UUID1 ]
+        composer.commitSession(previousSession);
+
+        // Create Concept version for multiple Uuid
+        Session laterSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        laterSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithMultipleUuids)); // Concept with [ UUID1, UUID2 ]
+        composer.commitSession(laterSession);
+
+        int expectedVersionCount = 2;
+        int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
+        assertEquals(expectedVersionCount, actualVersionCount,
+                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+    }
+
+    @Test
+    public void writeConceptWithMultipleThenOneUuids() {
+        PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
+        Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
+        Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
+        Composer composer = new Composer("writeConceptWithMultipleThenOneUuids");
 
         // Create Concept with multiple Uuids
-        ComposerSession previousSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        previousSession.composeConcept(conceptWithSingleUuid); // Concept with [ UUID1 ]
-        previousSession.close();
+        Session previousSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        previousSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithMultipleUuids)); // Concept with [ UUID1 ]
+        composer.commitSession(previousSession);
 
         // Create Concept version for one Uuid
-        ComposerSession laterSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        laterSession.composeConcept(conceptWithMultipleUuids); // Concept with [ UUID1, UUID2 ]
-        laterSession.close();
+        Session laterSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        laterSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(conceptWithSingleUuid)); // Concept with [ UUID1, UUID2 ]
+        composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
         int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
@@ -413,18 +569,22 @@ public class ComposerCreateIT {
     @Test
     @Disabled
     public void writeHealthConceptRecords() {
+        Composer composer = new Composer("writeHealthConceptRecords");
+
         // Create Concept with multiple UUIDs (i.e., Health Concept)
-        ComposerSession healthConceptSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        healthConceptSession.composeConcept(TinkarTerm.HEALTH_CONCEPT);
-        healthConceptSession.close();
+        Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        healthConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(HEALTH_CONCEPT));
+        composer.commitSession(healthConceptSession);
 
         // Create Concept version for a single UUID in the PublicId from the Concept above
-        ComposerSession snomedRootConceptSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        snomedRootConceptSession.composeConcept(Concept.make(PublicIds.of(TinkarTerm.HEALTH_CONCEPT.asUuidArray()[0])));
-        snomedRootConceptSession.close();
+        Session snomedRootConceptSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        snomedRootConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(Concept.make(PublicIds.of(HEALTH_CONCEPT.asUuidArray()[0]))));
+        composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityService.get().getEntityFast(TinkarTerm.HEALTH_CONCEPT).versions().size();
+        int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -432,74 +592,103 @@ public class ComposerCreateIT {
     @Test
     @Disabled
     public void writeFullyQualifiedNameConceptRecords() {
+        Composer composer = new Composer("writeFullyQualifiedNameConceptRecords");
+
         // Create Concept with multiple UUIDs (i.e., FullyQualifiedName)
-        ComposerSession healthConceptSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        healthConceptSession.composeConcept(Concept.make(PublicIds.of(TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.asUuidArray()[0])));
-        healthConceptSession.close();
+        Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        healthConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(Concept.make(PublicIds.of(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.asUuidArray()[0]))));
+        composer.commitSession(healthConceptSession);
 
         // Create Concept version for a single UUID in the PublicId from the Concept above
-        ComposerSession snomedRootConceptSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        snomedRootConceptSession.composeConcept(TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE);
-        snomedRootConceptSession.close();
+        Session snomedRootConceptSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        snomedRootConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
+        composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityService.get().getEntityFast(TinkarTerm.HEALTH_CONCEPT).versions().size();
+        int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
 
+//    @Test
+//    @Disabled
+//    public void writeSemanticWithMergableVersions() {
+//        PublicId conceptId = PublicIds.newRandom();
+//        PublicId initialSemanticId = PublicIds.newRandom();
+//        PublicId semanticIdWithExtraUuid = PublicIds.of(initialSemanticId.asUuidArray()[0], PublicIds.newRandom().asUuidArray()[0]);
+//        Concept referencedConcept = Concept.make(conceptId);
+//        Composer composer = new Composer("writeSemanticWithMergableVersions");
+//
+//        // Create Initial Semantic Version from Template
+//        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        initSession.compose(new Synonym(Semantic.make(initialSemanticId), ENGLISH_LANGUAGE,
+//                        "Synonym Version with single UUID", DESCRIPTION_NOT_CASE_SENSITIVE),
+//                referencedConcept);
+//        composer.commitSession(initSession);
+//
+//        // Append Semantic Version from Template
+//        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        appendSession.compose(new Synonym(Semantic.make(semanticIdWithExtraUuid), ENGLISH_LANGUAGE,
+//                        "Synonym Version with multiple UUIDs", DESCRIPTION_NOT_CASE_SENSITIVE),
+//                referencedConcept);
+//        composer.commitSession(appendSession);
+//
+//        int expectedVersionCount = 2;
+//        int actualVersionCount = EntityService.get().getEntityFast(semanticIdWithExtraUuid.asUuidArray()).versions().size();
+//        assertEquals(expectedVersionCount, actualVersionCount,
+//                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+//    }
+
     @Test
-    @Disabled
-    public void writeSemanticWithMergableVersions() {
-        PublicId conceptId = PublicIds.newRandom();
-        PublicId initialSemanticId = PublicIds.newRandom();
-        Concept referencedConcept = Concept.make(conceptId);
-        // Create Initial Semantic Version from Template
-        ComposerSession initSession = new ComposerSession(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        initSession.composeSemantic(new Synonym(Semantic.make(initialSemanticId), TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym Version with single UUID", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                referencedConcept);
-        initSession.close();
-
-        PublicId semanticIdWithExtraUuid = PublicIds.of(initialSemanticId.asUuidArray()[0], PublicIds.newRandom().asUuidArray()[0]);
-        // Append Semantic Version from Template
-        ComposerSession appendSession = new ComposerSession(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-        appendSession.composeSemantic(new Synonym(Semantic.make(semanticIdWithExtraUuid), TinkarTerm.ENGLISH_LANGUAGE,
-                        "Synonym Version with multiple UUIDs", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                referencedConcept);
-        appendSession.close();
-
-        int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(semanticIdWithExtraUuid.asUuidArray()).versions().size();
-        assertEquals(expectedVersionCount, actualVersionCount,
-                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
-    }
-
-    @Test
-    @Disabled
-    public void createSessionTest() {
-        long time = System.currentTimeMillis();
-
+    public void complexCreateTest() {
         PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
         PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
+        Composer composer = new Composer("complexCreateTest");
 
-        ComposerSession session = new ComposerSession(DEFAULT_STATUS, time, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+        Session session = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        session.composeConcept(Concept.make("Concept", conceptId))
-                .with(new FullyQualifiedName(EntityProxy.Semantic.make("F1", fqnId), TinkarTerm.ENGLISH_LANGUAGE, "FQN1", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
-                        .with(new USEnglishDialect(EntityProxy.Semantic.make("D1F1", PublicIds.newRandom()), TinkarTerm.PREFERRED)
-                                .with(new Comment(EntityProxy.Semantic.make("C1D1", PublicIds.newRandom()), "Comment on USEnglishDialect")))
-                        .with(new Comment(EntityProxy.Semantic.make("C1F1", PublicIds.newRandom()), "Comment on FQN1")))
-                .with(new Comment(EntityProxy.Semantic.make("C1", PublicIds.newRandom()), "Comment1 on Concept"))
-                .with(
-                        new FullyQualifiedName(EntityProxy.Semantic.make("F2", PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "FQN2", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                        new Comment(EntityProxy.Semantic.make("C2", PublicIds.newRandom()), "Comment2 on Concept"))
-                .with(new Synonym(EntityProxy.Semantic.make("S1", PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "Synonym", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
-                        .with(
-                                new Comment(EntityProxy.Semantic.make("C1S1", PublicIds.newRandom()), "Comment1 on Synonym"),
-                                new Comment(EntityProxy.Semantic.make("C2S1", PublicIds.newRandom()), "Comment2 on Synonym")));
+        session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .concept(Concept.make("Concept", conceptId)))
+                .attach((FullyQualifiedName fqn) -> fqn
+                        .semantic(Semantic.make("F1", PublicIds.newRandom()))
+                        .language(ENGLISH_LANGUAGE)
+                        .text("FQN1")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .attach((USDialect dialect) -> dialect
+                                .semantic(Semantic.make("D1F1", PublicIds.newRandom()))
+                                .acceptability(PREFERRED)
+                                .attach((Comment comment) -> comment
+                                        .semantic(Semantic.make("C1D1", PublicIds.newRandom()))
+                                        .text("Comment on USEnglishDialect")))
+                        .attach((Comment comment) -> comment
+                                .semantic(Semantic.make("C1F1", PublicIds.newRandom()))
+                                .text("Comment on FQN1")))
+                .attach((Comment comment) -> comment
+                        .semantic(Semantic.make("C1", PublicIds.newRandom()))
+                        .text("Comment1 on Concept"))
+                .attach((FullyQualifiedName fqn) -> fqn
+                        .semantic(Semantic.make("F2", PublicIds.newRandom()))
+                        .language(ENGLISH_LANGUAGE)
+                        .text("FQN2")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE))
+                .attach((Comment comment) -> comment
+                        .semantic(Semantic.make("C2", PublicIds.newRandom()))
+                        .text("Comment2 on Concept"))
+                .attach((Synonym synonym) -> synonym
+                        .semantic(Semantic.make("S1", PublicIds.newRandom()))
+                        .language(ENGLISH_LANGUAGE)
+                        .text("Synonym")
+                        .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
+                        .attach((Comment comment) -> comment
+                                .semantic(Semantic.make("C1S1", PublicIds.newRandom()))
+                                .text("Comment2 on Synonym"))
+                        .attach((Comment comment) -> comment
+                                .semantic(Semantic.make("C2S1", PublicIds.newRandom()))
+                                .text("Comment2 on Synonym")));
 
-        session.close();
+        composer.commitSession(session);
 
         int expectedComponentsUpdatedCount = 11;
         int actualComponentsUpdatedCount = session.componentsInSessionCount();
@@ -508,98 +697,101 @@ public class ComposerCreateIT {
                 String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
     }
 
-    @Test
-    @Disabled
-    public void appendVersionTest() {
-        State status = State.ACTIVE;
-        long updated_time = System.currentTimeMillis();
-        Concept author = TinkarTerm.USER;
-        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
-        Concept path = TinkarTerm.DEVELOPMENT_PATH;
-
-        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
-        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
-
-        ComposerSession appendSession = new ComposerSession(status, System.currentTimeMillis(), author, module, path);
-
-        appendSession.composeSemantic(EntityProxy.Semantic.make("FQN Version Test", fqnId),
-                Concept.make("Concept Version Test", conceptId),
-                TinkarTerm.DESCRIPTION_PATTERN,
-                Lists.immutable.of(
-                        TinkarTerm.ENGLISH_LANGUAGE,
-                        "FQN1 Version Test",
-                        TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
-                        TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
-
-        appendSession.close();
-
-        int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
-
-        assertEquals(expectedVersionCount, actualVersionCount,
-                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
-    }
-
-    @Test
-    @Disabled
-    public void appendVersionFromTemplateTest() {
-        State status = State.ACTIVE;
-        long updated_time = System.currentTimeMillis();
-        Concept author = TinkarTerm.USER;
-        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
-        Concept path = TinkarTerm.DEVELOPMENT_PATH;
-
-        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
-        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
-
-        ComposerSession appendSession = new ComposerSession(status, System.currentTimeMillis(), author, module, path);
-
-        appendSession.composeSemantic(
-                new FullyQualifiedName(EntityProxy.Semantic.make("FQN Version from Template Test", fqnId), TinkarTerm.ENGLISH_LANGUAGE, "FQN1 Version from Template Test", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE),
-                Concept.make("Concept Version from Template Test", conceptId))
-                    .with(new USEnglishDialect(EntityProxy.Semantic.make("Dialect Version from Template Test", PublicIds.newRandom()), TinkarTerm.ACCEPTABLE));
-
-        appendSession.close();
-
-        int expectedVersionCount = 3;
-        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
-
-        assertEquals(expectedVersionCount, actualVersionCount,
-                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
-    }
-
-
-    @Test
-    @Disabled
-    public void retireSemanticTest() {
-        State status = State.WITHDRAWN;
-        long updated_time = System.currentTimeMillis();
-        Concept author = TinkarTerm.USER;
-        Concept module = TinkarTerm.DEVELOPMENT_MODULE;
-        Concept path = TinkarTerm.DEVELOPMENT_PATH;
-
-        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
-        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
-
-        ComposerSession appendSession = new ComposerSession(status, System.currentTimeMillis(), author, module, path);
-
-        appendSession.composeSemantic(EntityProxy.Semantic.make("FQN Retire Test", fqnId),
-                Concept.make("Concept", conceptId),
-                TinkarTerm.DESCRIPTION_PATTERN,
-                Lists.immutable.of(
-                        TinkarTerm.ENGLISH_LANGUAGE,
-                        "FQN1 Retire Test",
-                        TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE,
-                        TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
-
-        appendSession.close();
-
-        int expectedVersionCount = 4;
-        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
-
-        assertEquals(expectedVersionCount, actualVersionCount,
-                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
-    }
+//    @Test
+//    @Disabled
+//    public void appendVersionTest() {
+//        State status = State.ACTIVE;
+//        long updated_time = System.currentTimeMillis();
+//        Concept author = USER;
+//        Concept module = DEVELOPMENT_MODULE;
+//        Concept path = DEVELOPMENT_PATH;
+//
+//        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
+//        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
+//
+//        Composer appendComposer = new Composer("testname");
+//        Session appendSession = appendComposer.open(status, System.currentTimeMillis(), author, module, path);
+//
+//        appendSession.compose(Semantic.make("FQN Version Test", fqnId),
+//                Concept.make("Concept Version Test", conceptId),
+//                DESCRIPTION_PATTERN,
+//                Lists.immutable.of(
+//                        ENGLISH_LANGUAGE,
+//                        "FQN1 Version Test",
+//                        DESCRIPTION_NOT_CASE_SENSITIVE,
+//                        FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
+//
+//        composer.commitSession(appendSession);
+//
+//        int expectedVersionCount = 2;
+//        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
+//
+//        assertEquals(expectedVersionCount, actualVersionCount,
+//                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+//    }
+//
+//    @Test
+//    @Disabled
+//    public void appendVersionFromTemplateTest() {
+//        State status = State.ACTIVE;
+//        long updated_time = System.currentTimeMillis();
+//        Concept author = USER;
+//        Concept module = DEVELOPMENT_MODULE;
+//        Concept path = DEVELOPMENT_PATH;
+//
+//        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
+//        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
+//
+//        Composer appendComposer = new Composer("testname");
+//        Session appendSession = appendComposer.open(status, System.currentTimeMillis(), author, module, path);
+//
+//        appendSession.compose(
+//                new FullyQualifiedName(Semantic.make("FQN Version from Template Test", fqnId), ENGLISH_LANGUAGE, "FQN1 Version from Template Test", DESCRIPTION_NOT_CASE_SENSITIVE),
+//                Concept.make("Concept Version from Template Test", conceptId))
+//                    .with(new USEnglishDialect(Semantic.make("Dialect Version from Template Test", PublicIds.newRandom()), ACCEPTABLE));
+//
+//        composer.commitSession(appendSession);
+//
+//        int expectedVersionCount = 3;
+//        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
+//
+//        assertEquals(expectedVersionCount, actualVersionCount,
+//                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+//    }
+//
+//
+//    @Test
+//    @Disabled
+//    public void retireSemanticTest() {
+//        State status = State.WITHDRAWN;
+//        long updated_time = System.currentTimeMillis();
+//        Concept author = USER;
+//        Concept module = DEVELOPMENT_MODULE;
+//        Concept path = DEVELOPMENT_PATH;
+//
+//        PublicId fqnId = PublicIds.of(UUID.nameUUIDFromBytes("fqnId".getBytes()));
+//        PublicId conceptId = PublicIds.of(UUID.nameUUIDFromBytes("conceptId".getBytes()));
+//
+//        Composer appendComposer = new Composer("testname");
+//        Session appendSession = appendComposer.open(status, System.currentTimeMillis(), author, module, path);
+//
+//        appendSession.compose(Semantic.make("FQN Retire Test", fqnId),
+//                Concept.make("Concept", conceptId),
+//                DESCRIPTION_PATTERN,
+//                Lists.immutable.of(
+//                        ENGLISH_LANGUAGE,
+//                        "FQN1 Retire Test",
+//                        DESCRIPTION_NOT_CASE_SENSITIVE,
+//                        FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
+//
+//        composer.commitSession(appendSession);
+//
+//        int expectedVersionCount = 4;
+//        int actualVersionCount = EntityService.get().getEntityFast(fqnId.asUuidArray()).versions().size();
+//
+//        assertEquals(expectedVersionCount, actualVersionCount,
+//                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
+//    }
     // ### END: Miscellaneous Tests
 
 }

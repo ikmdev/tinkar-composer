@@ -39,6 +39,8 @@ public class Write {
 
     private static final Logger LOG = LoggerFactory.getLogger(Write.class);
 
+    public record PatternDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {}
+
     private static long[] createAdditionalLongs(PublicId publicId) {
         long[] additionalLongs = new long[(publicId.uuidCount() * 2) - 2];
         int index = 0;
@@ -118,7 +120,7 @@ public class Write {
 
     public static void pattern(Pattern pattern, PublicId stampId,
                                Concept meaning, Concept purpose,
-                               List<PatternFieldDetail> patternFieldDetails){
+                               List<PatternDefinition> patternDefinitions){
         //Pull out primordial UUID from PublicId
         UUID primordialUUID = pattern.asUuidArray()[0];
 
@@ -155,19 +157,18 @@ public class Write {
                 .build();
 
         //Create individual pattern definitions
-        final AtomicInteger patternIndex = new AtomicInteger(0);
         MutableList<FieldDefinitionRecord> fieldDefinitions = Lists.mutable.empty();
-        patternFieldDetails.forEach(patternFieldDetail -> {
-            int meaningNid = EntityService.get().nidForPublicId(patternFieldDetail.meaning());
-            int purposeNid = EntityService.get().nidForPublicId(patternFieldDetail.purpose());
-            int dataTypeNid = EntityService.get().nidForPublicId(patternFieldDetail.dataType());
+        patternDefinitions.forEach(patternDefinition -> {
+            int meaningNid = EntityService.get().nidForPublicId(patternDefinition.meaning());
+            int purposeNid = EntityService.get().nidForPublicId(patternDefinition.purpose());
+            int dataTypeNid = EntityService.get().nidForPublicId(patternDefinition.datatype());
 
             FieldDefinitionRecord fieldDefinitionRecord = FieldDefinitionRecordBuilder.builder()
                     .patternNid(pattern.nid())
                     .meaningNid(meaningNid)
                     .purposeNid(purposeNid)
                     .dataTypeNid(dataTypeNid)
-                    .indexInPattern(patternIndex.getAndIncrement())
+                    .indexInPattern(patternDefinition.index())
                     .patternVersionStampNid(stampNid)
                     .build();
             fieldDefinitions.add(fieldDefinitionRecord);

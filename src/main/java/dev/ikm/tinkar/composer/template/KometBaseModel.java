@@ -22,48 +22,26 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
-public class Comment extends SemanticTemplate {
-
-    private String text;
-
-    /**
-     * Sets the text for the Comment Semantic.
-     * @param text the Comment text
-     * @return the Comment SemanticTemplate for further method chaining
-     */
-    public Comment text(String text) {
-        this.text = text;
-        return this;
-    }
-
-    /**
-     * Gets the text for the Comment Semantic.
-     */
-    public String getText() {
-        return text;
-    }
+public class KometBaseModel extends SemanticTemplate {
 
     @Override
-    public Comment semantic(Semantic semantic) {
+    public KometBaseModel semantic(Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.COMMENT_PATTERN;
+        return TinkarTerm.KOMET_BASE_MODEL_COMPONENT_PATTERN;
     }
 
     @Override
     protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(text);
+        return Lists.immutable.empty();
     }
 
     @Override
-    protected void validate() throws IllegalArgumentException {
-        if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("Comment requires text");
-        }
+    protected void validate() {
+        // Nothing to validate
     }
-
 }

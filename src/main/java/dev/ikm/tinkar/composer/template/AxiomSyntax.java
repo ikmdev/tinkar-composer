@@ -22,36 +22,29 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
-public class Comment extends SemanticTemplate {
+public class AxiomSyntax extends SemanticTemplate {
 
     private String text;
 
     /**
-     * Sets the text for the Comment Semantic.
-     * @param text the Comment text
-     * @return the Comment SemanticTemplate for further method chaining
+     * Sets the text for the AxiomSyntax Semantic.
+     * @param text the AxiomSyntax text in OWL format
+     * @return the AxiomSyntax SemanticTemplate for further method chaining
      */
-    public Comment text(String text) {
+    public AxiomSyntax text(String text) {
         this.text = text;
         return this;
     }
 
-    /**
-     * Gets the text for the Comment Semantic.
-     */
-    public String getText() {
-        return text;
-    }
-
     @Override
-    public Comment semantic(Semantic semantic) {
+    public AxiomSyntax semantic(Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.COMMENT_PATTERN;
+        return TinkarTerm.OWL_AXIOM_SYNTAX_PATTERN;
     }
 
     @Override
@@ -62,8 +55,7 @@ public class Comment extends SemanticTemplate {
     @Override
     protected void validate() throws IllegalArgumentException {
         if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("Comment requires text");
+            throw new IllegalArgumentException("Axiom syntax requires text");
         }
     }
-
 }
