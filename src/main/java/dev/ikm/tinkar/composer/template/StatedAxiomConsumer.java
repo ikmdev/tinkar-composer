@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ikm.tinkar.composer;
+package dev.ikm.tinkar.composer.template;
 
-import dev.ikm.tinkar.common.id.PublicId;
-
-public record PatternFieldDetail(PublicId meaning, PublicId purpose, PublicId dataType, int index) {
+@FunctionalInterface
+public interface StatedAxiomConsumer {
+    void accept(StatedAxiom axiom);
 }

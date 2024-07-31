@@ -16,54 +16,47 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
-public class Comment extends SemanticTemplate {
+public class GBDialect extends SemanticTemplate {
 
-    private String text;
+    private Concept acceptability;
 
     /**
-     * Sets the text for the Comment Semantic.
-     * @param text the Comment text
-     * @return the Comment SemanticTemplate for further method chaining
+     * Sets the acceptability value for the GBDialect Semantic.
+     * @param acceptability the GBDialect acceptability value
+     * @return the GBDialect SemanticTemplate for further method chaining
      */
-    public Comment text(String text) {
-        this.text = text;
+    public GBDialect acceptability(Concept acceptability) {
+        this.acceptability = acceptability;
         return this;
     }
 
-    /**
-     * Gets the text for the Comment Semantic.
-     */
-    public String getText() {
-        return text;
-    }
-
     @Override
-    public Comment semantic(Semantic semantic) {
+    public GBDialect semantic(Semantic semantic) {
         this.setSemantic(semantic);
         return this;
     }
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.COMMENT_PATTERN;
+        return TinkarTerm.GB_DIALECT_PATTERN;
     }
 
     @Override
     protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(text);
+        return Lists.immutable.of(acceptability);
     }
 
     @Override
     protected void validate() throws IllegalArgumentException {
-        if (text == null || text.isEmpty()) {
-            throw new IllegalArgumentException("Comment requires text");
+        if (acceptability==null) {
+            throw new IllegalArgumentException("GBDialect requires acceptability");
         }
     }
-
 }
