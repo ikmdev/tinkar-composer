@@ -189,26 +189,6 @@ session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                         .text("Custom Semantic Example")));
 ```
 
-## Appendix
-
-## Entity Model
-
-At a high level the Entity Model consists of different types of Components - Concepts, Semantics, Patterns. Concepts simply represent a reference which can be 
-conceptualized as a datastore key. Semantics are then used to associate additional information such as names, definitions, relationships, etc. to a Concept. This 
-additional information is stored in a Semantic as field values, which require additional context to interpret. Patterns provide this context through field definitions 
-which provide meaning, purpose, and datatype metadata for the associated Semantic field values. Without the metadata provided by Patterns, a Semantic could contain a 
-String field value (e.g., “ above threshold“), but users or computational agents would not have the context to know whether this information represents a name, a 
-definition, an isA or hasA property, etc.
-
-It is important for our understanding to note that Semantics are the “connecting Component” in that they refer to other Components. Concepts and Patterns contain 
-information but do not refer to other Components, while Semantics have a Component reference - the Component to which the semantic information applies - and a 
-Pattern referenced - the Pattern whose field definitions provide context for the Semantic field values.
-
-Each Component may also contain one or more Versions, enabling terminology development and capturing changes over time. Versions of a Component are “ordered” using a 
-STAMP which includes a Status, Time, Author, Module, and Path. These five properties are used to calculate Version order based on a Coordinate configuration 
-(a topic explored in further detail {@link here}). At a high-level, Versions on the same Path are ordered by timestamp and can also be filtered by other parameters 
-such as Active or Inactive Status.
-
 ## How to Contribute
 
 For a quick guide on how to make changes to this project, including new features or bug fixes, please click [here](doc/how-to-contribute.md).
