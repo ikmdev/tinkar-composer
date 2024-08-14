@@ -1,0 +1,202 @@
+name: Release Workflow
+
+run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_number}}"
+
+# Trigger workflow manually
+on:
+  workflow_dispatch:
+    inputs:
+      release_message:
+        type: string
+        description: "(Optional) Enter Release Message"
+
+# Define environment parameters
+env:
+  BRANCH_NAME: ${{github.ref_name}}
+  TRUNK_BRANCH_NAME: master
+  RELEASE_MESSAGE: ${{github.event.inputs.release_message}}
+  MAVEN_SETTING: '/home/ec2-user/maven/.m2/settings.xml'
+
+jobs:
+  release:
+    name: Increment Release Version
+    runs-on: ubuntu-latest
+    outputs:
+      NEXT_IKM_RELEASE_VERSION: ${{env.NEW_DEV_VERSION}}
+      RELEASE_VERSION: ${{env.RELEASE_VERSION}}
+    steps:
+      - name: Verify Branch
+        if: env.BRANCH_NAME != env.TRUNK_BRANCH_NAME
+        run: |
+          echo "ERROR: Attempting to release from branch ${{env.BRANCH_NAME}}. Release from ${{env.TRUNK_BRANCH_NAME}} branch only"
+          exit 1
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{secrets.IKMDEVOPS_PAT_TOKEN}}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'adopt'
+
+      - name: Set up Node.js (for XML parsing)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install XML2JS
+        run: npm install xml2js
+
+      - name: Extract and Increment Version
+        id: increment_version
+        run: |
+          # Extract the current version from pom.xml
+          CURRENT_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml)
+          
+          # Split the version into parts
+          VERSION_PREFIX=$(echo $CURRENT_VERSION | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION_SUFFIX=$(echo $CURRENT_VERSION | grep -oE '[a-zA-Z0-9\-]+$')
+          
+          # Extract the current numeric suffix
+          CURRENT_SUFFIX_NUMBER=$(echo $VERSION_SUFFIX | grep -oE '[0-9]+$')
+          
+          # Increment the suffix number for new development version
+          NEW_SUFFIX_NUMBER=$((CURRENT_SUFFIX_NUMBER + 1))
+          
+          # Form the new versions
+          RELEASE_VERSION="$CURRENT_VERSION"
+          NEW_DEV_VERSION="$VERSION_PREFIX-ikm-r$NEW_SUFFIX_NUMBER"
+          
+          # Output the new versions
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "NEW_DEV_VERSION=$NEW_DEV_VERSION" >> $GITHUB_ENV
+
+  set_build_and_tag_release:
+    name: Set, Build, Tag Release Version & Set Next Version
+    runs-on: self-hosted
+    needs: release
+    outputs:
+      NEXT_IKM_RELEASE_VERSION: ${{needs.release.outputs.NEXT_IKM_RELEASE_VERSION}}
+      RELEASE_VERSION: ${{needs.release.outputs.RELEASE_VERSION}}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{secrets.IKMDEVOPS_PAT_TOKEN}}
+
+      - name: Build Release Version
+        run: |
+          mvn -version
+          mvn clean install \
+               -s ${{env.MAVEN_SETTING}} \
+               --batch-mode \
+               -e \
+               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+               -PcodeQuality,release-enforcement
+
+      - name: Create Tag
+        run: |
+          git remote set-url origin https://git:${{secrets.IKMDEVOPS_PAT_TOKEN}}@github.com/${{github.repository}}.git
+          git pull -p
+          git config user.name "ikmdevops"
+          git config user.email ${{vars.IKMDEVOPS_EMAIL}}
+          git tag -a ${{needs.release.outputs.RELEASE_VERSION}} -m '${{needs.release.outputs.RELEASE_VERSION}}' --force
+
+      - name: Set IKM Release Version
+        run: |
+          mvn -B versions:set \
+          -DnewVersion=${{needs.release.outputs.NEXT_IKM_RELEASE_VERSION}} \
+          -DgenerateBackupPoms=false
+
+      - name: Commit & Push
+        run: |
+          git add .
+          git commit -m 'Set next ikm release version to ${{needs.release.outputs.NEXT_IKM_RELEASE_VERSION}}'
+          git push origin HEAD:${{env.TRUNK_BRANCH_NAME}}
+          git push --tags origin
+
+
+  # Creating a release
+  create_release:
+    name: Create Release
+    permissions: write-all
+    outputs:
+      RELEASE_VERSION: ${{needs.set_build_and_tag_release.outputs.RELEASE_VERSION}}
+    needs:
+      - set_build_and_tag_release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Modify Release Message
+        if: inputs.release_message == ''
+        run: echo "RELEASE_MESSAGE=Release ${{needs.set_build_and_tag_release.outputs.RELEASE_VERSION}}" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        run: |
+          curl -L \
+           -X POST \
+           -H "Accept: application/vnd.github+json" \
+           -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" \
+           -H "X-GitHub-Api-Version: 2022-11-28" \
+           https://api.github.com/repos/${{github.repository}}/releases \
+          -d '{"tag_name":"${{needs.set_build_and_tag_release.outputs.RELEASE_VERSION}}","name":"${{needs.set_build_and_tag_release.outputs.RELEASE_VERSION}}","body":"${{env.RELEASE_MESSAGE}}","draft":false,"prerelease":false,"generate_release_notes":false}'
+
+
+  publish-artifacts:
+    name: Publishing Artifacts to Nexus & OSSRH
+    runs-on: self-hosted
+    needs:
+      - create_release
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{needs.create_release.outputs.RELEASE_VERSION}}
+
+      - name: Maven Build
+        run: |
+          mvn clean install \
+            -s ${{env.MAVEN_SETTING}} \
+            --batch-mode \
+            -e \
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+            -PcodeQuality
+
+      - name: Deploy To Nexus
+        run: |
+          mvn deploy \
+                --batch-mode \
+                -e \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -DskipTests \
+                -DskipITs \
+                -PcodeQuality \
+                -s ${{env.MAVEN_SETTING}} \
+                -DrepositoryId='maven-releases' \
+                -Dgpg.passphrase=${{secrets.SELF_HOSTED_GPG_PASSPHRASE}}
+
+
+      - name: Publish To OSSRH (Maven Central Staging)
+        run: |
+          mvn deploy \
+              --batch-mode \
+              -e \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DskipTests \
+              -DskipITs \
+              -PcodeQuality \
+              -s ${{env.MAVEN_SETTING}} \
+              -DrepositoryId='maven-releases' \
+              -DrepositoryIdOSSRH='true' \
+              -PstageOSSRH -Dgpg.passphrase=${{secrets.SELF_HOSTED_GPG_PASSPHRASE}}
