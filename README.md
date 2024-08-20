@@ -2,6 +2,9 @@
 
 Tinkar Composer provides a fluent interface for creating data for the Entity Model. This API is intended to accelerate developers creating Concepts, Semantics, and Patterns (and their associated Versions) by providing a declarative interface that abstracts many of the nuances of low-level data handling in favor of consistent writing and merging.
 
+### Team Ownership - Product Owner
+Architecture Team
+
 ## Composing
 
 Composing new data requires four steps:
