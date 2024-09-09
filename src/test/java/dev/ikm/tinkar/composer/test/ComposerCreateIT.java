@@ -519,9 +519,8 @@ public class ComposerCreateIT {
 
     // ### START: Miscellaneous Tests
     @Test
-    @Disabled
     public void writeConceptWithOneThenMultipleUuids() {
-        PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
+        PublicId pubIdWithTwoUuids = PublicIds.of(UUID.randomUUID(), UUID.randomUUID());
         Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
         Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
         Composer composer = new Composer("writeConceptWithOneThenMultipleUuids");
@@ -544,7 +543,7 @@ public class ComposerCreateIT {
 
     @Test
     public void writeConceptWithMultipleThenOneUuids() {
-        PublicId pubIdWithTwoUuids = PublicIds.of("785d9b31-571b-495e-8ca4-b584146e3bef", "7bf1f629-5585-4c23-903a-27be0d362b28");
+        PublicId pubIdWithTwoUuids = PublicIds.of(UUID.randomUUID(), UUID.randomUUID());
         Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
         Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
         Composer composer = new Composer("writeConceptWithMultipleThenOneUuids");
@@ -567,7 +566,6 @@ public class ComposerCreateIT {
 
 
     @Test
-    @Disabled
     public void writeHealthConceptRecords() {
         Composer composer = new Composer("writeHealthConceptRecords");
 
@@ -590,7 +588,6 @@ public class ComposerCreateIT {
     }
 
     @Test
-    @Disabled
     public void writeFullyQualifiedNameConceptRecords() {
         Composer composer = new Composer("writeFullyQualifiedNameConceptRecords");
 
