@@ -15,6 +15,8 @@
  */
 package dev.ikm.tinkar.composer.template;
 
+import dev.ikm.tinkar.common.id.IntIdSet;
+import dev.ikm.tinkar.common.id.IntIds;
 import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
@@ -63,7 +65,9 @@ public class StatedNavigation extends SemanticTemplate {
 
     @Override
     protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(destinations.toImmutable(), origins.toImmutable());
+        IntIdSet destinationNids = IntIds.set.of(destinations.stream().mapToInt(EntityProxy::nid).toArray());
+        IntIdSet originNids = IntIds.set.of(origins.stream().mapToInt(EntityProxy::nid).toArray());
+        return Lists.immutable.of(destinationNids, originNids);
     }
 
     @Override
