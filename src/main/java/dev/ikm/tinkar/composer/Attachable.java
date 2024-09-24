@@ -91,6 +91,19 @@ public abstract class Attachable {
     }
 
     /**
+     * Creates an StatedNavigation Semantic which references this Component.
+     * @param statedNavigationConsumer
+     * @return this Component as an Attachable
+     */
+    public Attachable attach(StatedNavigationConsumer statedNavigationConsumer) {
+        StatedNavigation statedNavigation = new StatedNavigation();
+        initializeAttachable(statedNavigation);
+        statedNavigationConsumer.accept(statedNavigation);
+        statedNavigation.validateAndWrite();
+        return this;
+    }
+
+    /**
      * Creates an Comment Semantic which references this Component.
      * @param commentConsumer
      * @return this Component as an Attachable
