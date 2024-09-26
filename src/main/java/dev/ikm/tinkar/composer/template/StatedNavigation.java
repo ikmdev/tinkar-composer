@@ -19,6 +19,7 @@ import dev.ikm.tinkar.common.id.IntIdSet;
 import dev.ikm.tinkar.common.id.IntIds;
 import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy;
+import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
@@ -37,7 +38,7 @@ public class StatedNavigation extends SemanticTemplate {
      * @param originConcepts the list of parent Concepts
      * @return the StatedNavigation SemanticTemplate for further method chaining
      */
-    public StatedNavigation parents(EntityProxy.Concept... originConcepts) {
+    public StatedNavigation parents(Concept... originConcepts) {
         Collections.addAll(origins, originConcepts);
         return this;
     }
@@ -47,7 +48,7 @@ public class StatedNavigation extends SemanticTemplate {
      * @param destinationConcepts the list of parent Concepts
      * @return the StatedNavigation SemanticTemplate for further method chaining
      */
-    public StatedNavigation children(EntityProxy.Concept... destinationConcepts) {
+    public StatedNavigation children(Concept... destinationConcepts) {
         Collections.addAll(destinations, destinationConcepts);
         return this;
     }
