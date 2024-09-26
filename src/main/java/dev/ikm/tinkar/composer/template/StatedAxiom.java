@@ -44,19 +44,21 @@ public class StatedAxiom extends SemanticTemplate {
     private final MutableList<EntityVertex> originVertexList = Lists.mutable.empty();
 
     /**
-     * Adds a isA relationship denoting the Concept provided as a parent of the referenced Component for the StatedAxiom Semantic.
-     * @param originConcept the parent Concept
+     * Adds an isA relationship for each Concept provided, denoting it as a parent of the referenced Component for the StatedAxiom Semantic.
+     * @param originConcepts the parent Concept
      * @return the StatedAxiom SemanticTemplate for further method chaining
      */
-    public StatedAxiom isA(Concept originConcept) {
-        MutableIntObjectMap<Object> referenceProperty =  IntObjectMaps.mutable.empty();
-        referenceProperty.put(TinkarTerm.CONCEPT_REFERENCE.nid(), abstractObject(originConcept));
+    public StatedAxiom isA(Concept... originConcepts) {
+        for (Concept originConcept : originConcepts) {
+            MutableIntObjectMap<Object> referenceProperty = IntObjectMaps.mutable.empty();
+            referenceProperty.put(TinkarTerm.CONCEPT_REFERENCE.nid(), abstractObject(originConcept));
 
-        EntityVertex originVertex = EntityVertex.make(originConcept);
-        originVertex.setProperties(referenceProperty);
-        originVertex.setVertexIndex(vertexIdx.getAndIncrement());
-        originVertex.setMeaningNid(TinkarTerm.CONCEPT_REFERENCE.nid());
-        originVertexList.with(originVertex);
+            EntityVertex originVertex = EntityVertex.make(originConcept);
+            originVertex.setProperties(referenceProperty);
+            originVertex.setVertexIndex(vertexIdx.getAndIncrement());
+            originVertex.setMeaningNid(TinkarTerm.CONCEPT_REFERENCE.nid());
+            originVertexList.with(originVertex);
+        }
         return this;
     }
 
