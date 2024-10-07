@@ -56,7 +56,7 @@
     </organization>
 
     <properties>
-        <tinkar-core.version>1.72.0-SNAPSHOT</tinkar-core.version>
+        <tinkar-core.version>1.72.0</tinkar-core.version>
         <slf4j.version>2.0.13</slf4j.version>
         <log4j.version>3.0.0-alpha1</log4j.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
