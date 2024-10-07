@@ -17,7 +17,7 @@ module dev.ikm.tinkar.composer {
     requires dev.ikm.tinkar.common;
     requires dev.ikm.tinkar.terms;
     requires dev.ikm.tinkar.entity;
-    requires org.eclipse.collections.api;
+    requires dev.ikm.jpms.eclipse.collections.api;
     requires org.slf4j;
     exports dev.ikm.tinkar.composer;
     exports dev.ikm.tinkar.composer.template;
