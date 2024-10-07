@@ -127,7 +127,6 @@
         <dependency>
             <groupId>${tinkar-jpms-deps.groupId}</groupId>
             <artifactId>eclipse-collections-api</artifactId>
-            <version>${eclipse-collections-api.version}</version>
         </dependency>
 
         <!-- Data Providers       -->
