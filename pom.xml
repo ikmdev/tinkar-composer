@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.ikm.build</groupId>
         <artifactId>java-parent</artifactId>
-        <version>1.47.0</version>
+        <version>1.51.0-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -56,15 +56,26 @@
     </organization>
 
     <properties>
-        <tinkar-core.version>1.68.0</tinkar-core.version>
+        <tinkar-core.version>1.72.0-SNAPSHOT</tinkar-core.version>
         <slf4j.version>2.0.13</slf4j.version>
         <log4j.version>3.0.0-alpha1</log4j.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
+
+        <!-- JPMS Dependencies -->
+        <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
+        <eclipse-collections.version>11.1.0-r12</eclipse-collections.version>
+        <eclipse-collections-api.version>11.1.0-r11</eclipse-collections-api.version>
     </properties>
 
     <!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>${tinkar-jpms-deps.groupId}</groupId>
+                <artifactId>eclipse-collections-api</artifactId>
+                <version>${eclipse-collections-api.version}</version>
+            </dependency>
+
             <!-- Data Providers       -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -113,6 +124,12 @@
 
     <!-- Cross project dependencies -->
     <dependencies>
+        <dependency>
+            <groupId>${tinkar-jpms-deps.groupId}</groupId>
+            <artifactId>eclipse-collections-api</artifactId>
+            <version>${eclipse-collections-api.version}</version>
+        </dependency>
+
         <!-- Data Providers       -->
         <dependency>
             <groupId>${project.groupId}</groupId>
