@@ -29,29 +29,64 @@ import dev.ikm.tinkar.composer.assembler.PatternAssembler;
 import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
 import dev.ikm.tinkar.composer.template.Comment;
 import dev.ikm.tinkar.composer.template.FullyQualifiedName;
+import dev.ikm.tinkar.composer.template.StatedAxiom;
+import dev.ikm.tinkar.composer.template.StatedNavigation;
 import dev.ikm.tinkar.composer.template.Synonym;
 import dev.ikm.tinkar.composer.template.USDialect;
 import dev.ikm.tinkar.composer.test.template.CustomSemantic;
+import dev.ikm.tinkar.entity.Entity;
 import dev.ikm.tinkar.entity.EntityCountSummary;
 import dev.ikm.tinkar.entity.EntityService;
+import dev.ikm.tinkar.entity.PatternRecord;
+import dev.ikm.tinkar.entity.SemanticEntityVersion;
 import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
+import dev.ikm.tinkar.entity.transaction.Transaction;
+import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.ParseException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static dev.ikm.tinkar.terms.TinkarTerm.*;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACCEPTABLE;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_NAME;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_PROPERTIES;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_PURPOSE;
+import static dev.ikm.tinkar.terms.TinkarTerm.COMPONENT_FIELD;
+import static dev.ikm.tinkar.terms.TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE;
+import static dev.ikm.tinkar.terms.TinkarTerm.DESCRIPTION_PATTERN;
+import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
+import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_PATH;
+import static dev.ikm.tinkar.terms.TinkarTerm.EL_PLUS_PLUS_INFERRED_TERMINOLOGICAL_AXIOMS;
+import static dev.ikm.tinkar.terms.TinkarTerm.EL_PLUS_PLUS_STATED_AXIOMS_PATTERN;
+import static dev.ikm.tinkar.terms.TinkarTerm.EL_PLUS_PLUS_STATED_TERMINOLOGICAL_AXIOMS;
+import static dev.ikm.tinkar.terms.TinkarTerm.ENGLISH_LANGUAGE;
+import static dev.ikm.tinkar.terms.TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE;
+import static dev.ikm.tinkar.terms.TinkarTerm.HEALTH_CONCEPT;
+import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
+import static dev.ikm.tinkar.terms.TinkarTerm.MODEL_CONCEPT;
+import static dev.ikm.tinkar.terms.TinkarTerm.PREFERRED;
+import static dev.ikm.tinkar.terms.TinkarTerm.PURPOSE;
+import static dev.ikm.tinkar.terms.TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE;
+import static dev.ikm.tinkar.terms.TinkarTerm.ROOT_VERTEX;
+import static dev.ikm.tinkar.terms.TinkarTerm.STRING;
+import static dev.ikm.tinkar.terms.TinkarTerm.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ComposerCreateIT {
+public class SandboxIT {
     public static final Function<String, File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
     public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-1.0.0-pb.zip");
     public static State DEFAULT_STATUS = State.ACTIVE;
@@ -59,12 +94,14 @@ public class ComposerCreateIT {
     public static Concept DEFAULT_AUTHOR = USER;
     public static Concept DEFAULT_MODULE = DEVELOPMENT_MODULE;
     public static Concept DEFAULT_PATH = DEVELOPMENT_PATH;
-    public static final File DATASTORE = createFilePathInTarget.apply("generated-data/" + ComposerCreateIT.class.getSimpleName());
+    public static final File DATASTORE = createFilePathInTarget.apply("generated-data/" + SandboxIT.class.getSimpleName());
+
+    private static final Pattern testPattern = EntityProxy.Pattern.make(PublicIds.of("451c6aa4-8319-4b15-ace7-922285eb268f"));
 
 
     private final Path datastore = Path.of(System.getProperty("user.dir"))
             .resolve("target")
-            .resolve(ComposerCreateIT.class.getSimpleName())
+            .resolve(SandboxIT.class.getSimpleName())
             .resolve("datastore");
 
     @BeforeAll
@@ -82,6 +119,118 @@ public class ComposerCreateIT {
     @AfterAll
     public void afterAll() {
         PrimitiveData.stop();
+    }
+
+    @Test
+    public void createConceptWithNavSemanticTest() {
+        Composer composer = new Composer("createConceptWithSemanticTest");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+                .attach((StatedNavigation statedNav) -> statedNav
+                        .parents(ROOT_VERTEX)
+                        .children(MEANING)));
+
+        composer.commitSession(session);
+        int expectedComponentsUpdatedCount = 2;
+        int actualComponentsUpdatedCount = session.componentsInSessionCount();
+        assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
+                String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
+    }
+
+    @Test
+    @Disabled
+    public void createMultiplePatternVersionsWithOneStampPart1() throws IOException, InterruptedException {
+        Composer composer = new Composer("createMultiplePatternVersionsWithOneStamp");
+        Session session = composer.open(DEFAULT_STATUS, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        session.compose((PatternAssembler patternAssembler) -> {
+            patternAssembler.pattern(testPattern)
+                    .meaning(MEANING)
+                    .purpose(PURPOSE)
+                    .fieldDefinition(MEANING, PURPOSE, STRING);
+        });
+
+        PatternRecord patternFromDbBefore = EntityService.get().getEntityFast(testPattern.asUuidArray());
+        int versionsCountBefore = patternFromDbBefore.versions().size();
+
+        System.out.println("Stamp PublicId: " + patternFromDbBefore.versions().get(0).stamp().publicId().idString());
+
+        session.compose((PatternAssembler patternAssembler) -> {
+            patternAssembler.pattern(testPattern)
+                    .meaning(HEALTH_CONCEPT)
+                    .purpose(MODEL_CONCEPT)
+                    .fieldDefinition(MEANING, PURPOSE, STRING)
+                    .fieldDefinition(MEANING, PURPOSE, COMPONENT_FIELD);
+        });
+
+        PatternRecord patternFromDbAfter = EntityService.get().getEntityFast(testPattern.asUuidArray());
+        int versionsCountAfter = patternFromDbAfter.versions().size();
+
+//        afterAll();
+//        Thread.sleep(5000);
+//        beforeAll();
+//
+//        PatternRecord patternFromDbRetrieve = EntityService.get().getEntityFast(testPattern.asUuidArray());
+//        int versionsCountRetrieve = EntityService.get().getEntityFast(testPattern.asUuidArray()).versions().size();
+//
+//        composer.commitAllSessions();
+//
+//        PatternRecord patternFromDbCommitted = EntityService.get().getEntityFast(testPattern.asUuidArray());
+//        int versionsCountCommitted = EntityService.get().getEntityFast(testPattern.asUuidArray()).versions().size();
+//
+        System.out.println("DONE");
+    }
+
+    @Test
+    @Disabled
+    public void createMultiplePatternVersionsWithOneStampPart2() throws IOException, InterruptedException {
+        Optional<Entity> stampEntity = EntityService.get().getEntity(UUID.fromString("6b4c07c5-a804-5f97-a803-bb72501c57b6"));
+        Transaction.forStamp(stampEntity.get().publicId());
+
+        PatternRecord patternFromDbRetrieve = EntityService.get().getEntityFast(testPattern.asUuidArray());
+        int versionsCountRetrieve = patternFromDbRetrieve.versions().size();
+
+//        Composer composer = new Composer("createMultiplePatternVersionsWithOneStampPart2");
+//        Session session = composer.open(DEFAULT_STATUS, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//
+//        Pattern testPattern = Pattern.make(PublicIds.newRandom());
+//        System.out.println(testPattern.asUuidArray());
+//
+//        session.compose((PatternAssembler patternAssembler) -> {
+//            patternAssembler.pattern(testPattern)
+//                    .meaning(MEANING)
+//                    .purpose(PURPOSE)
+//                    .fieldDefinition(MEANING, PURPOSE, STRING);
+//        });
+//
+//        PatternRecord patternFromDbBefore = EntityService.get().getEntityFast(testPattern.asUuidArray());
+//        int versionsCountBefore = EntityService.get().getEntityFast(testPattern.asUuidArray()).versions().size();
+//
+//        session.compose((PatternAssembler patternAssembler) -> {
+//            patternAssembler.pattern(testPattern)
+//                    .meaning(HEALTH_CONCEPT)
+//                    .purpose(MODEL_CONCEPT)
+//                    .fieldDefinition(MEANING, PURPOSE, STRING)
+//                    .fieldDefinition(MEANING, PURPOSE, COMPONENT_FIELD);
+//        });
+//
+//        PatternRecord patternFromDbAfter = EntityService.get().getEntityFast(testPattern.asUuidArray());
+//        int versionsCountAfter = EntityService.get().getEntityFast(testPattern.asUuidArray()).versions().size();
+//
+//        afterAll();
+//        Thread.sleep(5000);
+//        beforeAll();
+//
+//        PatternRecord patternFromDbRetrieve = EntityService.get().getEntityFast(testPattern.asUuidArray());
+//        int versionsCountRetrieve = EntityService.get().getEntityFast(testPattern.asUuidArray()).versions().size();
+//
+//        composer.commitAllSessions();
+//
+//        PatternRecord patternFromDbCommitted = EntityService.get().getEntityFast(testPattern.asUuidArray());
+//        int versionsCountCommitted = EntityService.get().getEntityFast(testPattern.asUuidArray()).versions().size();
+
+        System.out.println("DONE");
     }
 
     // ### START: Creation Tests Basic
@@ -210,10 +359,10 @@ public class ComposerCreateIT {
                         .with(ENGLISH_LANGUAGE)
                         .with("Synonym with Dialect Semantic")
                         .with(DESCRIPTION_NOT_CASE_SENSITIVE)
-                        .with(REGULAR_NAME_DESCRIPTION_TYPE))
+                        .with(REGULAR_NAME_DESCRIPTION_TYPE)))
                 .attach((USDialect dialect) -> dialect
                         .semantic(Semantic.make("Dialect for Synonym", PublicIds.newRandom()))
-                        .acceptability(PREFERRED)));
+                        .acceptability(PREFERRED));
 
         composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
@@ -692,6 +841,73 @@ public class ComposerCreateIT {
 
         assertEquals(expectedComponentsUpdatedCount, actualComponentsUpdatedCount,
                 String.format("Expect %s updated components, but %s were updated instead.", expectedComponentsUpdatedCount, actualComponentsUpdatedCount));
+    }
+
+    @Test
+    public void test() throws ParseException {
+        Composer composer = new Composer("test");
+        Session session = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+
+        Concept conceptId = Concept.make(PublicIds.newRandom());
+        session.compose((ConceptAssembler concept) -> concept
+                .concept(conceptId)
+                .attach((StatedAxiom statedAxiom) -> statedAxiom
+                        .isA(EL_PLUS_PLUS_STATED_TERMINOLOGICAL_AXIOMS, EL_PLUS_PLUS_INFERRED_TERMINOLOGICAL_AXIOMS)));
+
+        composer.commitAllSessions();
+
+        EntityService.get().forEachSemanticForComponentOfPattern(conceptId.nid(), EL_PLUS_PLUS_STATED_AXIOMS_PATTERN.nid(),
+                semanticEntity -> {
+                    SemanticEntityVersion semanticEntityVersion = semanticEntity.versions().get(0);
+                    semanticEntityVersion.active();
+                });
+
+
+//        Concept conceptId = EntityProxy.Concept.make(PublicIds.of(UuidUtil.fromSNOMED("2309482309")));
+//        long epochTime2002 = new SimpleDateFormat("yyyyMMdd").parse("20020131").getTime();
+//        Session session2002 = composer.open(DEFAULT_STATUS, epochTime2002, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        session2002.compose((ConceptAssembler concept) -> concept
+//                .concept(conceptId));
+//
+//        long epochTime2017 = new SimpleDateFormat("yyyyMMdd").parse("20170731").getTime();
+//        Session session2017 = composer.open(DEFAULT_STATUS, epochTime2017, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        session2017.compose((ConceptAssembler concept) -> concept
+//                .concept(conceptId));
+//
+//        composer.cancelAllSessions();
+////        composer.commitSession(session2002);
+////        composer.commitAllSessions();
+//
+//        assertEquals(2, EntityService.get().getEntityFast(conceptId).versions().size(), "Versions should be 2");
+//
+//        Session session = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
+//        session.compose((ConceptAssembler concept) -> concept
+//                .concept(ENGLISH_DIALECT_ASSEMBLAGE))
+//                        .attach((FullyQualifiedName fqn) -> fqn
+//                                .language(ENGLISH_LANGUAGE)
+//                                .text("English Dialect")
+//                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
+//                                .attach((USDialect usDialect) -> usDialect
+//                                        .acceptability(PREFERRED)))
+//                        .attach((Synonym synonym) -> synonym
+//                                .language(ENGLISH_LANGUAGE)
+//                                .text("English Dialect")
+//                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
+//                                .attach((USDialect usDialect) -> usDialect
+//                                        .acceptability(PREFERRED))))
+//
+//
+//
+//        starterData.concept(TinkarTerm.ENGLISH_DIALECT_ASSEMBLAGE)
+//                .fullyQualifiedName("English Dialect", TinkarTerm.PREFERRED)
+//                .synonym("English dialect", TinkarTerm.PREFERRED)
+//                .definition("Specifies the dialect of the English language", TinkarTerm.PREFERRED)
+//                .identifier(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER, TinkarTerm.ENGLISH_DIALECT_ASSEMBLAGE.asUuidArray()[0].toString())
+//                .statedNavigation(List.of(TinkarTerm.GB_ENGLISH_DIALECT, TinkarTerm.US_ENGLISH_DIALECT), List.of(TinkarTerm.DIALECT_ASSEMBLAGE))
+//                .statedDefinition(List.of(TinkarTerm.DIALECT_ASSEMBLAGE))
+//                .tinkarBaseModelMembership()
+//                .build();
+
     }
 
 //    @Test
