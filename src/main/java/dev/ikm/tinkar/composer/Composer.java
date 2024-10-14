@@ -54,10 +54,12 @@ public class Composer {
      * @see State
      */
     public Session open(State status, long time, Concept author, Concept module, Concept path) {
-        this.transaction = new Transaction(name);
-        this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
         UUID sessionKey = keyValue(status, time, author, module, path);
-        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity, sessionKey));
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> {
+            this.transaction = new Transaction(name);
+            this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
+            return new Session(transaction, stampEntity, sessionKey);
+        });
         return composerSessionCache.get(sessionKey);
     }
 
@@ -80,10 +82,12 @@ public class Composer {
      * @see State
      */
     public Session open(State status, Concept author, Concept module, Concept path) {
-        this.transaction = new Transaction(name);
-        this.stampEntity = transaction.getStamp(status, author, module, path);
-        UUID sessionKey = keyValue(status, transaction.commitTime(), author, module, path);
-        composerSessionCache.computeIfAbsent(sessionKey, (key) -> new Session(transaction, stampEntity, sessionKey));
+        UUID sessionKey = keyValue(status, Long.MAX_VALUE, author, module, path);
+        composerSessionCache.computeIfAbsent(sessionKey, (key) -> {
+            this.transaction = new Transaction(name);
+            this.stampEntity = transaction.getStamp(status, author, module, path);
+            return new Session(transaction, stampEntity, sessionKey);
+        });
         return composerSessionCache.get(sessionKey);
     }
 
