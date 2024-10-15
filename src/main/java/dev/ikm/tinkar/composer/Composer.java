@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Composer {
     private final Map<UUID, Session> composerSessionCache = new HashMap<>();
     private StampEntity stampEntity;
-    private Transaction transaction;
     private final String name;
 
     public Composer(String name) {
@@ -56,7 +55,7 @@ public class Composer {
     public Session open(State status, long time, Concept author, Concept module, Concept path) {
         UUID sessionKey = keyValue(status, time, author, module, path);
         composerSessionCache.computeIfAbsent(sessionKey, (key) -> {
-            this.transaction = new Transaction(name);
+            Transaction transaction = new Transaction(name);
             this.stampEntity = transaction.getStamp(status, time, author.publicId(), module.publicId(), path.publicId());
             return new Session(transaction, stampEntity, sessionKey);
         });
@@ -84,7 +83,7 @@ public class Composer {
     public Session open(State status, Concept author, Concept module, Concept path) {
         UUID sessionKey = keyValue(status, Long.MAX_VALUE, author, module, path);
         composerSessionCache.computeIfAbsent(sessionKey, (key) -> {
-            this.transaction = new Transaction(name);
+            Transaction transaction = new Transaction(name);
             this.stampEntity = transaction.getStamp(status, author, module, path);
             return new Session(transaction, stampEntity, sessionKey);
         });
