@@ -56,14 +56,14 @@
     </organization>
 
     <properties>
-        <tinkar-core.version>1.72.0</tinkar-core.version>
+        <tinkar-core.version>1.75.0</tinkar-core.version>
         <slf4j.version>2.0.13</slf4j.version>
         <log4j.version>3.0.0-alpha1</log4j.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
-        <eclipse-collections.version>11.1.0-r12</eclipse-collections.version>
+        <eclipse-collections.version>11.1.0-r13</eclipse-collections.version>
         <eclipse-collections-api.version>11.1.0-r11</eclipse-collections-api.version>
     </properties>
 
