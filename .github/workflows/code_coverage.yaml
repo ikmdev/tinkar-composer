@@ -1,0 +1,27 @@
+name: Code Coverage (Sonar Cloud)
+
+run-name: SonarCloud Scan -- ${{github.event.workflow_run.head_branch}}
+
+on:
+   workflow_run:
+    workflows:
+      - Build Workflow
+    types:
+      - completed
+      
+jobs:
+  code-coverage:
+    name: Code Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+          
+      - name: IKMDEV Code Coverage
+        uses: ikmdev/maven-code-coverage-action@main
+        with:
+          repo_name: ${{github.event.workflow_run.head_repository.full_name}}
+          branch_name: ${{github.event.workflow_run.head_branch}}
+          sonarcloud_token: ${{ secrets.SONAR_TOKEN }}
