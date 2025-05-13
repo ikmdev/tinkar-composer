@@ -15,7 +15,12 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.composer.assembler.*;
+import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
+import dev.ikm.tinkar.composer.assembler.ConceptAssemblerConsumer;
+import dev.ikm.tinkar.composer.assembler.PatternAssembler;
+import dev.ikm.tinkar.composer.assembler.PatternAssemblerConsumer;
+import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
+import dev.ikm.tinkar.composer.assembler.SemanticAssemblerConsumer;
 import dev.ikm.tinkar.entity.StampEntity;
 import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
