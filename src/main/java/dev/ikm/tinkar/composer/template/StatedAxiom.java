@@ -15,7 +15,7 @@
  */
 package dev.ikm.tinkar.composer.template;
 
-import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.composer.SingleSemanticTemplate;
 import dev.ikm.tinkar.entity.graph.DiTreeEntity;
 import dev.ikm.tinkar.entity.graph.EntityVertex;
 import dev.ikm.tinkar.terms.ConceptFacade;
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static dev.ikm.tinkar.entity.graph.EntityVertex.abstractObject;
 
-public class StatedAxiom extends SemanticTemplate {
+public class StatedAxiom extends SingleSemanticTemplate {
     private static final int IDX_DEFINITION_ROOT = 0;
     private final AtomicInteger vertexIdx = new AtomicInteger(1); //Index zero reserved for DefinitionRoot
     private final MutableList<EntityVertex> originVertexList = Lists.mutable.empty();
