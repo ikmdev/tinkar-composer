@@ -17,7 +17,7 @@ package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.common.id.IntIdSet;
 import dev.ikm.tinkar.common.id.IntIds;
-import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.composer.SingleSemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
@@ -29,7 +29,7 @@ import org.eclipse.collections.api.list.MutableList;
 
 import java.util.Collections;
 
-public class StatedNavigation extends SemanticTemplate {
+public class StatedNavigation extends SingleSemanticTemplate {
     private final MutableList<EntityProxy> origins = Lists.mutable.empty();
     private final MutableList<EntityProxy> destinations = Lists.mutable.empty();
 

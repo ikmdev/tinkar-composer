@@ -38,9 +38,13 @@ public abstract class SemanticTemplate extends Attachable {
 
     protected Semantic semantic() {
         if (semantic == null) {
-            semantic = Semantic.make(PublicIds.newRandom());
+            semantic = defaultSemantic();
         }
         return semantic;
+    }
+
+    protected Semantic defaultSemantic() {
+        return Semantic.make(PublicIds.newRandom());
     }
 
     /**
