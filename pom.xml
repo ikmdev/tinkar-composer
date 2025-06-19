@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.ikm.build</groupId>
         <artifactId>java-parent</artifactId>
-        <version>1.59.0</version>
+        <version>1.61.0</version>
         <relativePath />
     </parent>
 
@@ -56,14 +56,12 @@
     </organization>
 
     <properties>
+        <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
         <tinkar-core.version>1.109.0</tinkar-core.version>
-        <slf4j.version>2.0.17</slf4j.version>
-        <log4j.version>3.0.0-alpha1</log4j.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
-        <eclipse-collections.version>12.0.0.M3-r2</eclipse-collections.version>
         <eclipse-collections-api.version>12.0.0.M3-r2</eclipse-collections-api.version>
     </properties>
 
@@ -78,46 +76,34 @@
 
             <!-- Data Providers       -->
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>${tinkar-core.groupId}</groupId>
                 <artifactId>data-spinedarray-provider</artifactId>
                 <version>${tinkar-core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>${tinkar-core.groupId}</groupId>
                 <artifactId>data-ephemeral-provider</artifactId>
                 <version>${tinkar-core.version}</version>
             </dependency>
 
             <!-- Core Libraries       -->
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>${tinkar-core.groupId}</groupId>
                 <artifactId>entity-provider</artifactId>
                 <version>${tinkar-core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>${tinkar-core.groupId}</groupId>
                 <artifactId>executor-provider</artifactId>
                 <version>${tinkar-core.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>${tinkar-core.groupId}</groupId>
                 <artifactId>search-provider</artifactId>
                 <version>${tinkar-core.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j2-impl</artifactId>
-                <version>${log4j.version}</version>
             </dependency>
        </dependencies>
     </dependencyManagement>
@@ -131,31 +117,31 @@
 
         <!-- Data Providers       -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>${tinkar-core.groupId}</groupId>
             <artifactId>data-spinedarray-provider</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>${tinkar-core.groupId}</groupId>
             <artifactId>data-ephemeral-provider</artifactId>
             <scope>test</scope>
         </dependency>
 
         <!-- Core Libraries       -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>${tinkar-core.groupId}</groupId>
             <artifactId>entity-provider</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>${tinkar-core.groupId}</groupId>
             <artifactId>executor-provider</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>${tinkar-core.groupId}</groupId>
             <artifactId>search-provider</artifactId>
             <scope>test</scope>
         </dependency>
