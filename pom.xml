@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>dev.ikm.build</groupId>
         <artifactId>java-parent</artifactId>
@@ -19,9 +19,12 @@
         Tinkar-Composer is a java software project that provides an API for creating,
         updating, and retiring data Components that adhere to the Tinkar data model.
     </description>
-
+    <url>http://www.ikm.dev</url>
     <inceptionYear>2024</inceptionYear>
-
+    <organization>
+        <name>Integrated Knowledge Management</name>
+        <url>http://www.ikm.dev</url>
+    </organization>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -31,10 +34,6 @@
         </license>
     </licenses>
 
-    <scm>
-        <url>http://www.github.com/ikmdev/tinkar-composer</url>
-    </scm>
-
     <developers>
         <developer>
             <id>ikmdev</id>
@@ -43,19 +42,21 @@
         </developer>
     </developers>
 
+    <scm>
+        <url>http://www.github.com/ikmdev/tinkar-composer</url>
+    </scm>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/ikmdev/tinkar-composer/issues</url>
     </issueManagement>
 
-    <url>http://www.ikm.dev</url>
-
-    <organization>
-        <name>Integrated Knowledge Management</name>
-        <url>http://www.ikm.dev</url>
-    </organization>
-
     <properties>
+        <!-- Properties Needed To Build On Java 24 (Start) -->
+        <java.version>24</java.version>
+        <maven-dependency-analyzer.version>1.16.0</maven-dependency-analyzer.version>
+        <maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
+        <!-- Properties Needed To Build On Java 24 (End) -->
+
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
         <tinkar-core.version>1.109.0</tinkar-core.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
@@ -107,7 +108,6 @@
             </dependency>
        </dependencies>
     </dependencyManagement>
-
     <!-- Cross project dependencies -->
     <dependencies>
         <dependency>
@@ -165,6 +165,44 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Maven Dependency Plugin Fix (Start) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>analyze</id>
+                            <goals>
+                                <goal>analyze-only</goal>
+                            </goals>
+                            <configuration>
+                                <ignoredNonTestScopedDependencies>
+                                    <ignoredNonTestScopedDependency>org.slf4j:*</ignoredNonTestScopedDependency>
+                                </ignoredNonTestScopedDependencies>
+                                <ignoredUnusedDeclaredDependencies>
+                                    <ignoredUnusedDeclaredDependency>org.slf4j:*</ignoredUnusedDeclaredDependency>
+                                </ignoredUnusedDeclaredDependencies>
+                                <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
+                                <ignoredUsedUndeclaredDependencies>
+                                    <ignoredUsedUndeclaredDependency>dev.ikm.jpms:eclipse-collections-api</ignoredUsedUndeclaredDependency>
+                                </ignoredUsedUndeclaredDependencies>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <!-- Necessary for JDK 24. Should be removed for updates of dependency plugin -->
+                        <dependency>
+                            <groupId>org.apache.maven.shared</groupId>
+                            <artifactId>maven-dependency-analyzer</artifactId>
+                            <version>${maven-dependency-analyzer.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <!-- Maven Dependency Plugin Fix (End) -->
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -217,4 +255,28 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- codeQuality profile to override pmd configuration from build-parent
+         Need to ovverride aggregate parameter as it is deprecated. -->
+        <profile>
+            <!-- To disable this, use something like "mvn install -P!codeQuality" -->
+            <id>codeQuality</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <configuration>
+                            <aggregate combine.self="override"></aggregate> <!-- Overridden due to deprecation -->
+                            <targetJdk>${java.version}</targetJdk>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
