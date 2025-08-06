@@ -144,4 +144,8 @@ public class Session {
         return this.id;
     }
 
+    public EntityProxy getStamp() {
+        return EntityProxy.make(stampEntity.nid());
+    }
+
 }
