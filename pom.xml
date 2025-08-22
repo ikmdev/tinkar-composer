@@ -52,19 +52,19 @@
 
     <properties>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.109.0</tinkar-core.version>
+        <tinkar-core.version>1.122.0</tinkar-core.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
-        <eclipse-collections-api.version>12.0.0.M3-r2</eclipse-collections-api.version>
+        <eclipse-collections-api.version>13.0.0</eclipse-collections-api.version>
     </properties>
 
     <!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>${tinkar-jpms-deps.groupId}</groupId>
+                <groupId>org.eclipse.collections</groupId>
                 <artifactId>eclipse-collections-api</artifactId>
                 <version>${eclipse-collections-api.version}</version>
             </dependency>
@@ -105,7 +105,7 @@
     <!-- Cross project dependencies -->
     <dependencies>
         <dependency>
-            <groupId>${tinkar-jpms-deps.groupId}</groupId>
+            <groupId>org.eclipse.collections</groupId>
             <artifactId>eclipse-collections-api</artifactId>
         </dependency>
 
