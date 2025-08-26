@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>dev.ikm.build</groupId>
         <artifactId>java-parent</artifactId>
-        <version>1.63.0</version>
+        <version>1.64.0</version>
         <relativePath />
     </parent>
 
@@ -19,9 +19,12 @@
         Tinkar-Composer is a java software project that provides an API for creating,
         updating, and retiring data Components that adhere to the Tinkar data model.
     </description>
-
+    <url>http://www.ikm.dev</url>
     <inceptionYear>2024</inceptionYear>
-
+    <organization>
+        <name>Integrated Knowledge Management</name>
+        <url>http://www.ikm.dev</url>
+    </organization>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -31,10 +34,6 @@
         </license>
     </licenses>
 
-    <scm>
-        <url>http://www.github.com/ikmdev/tinkar-composer</url>
-    </scm>
-
     <developers>
         <developer>
             <id>ikmdev</id>
@@ -43,33 +42,29 @@
         </developer>
     </developers>
 
+    <scm>
+        <url>http://www.github.com/ikmdev/tinkar-composer</url>
+    </scm>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/ikmdev/tinkar-composer/issues</url>
     </issueManagement>
 
-    <url>http://www.ikm.dev</url>
-
-    <organization>
-        <name>Integrated Knowledge Management</name>
-        <url>http://www.ikm.dev</url>
-    </organization>
-
     <properties>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.109.0</tinkar-core.version>
+        <tinkar-core.version>1.122.0</tinkar-core.version>
         <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
-        <eclipse-collections-api.version>12.0.0.M3-r2</eclipse-collections-api.version>
+        <eclipse-collections-api.version>13.0.0</eclipse-collections-api.version>
     </properties>
 
     <!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>${tinkar-jpms-deps.groupId}</groupId>
+                <groupId>org.eclipse.collections</groupId>
                 <artifactId>eclipse-collections-api</artifactId>
                 <version>${eclipse-collections-api.version}</version>
             </dependency>
@@ -107,11 +102,10 @@
             </dependency>
        </dependencies>
     </dependencyManagement>
-
     <!-- Cross project dependencies -->
     <dependencies>
         <dependency>
-            <groupId>${tinkar-jpms-deps.groupId}</groupId>
+            <groupId>org.eclipse.collections</groupId>
             <artifactId>eclipse-collections-api</artifactId>
         </dependency>
 
