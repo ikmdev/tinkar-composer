@@ -66,7 +66,7 @@
             <dependency>
                 <groupId>org.eclipse.collections</groupId>
                 <artifactId>eclipse-collections-api</artifactId>
-                <version>${eclipse-collections-api.version}</version>
+                <version>13.0.0</version>
             </dependency>
 
             <!-- Data Providers       -->
