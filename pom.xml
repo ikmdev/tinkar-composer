@@ -52,8 +52,8 @@
 
     <properties>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.122.0</tinkar-core.version>
-        <tinkar-starter-data.version>1.0.0</tinkar-starter-data.version>
+        <tinkar-core.version>1.124.0</tinkar-core.version>
+        <tinkar-starter-data.version>20250915</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
@@ -175,10 +175,10 @@
                 <configuration>
                     <artifactItems>
                         <artifactItem>
-                            <groupId>dev.ikm.tinkar.data</groupId>
+                            <groupId>dev.ikm.data.tinkar</groupId>
                             <artifactId>tinkar-starter-data</artifactId>
                             <version>${tinkar-starter-data.version}</version>
-                            <classifier>pb</classifier>
+                            <classifier>reasoned-pb</classifier>
                             <type>zip</type>
                             <overWrite>false</overWrite>
                             <outputDirectory>${project.build.directory}/data</outputDirectory>

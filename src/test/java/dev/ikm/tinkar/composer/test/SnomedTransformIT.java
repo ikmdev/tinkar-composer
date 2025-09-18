@@ -21,7 +21,7 @@ import org.junit.jupiter.api.TestInstance;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SnomedTransformIT {
 //    public static final Function<String,File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
-//    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-1.0.0-pb.zip");
+//    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-20250915-reasoned-pb.zip");
 //    public static final File DATASTORE = createFilePathInTarget.apply("generated-data/" + SnomedTransformIT.class.getSimpleName());
 //    public final Composer COMPOSER_SESSION_MANAGER = new Composer();
 //
