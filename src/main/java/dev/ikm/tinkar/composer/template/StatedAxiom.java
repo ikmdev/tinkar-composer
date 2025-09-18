@@ -51,7 +51,7 @@ public class StatedAxiom extends SingleSemanticTemplate {
     public StatedAxiom isA(Concept... originConcepts) {
         for (Concept originConcept : originConcepts) {
             MutableIntObjectMap<Object> referenceProperty = IntObjectMaps.mutable.empty();
-            referenceProperty.put(TinkarTerm.CONCEPT_REFERENCE.nid(), abstractObject(originConcept));
+            referenceProperty.put(TinkarTerm.CONCEPT_REFERENCE.nid(), originConcept.toProxy());
 
             EntityVertex originVertex = EntityVertex.make(originConcept);
             originVertex.setProperties(referenceProperty);
