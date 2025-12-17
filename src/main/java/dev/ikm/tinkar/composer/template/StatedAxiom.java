@@ -36,8 +36,6 @@ import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static dev.ikm.tinkar.entity.graph.EntityVertex.abstractObject;
-
 public class StatedAxiom extends SingleSemanticTemplate {
     private static final int IDX_DEFINITION_ROOT = 0;
     private final AtomicInteger vertexIdx = new AtomicInteger(1); //Index zero reserved for DefinitionRoot

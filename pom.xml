@@ -5,7 +5,7 @@
     <parent>
         <groupId>dev.ikm.build</groupId>
         <artifactId>java-parent</artifactId>
-        <version>1.65.0</version>
+        <version>1.73.0</version>
         <relativePath />
     </parent>
 
@@ -52,13 +52,22 @@
 
     <properties>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.124.0</tinkar-core.version>
+        <tinkar-core.version>1.126.0</tinkar-core.version>
         <tinkar-starter-data.version>20250915</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
         <eclipse-collections-api.version>13.0.0</eclipse-collections-api.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>tinkar-nexus</id>
+            <url>https://nexus.tinkar.org/repository/ike-public/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
 
     <!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
     <dependencyManagement>
@@ -155,6 +164,11 @@
           <groupId>org.junit.jupiter</groupId>
           <artifactId>junit-jupiter</artifactId>
           <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-console</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
