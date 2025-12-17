@@ -22,8 +22,10 @@ import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.factory.primitive.LongLists;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.list.primitive.ImmutableLongList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public class Write {
         UUID primordialUUID = concept.asUuidArray()[0];
 
         //Process additional UUID longs from PublicId
-        long[] additionalLongs = createAdditionalLongs(concept);
+        ImmutableLongList additionalLongs = LongLists.immutable.of(createAdditionalLongs(concept));
 
         //Create empty version list
         RecordListBuilder<ConceptVersionRecord> versions = RecordListBuilder.make();
@@ -87,7 +89,7 @@ public class Write {
         UUID primordialUUID = pattern.asUuidArray()[0];
 
         //Process additional UUID longs from PublicId
-        long[] additionalLongs = createAdditionalLongs(pattern);
+        ImmutableLongList additionalLongs = LongLists.immutable.of(createAdditionalLongs(pattern));
 
         //Create empty version list
         RecordListBuilder<PatternVersionRecord> versions = RecordListBuilder.make();
@@ -141,7 +143,7 @@ public class Write {
         UUID primordialUUID = semantic.asUuidArray()[0];
 
         //Process additional UUID longs from PublicId
-        long[] additionalLongs = createAdditionalLongs(semantic);
+        ImmutableLongList additionalLongs = LongLists.immutable.of(createAdditionalLongs(semantic));
 
         //Create empty version list
         RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
