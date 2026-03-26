@@ -29,8 +29,7 @@ public abstract class SemanticTemplate extends Attachable {
      * Sets the Semantic Proxy containing the PublicId for the Semantic.
      * <br />
      * If not supplied, a random PublicId will be assigned.
-     * @param semantic
-     * @return the SemanticTemplate for further method chaining
+     * @param semantic the Semantic Proxy containing the PublicId
      */
     protected void setSemantic(Semantic semantic) {
         this.semantic = semantic;

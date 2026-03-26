@@ -37,7 +37,7 @@ import dev.ikm.tinkar.composer.template.Synonym;
 import dev.ikm.tinkar.composer.template.TinkarBaseModel;
 import dev.ikm.tinkar.composer.template.USDialect;
 import dev.ikm.tinkar.composer.test.template.CustomSemantic;
-import dev.ikm.tinkar.entity.EntityCountSummary;
+import dev.ikm.tinkar.common.service.EntityCountSummary;
 import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;

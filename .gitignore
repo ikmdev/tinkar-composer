@@ -226,3 +226,8 @@ Temporary Items
 # General
 ###################
 **.zip
+
+###################
+# Claude (unpacked build standards)
+###################
+.claude
