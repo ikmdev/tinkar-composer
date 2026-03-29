@@ -309,7 +309,7 @@ public class ComposeVersionsToMergeIT {
         Concept conceptId = Concept.make(PublicIds.newRandom());
         session.compose((ConceptAssembler concept) -> concept
                 .concept(conceptId)
-                .attach((StatedAxiom statedAxiom) -> statedAxiom
+                .attach(StatedAxiom.class, statedAxiom -> statedAxiom
                         .isA(EL_PLUS_PLUS_STATED_TERMINOLOGICAL_AXIOMS, EL_PLUS_PLUS_INFERRED_TERMINOLOGICAL_AXIOMS)));
 
         composer.commitAllSessions();
@@ -341,17 +341,17 @@ public class ComposeVersionsToMergeIT {
 //        Session session = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 //        session.compose((ConceptAssembler concept) -> concept
 //                .concept(ENGLISH_DIALECT_ASSEMBLAGE))
-//                        .attach((FullyQualifiedName fqn) -> fqn
+//                        .attach(FullyQualifiedName.class, fqn -> fqn
 //                                .language(ENGLISH_LANGUAGE)
 //                                .text("English Dialect")
 //                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-//                                .attach((USDialect usDialect) -> usDialect
+//                                .attach(USDialect.class, usDialect -> usDialect
 //                                        .acceptability(PREFERRED)))
-//                        .attach((Synonym synonym) -> synonym
+//                        .attach(Synonym.class, synonym -> synonym
 //                                .language(ENGLISH_LANGUAGE)
 //                                .text("English Dialect")
 //                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-//                                .attach((USDialect usDialect) -> usDialect
+//                                .attach(USDialect.class, usDialect -> usDialect
 //                                        .acceptability(PREFERRED))))
 //
 //

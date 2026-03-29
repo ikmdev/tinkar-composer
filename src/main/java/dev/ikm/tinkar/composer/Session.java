@@ -32,14 +32,14 @@ import java.util.UUID;
 public class Session {
 
     private static final Logger LOG = LoggerFactory.getLogger(Session.class);
-    private final StampEntity stampEntity;
+    private final StampEntity<?> stampEntity;
     private final Transaction transaction;
     private final UUID id;
 
     /**
      * Provides a Session for creating Components using the Transaction and STAMP provided.
      */
-    protected Session(Transaction transaction, StampEntity stampEntity, UUID id){
+    protected Session(Transaction transaction, StampEntity<?> stampEntity, UUID id){
         this.transaction = transaction;
         this.stampEntity = stampEntity;
         this.id = id;

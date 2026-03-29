@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Composer {
     private final Map<UUID, Session> composerSessionCache = new HashMap<>();
-    private StampEntity stampEntity;
+    private StampEntity<?> stampEntity;
     private final String name;
 
     public Composer(String name) {

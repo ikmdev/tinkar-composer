@@ -105,7 +105,7 @@ public class SandboxIT {
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-                .attach((StatedNavigation statedNav) -> statedNav
+                .attach(StatedNavigation.class, statedNav -> statedNav
                         .parents(ROOT_VERTEX)
                         .children(MEANING)));
 
@@ -291,7 +291,7 @@ public class SandboxIT {
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-                .attach((FullyQualifiedName fqn) -> fqn
+                .attach(FullyQualifiedName.class, fqn -> fqn
                         .language(ENGLISH_LANGUAGE)
                         .text("FQN for Concept")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
@@ -312,7 +312,7 @@ public class SandboxIT {
                 .meaning(MEANING)
                 .purpose(PURPOSE)
                 .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING)
-                .attach((FullyQualifiedName fqn) -> fqn
+                .attach(FullyQualifiedName.class, fqn -> fqn
                         .language(ENGLISH_LANGUAGE)
                         .text("FQN for Pattern")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
@@ -338,7 +338,7 @@ public class SandboxIT {
                         .with("Synonym with Dialect Semantic")
                         .with(DESCRIPTION_NOT_CASE_SENSITIVE)
                         .with(REGULAR_NAME_DESCRIPTION_TYPE)))
-                .attach((USDialect dialect) -> dialect
+                .attach(USDialect.class, dialect -> dialect
                         .semantic(Semantic.make("Dialect for Synonym", PublicIds.newRandom()))
                         .acceptability(PREFERRED));
 
@@ -363,10 +363,10 @@ public class SandboxIT {
                         .with("Synonym with Dialect Semantic")
                         .with(DESCRIPTION_NOT_CASE_SENSITIVE)
                         .with(REGULAR_NAME_DESCRIPTION_TYPE))
-                .attach((USDialect dialect) -> dialect
+                .attach(USDialect.class, dialect -> dialect
                         .semantic(Semantic.make("Dialect for Synonym", PublicIds.newRandom()))
                         .acceptability(PREFERRED)
-                        .attach((Comment comment) -> comment
+                        .attach(Comment.class, comment -> comment
                                 .semantic(Semantic.make("Comment for Synonym", PublicIds.newRandom()))
                                 .text("Comment for Synonym"))));
 
@@ -394,7 +394,7 @@ public class SandboxIT {
                 .attach(new CustomSemantic()
                         .semantic(Semantic.make("Custom1 for Synonym", PublicIds.newRandom()))
                         .text("Custom1"))
-                        .attach((Comment comment) -> comment
+                        .attach(Comment.class, comment -> comment
                                 .semantic(Semantic.make("Comment for Custom1", PublicIds.newRandom()))
                                 .text("Comment for Custom1")));
 
@@ -775,40 +775,40 @@ public class SandboxIT {
 
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .concept(Concept.make("Concept", conceptId)))
-                .attach((FullyQualifiedName fqn) -> fqn
+                .attach(FullyQualifiedName.class, fqn -> fqn
                         .semantic(Semantic.make("F1", PublicIds.newRandom()))
                         .language(ENGLISH_LANGUAGE)
                         .text("FQN1")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-                        .attach((USDialect dialect) -> dialect
+                        .attach(USDialect.class, dialect -> dialect
                                 .semantic(Semantic.make("D1F1", PublicIds.newRandom()))
                                 .acceptability(PREFERRED)
-                                .attach((Comment comment) -> comment
+                                .attach(Comment.class, comment -> comment
                                         .semantic(Semantic.make("C1D1", PublicIds.newRandom()))
                                         .text("Comment on USEnglishDialect")))
-                        .attach((Comment comment) -> comment
+                        .attach(Comment.class, comment -> comment
                                 .semantic(Semantic.make("C1F1", PublicIds.newRandom()))
                                 .text("Comment on FQN1")))
-                .attach((Comment comment) -> comment
+                .attach(Comment.class, comment -> comment
                         .semantic(Semantic.make("C1", PublicIds.newRandom()))
                         .text("Comment1 on Concept"))
-                .attach((FullyQualifiedName fqn) -> fqn
+                .attach(FullyQualifiedName.class, fqn -> fqn
                         .semantic(Semantic.make("F2", PublicIds.newRandom()))
                         .language(ENGLISH_LANGUAGE)
                         .text("FQN2")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE))
-                .attach((Comment comment) -> comment
+                .attach(Comment.class, comment -> comment
                         .semantic(Semantic.make("C2", PublicIds.newRandom()))
                         .text("Comment2 on Concept"))
-                .attach((Synonym synonym) -> synonym
+                .attach(Synonym.class, synonym -> synonym
                         .semantic(Semantic.make("S1", PublicIds.newRandom()))
                         .language(ENGLISH_LANGUAGE)
                         .text("Synonym")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-                        .attach((Comment comment) -> comment
+                        .attach(Comment.class, comment -> comment
                                 .semantic(Semantic.make("C1S1", PublicIds.newRandom()))
                                 .text("Comment2 on Synonym"))
-                        .attach((Comment comment) -> comment
+                        .attach(Comment.class, comment -> comment
                                 .semantic(Semantic.make("C2S1", PublicIds.newRandom()))
                                 .text("Comment2 on Synonym")));
 
@@ -829,7 +829,7 @@ public class SandboxIT {
         Concept conceptId = Concept.make(PublicIds.newRandom());
         session.compose((ConceptAssembler concept) -> concept
                 .concept(conceptId)
-                .attach((StatedAxiom statedAxiom) -> statedAxiom
+                .attach(StatedAxiom.class, statedAxiom -> statedAxiom
                         .isA(EL_PLUS_PLUS_STATED_TERMINOLOGICAL_AXIOMS, EL_PLUS_PLUS_INFERRED_TERMINOLOGICAL_AXIOMS)));
 
         composer.commitAllSessions();
@@ -861,17 +861,17 @@ public class SandboxIT {
 //        Session session = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 //        session.compose((ConceptAssembler concept) -> concept
 //                .concept(ENGLISH_DIALECT_ASSEMBLAGE))
-//                        .attach((FullyQualifiedName fqn) -> fqn
+//                        .attach(FullyQualifiedName.class, fqn -> fqn
 //                                .language(ENGLISH_LANGUAGE)
 //                                .text("English Dialect")
 //                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-//                                .attach((USDialect usDialect) -> usDialect
+//                                .attach(USDialect.class, usDialect -> usDialect
 //                                        .acceptability(PREFERRED)))
-//                        .attach((Synonym synonym) -> synonym
+//                        .attach(Synonym.class, synonym -> synonym
 //                                .language(ENGLISH_LANGUAGE)
 //                                .text("English Dialect")
 //                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-//                                .attach((USDialect usDialect) -> usDialect
+//                                .attach(USDialect.class, usDialect -> usDialect
 //                                        .acceptability(PREFERRED))))
 //
 //

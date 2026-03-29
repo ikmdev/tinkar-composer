@@ -88,27 +88,27 @@ public class ConceptComposerIT {
         Concept myConcept = Concept.make(PublicIds.newRandom());
 
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.concept(myConcept))
-                .attach((Comment c1) -> c1.text("comment 1")
-                        .attach((Comment c2) -> c2.text("comment 2")
-                                .attach((Comment c3) -> c3.text("comment 3")
-                                        .attach((Comment c4) -> c4.text("Comment 4")
-                                                .attach((Comment c5) -> c5.text("Comment 5"))
+                .attach(Comment.class, c1 -> c1.text("comment 1")
+                        .attach(Comment.class, c2 -> c2.text("comment 2")
+                                .attach(Comment.class, c3 -> c3.text("comment 3")
+                                        .attach(Comment.class, c4 -> c4.text("Comment 4")
+                                                .attach(Comment.class, c5 -> c5.text("Comment 5"))
                                                 .attach(new Comment().text("Comment 6")))
-                                        .attach((Comment c7) -> c7.text("comment 7")))));
+                                        .attach(Comment.class, c7 -> c7.text("comment 7")))));
 
 
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler.publicId(PublicIds.newRandom()))
-                .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE)
+                .attach(FullyQualifiedName.class, fqn -> fqn.language(ENGLISH_LANGUAGE)
                         .text("Color")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-                        .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED))
-                        .attach((GBDialect gbDialect) -> gbDialect
+                        .attach(USDialect.class, usDialect -> usDialect.acceptability(PREFERRED))
+                        .attach(GBDialect.class, gbDialect -> gbDialect
                                 .acceptability(ACCEPTABLE)
-                                .attach((Comment comment) -> comment.text("Comment 1")
-                                        .attach((Comment comment2) -> comment2.text("Comment 2"))
+                                .attach(Comment.class, comment -> comment.text("Comment 1")
+                                        .attach(Comment.class, comment2 -> comment2.text("Comment 2"))
                                                 .attach(new CustomSemantic().text("Custom Semantic"))))
                         .attach(new Comment().text("Comment 3")))
-                .attach((Comment comment) -> comment.text("They spell things weird"))
+                .attach(Comment.class, comment -> comment.text("They spell things weird"))
                 .attach(new CustomSemantic().text("Custom Comments"));
 
         Semantic semantic = Semantic.make(PublicIds.newRandom());
@@ -116,22 +116,22 @@ public class ConceptComposerIT {
                     .pattern(DESCRIPTION_PATTERN)
                     .reference(myConcept)
                     .fieldValues(fieldValue -> System.out.println(fieldValue))
-                    .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED)
-                        .attach((Comment comment) -> comment.text("Comment 1"))));
+                    .attach(USDialect.class, usDialect -> usDialect.acceptability(PREFERRED)
+                        .attach(Comment.class, comment -> comment.text("Comment 1"))));
 
         session.compose(new FullyQualifiedName()
                 .language(ENGLISH_LANGUAGE)
                 .text("Color")
                 .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE), myConcept)
-                .attach((USDialect usDialect) -> usDialect.acceptability(PREFERRED)
-                        .attach((Comment comment) -> comment.text("Comment 1")));
+                .attach(USDialect.class, usDialect -> usDialect.acceptability(PREFERRED)
+                        .attach(Comment.class, comment -> comment.text("Comment 1")));
 
         Pattern pattern = Pattern.make(PublicIds.newRandom());
         session.compose((PatternAssembler patternAssembler) -> patternAssembler.pattern(pattern)
                 .meaning(MEANING)
                 .purpose(PURPOSE)
                 .fieldDefinition(MEANING, PURPOSE, STRING)
-                .attach((FullyQualifiedName fqn) -> fqn.language(ENGLISH_LANGUAGE)
+                .attach(FullyQualifiedName.class, fqn -> fqn.language(ENGLISH_LANGUAGE)
                         .text("FQN")
                         .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)));
 

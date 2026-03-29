@@ -24,6 +24,7 @@ module dev.ikm.tinkar.composer.test {
     requires dev.ikm.tinkar.composer;
     requires dev.ikm.tinkar.common;
     requires dev.ikm.tinkar.entity;
+    requires dev.ikm.tinkar.terms;
     requires dev.ikm.tinkar.provider.entity;
     requires org.junit.jupiter.api;
     requires org.eclipse.collections.api;
