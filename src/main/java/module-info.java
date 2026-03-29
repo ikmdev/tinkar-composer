@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 module dev.ikm.tinkar.composer {
-    requires dev.ikm.tinkar.common;
-    requires dev.ikm.tinkar.terms;
-    requires dev.ikm.tinkar.entity;
-    requires org.eclipse.collections.api;
+    requires transitive dev.ikm.tinkar.common;
+    requires transitive dev.ikm.tinkar.terms;
+    requires transitive dev.ikm.tinkar.entity;
+    requires transitive org.eclipse.collections.api;
     requires org.eclipse.collections.impl;
     requires org.slf4j;
     exports dev.ikm.tinkar.composer;
