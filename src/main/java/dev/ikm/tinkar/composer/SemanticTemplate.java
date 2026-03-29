@@ -53,7 +53,7 @@ public abstract class SemanticTemplate extends Attachable {
      * @param semantic
      * @return this SemanticTemplate as the same SubType that called it
      */
-    public abstract <T extends SemanticTemplate> T semantic(Semantic semantic);
+    public abstract SemanticTemplate semantic(Semantic semantic);
 
     protected abstract Pattern assignPattern();
 

@@ -140,7 +140,7 @@ public class Write {
         EntityService.get().putEntity(patternEntity);
     }
 
-    public static void semantic(Semantic semantic, PublicId stampId, EntityProxy referencedComponent, Pattern pattern, ImmutableList fieldValues) {
+    public static void semantic(Semantic semantic, PublicId stampId, EntityProxy referencedComponent, Pattern pattern, ImmutableList<Object> fieldValues) {
         //Assign primordial UUID from PublicId
         UUID primordialUUID = semantic.asUuidArray()[0];
 
