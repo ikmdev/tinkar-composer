@@ -25,6 +25,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class FullyQualifiedName extends SemanticTemplate {
 
+    public FullyQualifiedName() {}
+
     private Concept language;
     private String text;
     private Concept caseSignificance;

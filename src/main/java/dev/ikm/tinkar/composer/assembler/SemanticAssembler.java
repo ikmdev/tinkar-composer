@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 
 public class SemanticAssembler extends Attachable {
 
+    public SemanticAssembler() {}
+
     private Semantic semantic;
     private Pattern pattern;
     private Consumer<MutableList<Object>> fieldValuesConsumer;

@@ -25,6 +25,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class USDialect extends SemanticTemplate {
 
+    public USDialect() {}
+
     private Concept acceptability;
 
     /**

@@ -20,6 +20,8 @@ import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 
 public abstract class SingleSemanticTemplate extends SemanticTemplate {
 
+    protected SingleSemanticTemplate() {}
+
     @Override
     protected Semantic defaultSemantic() {
         return Semantic.make(PublicIds.singleSemanticId(assignPattern().publicId(), getReference().publicId()));

@@ -25,6 +25,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class Definition extends SemanticTemplate {
 
+    public Definition() {}
+
     private Concept language;
     private String text;
     private Concept caseSignificance;

@@ -23,6 +23,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public abstract class SemanticTemplate extends Attachable {
 
+    protected SemanticTemplate() {}
+
     private Semantic semantic;
 
     /**

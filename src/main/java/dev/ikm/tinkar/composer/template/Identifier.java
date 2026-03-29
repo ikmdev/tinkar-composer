@@ -25,6 +25,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class Identifier extends SemanticTemplate {
 
+    public Identifier() {}
+
     private Concept source;
     private String identifier;
 

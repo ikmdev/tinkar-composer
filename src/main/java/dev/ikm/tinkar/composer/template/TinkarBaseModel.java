@@ -24,6 +24,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class TinkarBaseModel extends SemanticTemplate {
 
+    public TinkarBaseModel() {}
+
     @Override
     public TinkarBaseModel semantic(Semantic semantic) {
         this.setSemantic(semantic);

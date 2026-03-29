@@ -25,6 +25,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class Synonym extends SemanticTemplate {
 
+    public Synonym() {}
+
     private Concept language;
     private String text;
     private Concept caseSignificance;

@@ -24,6 +24,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class AxiomSyntax extends SemanticTemplate {
 
+    public AxiomSyntax() {}
+
     private String text;
 
     /**

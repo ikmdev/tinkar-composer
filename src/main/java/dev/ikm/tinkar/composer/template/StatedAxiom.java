@@ -37,6 +37,9 @@ import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StatedAxiom extends SingleSemanticTemplate {
+
+    public StatedAxiom() {}
+
     private static final int IDX_DEFINITION_ROOT = 0;
     private final AtomicInteger vertexIdx = new AtomicInteger(1); //Index zero reserved for DefinitionRoot
     private final MutableList<EntityVertex> originVertexList = Lists.mutable.empty();

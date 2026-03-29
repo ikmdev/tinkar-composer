@@ -34,6 +34,8 @@ import java.util.UUID;
 
 public class Write {
 
+    private Write() {}
+
     private static final Logger LOG = LoggerFactory.getLogger(Write.class);
 
     public record PatternDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {}

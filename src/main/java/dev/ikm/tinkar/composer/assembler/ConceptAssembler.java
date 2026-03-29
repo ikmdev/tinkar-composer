@@ -26,6 +26,8 @@ import java.util.UUID;
 
 public class ConceptAssembler extends Attachable {
 
+    public ConceptAssembler() {}
+
     private Concept concept;
 
     /**

@@ -25,6 +25,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class GBDialect extends SemanticTemplate {
 
+    public GBDialect() {}
+
     private Concept acceptability;
 
     /**

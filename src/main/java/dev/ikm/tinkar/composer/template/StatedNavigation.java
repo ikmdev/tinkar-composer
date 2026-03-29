@@ -30,6 +30,9 @@ import org.eclipse.collections.api.list.MutableList;
 import java.util.Collections;
 
 public class StatedNavigation extends SingleSemanticTemplate {
+
+    public StatedNavigation() {}
+
     private final MutableList<EntityProxy> origins = Lists.mutable.empty();
     private final MutableList<EntityProxy> destinations = Lists.mutable.empty();
 

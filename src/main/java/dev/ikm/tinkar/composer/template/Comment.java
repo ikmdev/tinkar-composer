@@ -24,6 +24,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class Comment extends SemanticTemplate {
 
+    public Comment() {}
+
     private String text;
 
     /**

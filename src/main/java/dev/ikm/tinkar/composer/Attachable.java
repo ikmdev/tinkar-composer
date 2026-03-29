@@ -23,6 +23,8 @@ import java.util.function.Consumer;
 
 public abstract class Attachable {
 
+    protected Attachable() {}
+
     private Transaction sessionTransaction;
     private StampEntity<?> sessionStampEntity;
     private EntityProxy reference;

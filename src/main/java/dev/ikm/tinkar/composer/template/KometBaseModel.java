@@ -24,6 +24,8 @@ import org.eclipse.collections.api.list.ImmutableList;
 
 public class KometBaseModel extends SemanticTemplate {
 
+    public KometBaseModel() {}
+
     @Override
     public KometBaseModel semantic(Semantic semantic) {
         this.setSemantic(semantic);
