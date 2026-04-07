@@ -21,6 +21,8 @@ import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import org.eclipse.collections.api.list.ImmutableList;
 
+import static dev.ikm.tinkar.common.service.PrimitiveData.SCOPED_PATTERN_PUBLICID_FOR_NID;
+
 public abstract class SemanticTemplate extends Attachable {
 
     protected SemanticTemplate() {}
@@ -70,12 +72,15 @@ public abstract class SemanticTemplate extends Attachable {
         if (super.getReference()==null) {
             throw new IllegalArgumentException("Semantic requires a reference");
         }
-        super.getSessionTransaction().addComponent(semantic());
-        Write.semantic(semantic(),
-                super.getSessionStampEntity(),
-                getReference(),
-                assignPattern(),
-                assignFieldValues());
+        ScopedValue.where(SCOPED_PATTERN_PUBLICID_FOR_NID, assignPattern().publicId())
+                .run(() -> {
+                    super.getSessionTransaction().addComponent(semantic());
+                    Write.semantic(semantic(),
+                            super.getSessionStampEntity(),
+                            getReference(),
+                            assignPattern(),
+                            assignFieldValues());
+                });
     }
 
 }

@@ -19,10 +19,13 @@ import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
 import dev.ikm.tinkar.composer.Write;
+import dev.ikm.tinkar.terms.EntityBinding;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 
 import java.util.UUID;
+
+import static dev.ikm.tinkar.common.service.PrimitiveData.SCOPED_PATTERN_PUBLICID_FOR_NID;
 
 public class ConceptAssembler extends Attachable {
 
@@ -86,8 +89,11 @@ public class ConceptAssembler extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
-        super.getSessionTransaction().addComponent(concept());
-        Write.concept(concept(), super.getSessionStampEntity());
+        ScopedValue.where(SCOPED_PATTERN_PUBLICID_FOR_NID, EntityBinding.Concept.pattern().publicId())
+                .run(() -> {
+                    super.getSessionTransaction().addComponent(concept());
+                    Write.concept(concept(), super.getSessionStampEntity());
+                });
     }
 
     @Override
