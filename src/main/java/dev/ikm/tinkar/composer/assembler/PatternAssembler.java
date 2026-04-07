@@ -18,12 +18,15 @@ package dev.ikm.tinkar.composer.assembler;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
 import dev.ikm.tinkar.composer.Write;
+import dev.ikm.tinkar.terms.EntityBinding;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static dev.ikm.tinkar.common.service.PrimitiveData.SCOPED_PATTERN_PUBLICID_FOR_NID;
 
 public class PatternAssembler extends Attachable {
 
@@ -121,8 +124,11 @@ public class PatternAssembler extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
-        super.getSessionTransaction().addComponent(pattern());
-        Write.pattern(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
+        ScopedValue.where(SCOPED_PATTERN_PUBLICID_FOR_NID, EntityBinding.Pattern.pattern().publicId())
+                .run(() -> {
+                    super.getSessionTransaction().addComponent(pattern());
+                    Write.pattern(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
+                });
     }
 
     @Override
