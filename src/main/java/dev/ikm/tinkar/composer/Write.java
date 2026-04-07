@@ -26,6 +26,8 @@ import org.eclipse.collections.api.factory.primitive.LongLists;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.list.primitive.ImmutableLongList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +35,8 @@ import java.util.UUID;
 public class Write {
 
     private Write() {}
+
+    private static final Logger LOG = LoggerFactory.getLogger(Write.class);
 
     public record PatternDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {}
 

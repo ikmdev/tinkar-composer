@@ -27,8 +27,6 @@ import org.eclipse.collections.api.list.MutableList;
 
 import java.util.function.Consumer;
 
-import static dev.ikm.tinkar.common.service.PrimitiveData.SCOPED_PATTERN_PUBLICID_FOR_NID;
-
 public class SemanticAssembler extends Attachable {
 
     public SemanticAssembler() {}
@@ -104,11 +102,8 @@ public class SemanticAssembler extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
-        ScopedValue.where(SCOPED_PATTERN_PUBLICID_FOR_NID, pattern().publicId())
-                .run(() -> {
-                    super.getSessionTransaction().addComponent(semantic());
-                    Write.semantic(semantic(), super.getSessionStampEntity(), getReference(), pattern(), fieldValues());
-                });
+        super.getSessionTransaction().addComponent(semantic());
+        Write.semantic(semantic(), super.getSessionStampEntity(), getReference(), pattern(), fieldValues());
     }
 
     @Override
