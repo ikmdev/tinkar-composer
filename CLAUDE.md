@@ -1,6 +1,6 @@
-# Tinkar Composer
+# tinkar-composer
 
-API for creating, updating, and retiring Tinkar data components.
+tinkar-composer component.
 
 ## Build Standards
 
@@ -15,6 +15,16 @@ mvn clean verify -DskipTests -T4
 ## Key Facts
 
 - GroupId: `dev.ikm.tinkar`
-- ArtifactId: `composer`
-- Single jar artifact (no submodules)
-- Uses `--enable-preview` (Java 25) — set via `maven.compiler.enablePreview`
+- Version: `1.14.0-SNAPSHOT`
+- Uses `--enable-preview` (Java 25)
+- BOM: imports `dev.ikm.ike:ike-bom` for dependency version management
+
+## Prohibited Patterns
+
+- **Never use `maven-antrun-plugin`** — use a proper Maven goal or `exec-maven-plugin`
+- **Never use `build-helper-maven-plugin` for multi-execution property chaining** —
+  write a proper Maven goal in `ike-maven-plugin`
+- **Never embed shell commands inline in POM** — extract to a named script
+
+See `.claude/standards/` (after `mvn validate`) for full standards.
+See `CLAUDE-tinkar-composer.md` for project-specific notes.
