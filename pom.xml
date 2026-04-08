@@ -53,7 +53,7 @@
     <properties>
         <maven.compiler.enablePreview>true</maven.compiler.enablePreview>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.127.2-SNAPSHOT</tinkar-core.version>
+        <tinkar-core.version>1.127.2-feature-test-v67-SNAPSHOT</tinkar-core.version>
         <tinkar-starter-data.version>20250915</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
