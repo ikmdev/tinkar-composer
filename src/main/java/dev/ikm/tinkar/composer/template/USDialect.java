@@ -23,8 +23,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for United States dialect acceptability. Composes a semantic whose
+ * single field is an acceptability concept, matched against the
+ * {@link TinkarTerm#US_DIALECT_PATTERN US_DIALECT_PATTERN}.
+ */
 public class USDialect extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code USDialect} template.
+     */
     public USDialect() {}
 
     private Concept acceptability;

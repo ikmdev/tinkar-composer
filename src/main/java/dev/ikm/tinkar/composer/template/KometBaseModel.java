@@ -22,8 +22,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template that marks a component as part of the Komet base model.
+ * Composes a semantic with no additional fields, matched against the
+ * {@link TinkarTerm#KOMET_BASE_MODEL_COMPONENT_PATTERN KOMET_BASE_MODEL_COMPONENT_PATTERN}.
+ */
 public class KometBaseModel extends SemanticTemplate {
 
+    /**
+     * Constructs a new {@code KometBaseModel} template.
+     */
     public KometBaseModel() {}
 
     @Override

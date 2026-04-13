@@ -36,8 +36,16 @@ import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Semantic template for EL++ stated axioms. Builds a {@link DiTreeEntity} representing
+ * the stated logical definition of a concept, matched against the
+ * {@link TinkarTerm#EL_PLUS_PLUS_STATED_AXIOMS_PATTERN EL_PLUS_PLUS_STATED_AXIOMS_PATTERN}.
+ */
 public class StatedAxiom extends SingleSemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code StatedAxiom} template.
+     */
     public StatedAxiom() {}
 
     private static final int IDX_DEFINITION_ROOT = 0;

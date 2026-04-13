@@ -15,7 +15,18 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
+/**
+ * Functional interface for consuming a {@link SemanticAssembler} during semantic composition.
+ * Implementations configure the assembler (setting reference, pattern, field values, and
+ * attaching child semantics) before the framework validates and writes the resulting entity.
+ */
 @FunctionalInterface
 public interface SemanticAssemblerConsumer {
+
+    /**
+     * Accepts and configures a {@link SemanticAssembler} to define a Semantic entity.
+     *
+     * @param semanticAssembler the assembler to configure
+     */
     void accept(SemanticAssembler semanticAssembler);
 }

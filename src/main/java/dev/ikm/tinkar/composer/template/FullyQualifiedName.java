@@ -23,8 +23,17 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for fully qualified name descriptions. Composes a semantic with
+ * language, text, and case-significance fields using the
+ * {@link TinkarTerm#DESCRIPTION_PATTERN DESCRIPTION_PATTERN} with a description type of
+ * {@link TinkarTerm#FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE}.
+ */
 public class FullyQualifiedName extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code FullyQualifiedName} template.
+     */
     public FullyQualifiedName() {}
 
     private Concept language;

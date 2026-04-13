@@ -32,12 +32,26 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Utility class that writes Tinkar entity records (concepts, patterns, and semantics)
+ * to the {@link dev.ikm.tinkar.entity.EntityService}.
+ */
 public class Write {
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private Write() {}
 
     private static final Logger LOG = LoggerFactory.getLogger(Write.class);
 
+    /**
+     * Defines a single field within a pattern, specifying its meaning, purpose,
+     * datatype, and position.
+     *
+     * @param meaning  the concept representing the field's meaning
+     * @param purpose  the concept representing the field's purpose
+     * @param datatype the concept representing the field's data type
+     * @param index    the zero-based position of this field within the pattern
+     */
     public record PatternDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {}
 
     private static long[] createAdditionalLongs(PublicId publicId) {
@@ -51,6 +65,12 @@ public class Write {
         return additionalLongs.length == 0 ? null : additionalLongs;
     }
 
+    /**
+     * Writes a concept entity with a single version to the entity service.
+     *
+     * @param concept the concept proxy identifying the concept to create
+     * @param stampId the public id of the stamp for the concept version
+     */
     public static void concept(Concept concept, PublicId stampId) {
         //Pull out primordial UUID from PublicId
         UUID primordialUUID = concept.asUuidArray()[0];
@@ -84,6 +104,15 @@ public class Write {
         EntityService.get().putEntity(conceptEntity);
     }
 
+    /**
+     * Writes a pattern entity with field definitions and a single version to the entity service.
+     *
+     * @param pattern            the pattern proxy identifying the pattern to create
+     * @param stampId            the public id of the stamp for the pattern version
+     * @param meaning            the concept representing the semantic meaning of the pattern
+     * @param purpose            the concept representing the semantic purpose of the pattern
+     * @param patternDefinitions the list of field definitions for this pattern
+     */
     public static void pattern(Pattern pattern, PublicId stampId,
                                Concept meaning, Concept purpose,
                                List<PatternDefinition> patternDefinitions){
@@ -140,6 +169,15 @@ public class Write {
         EntityService.get().putEntity(patternEntity);
     }
 
+    /**
+     * Writes a semantic entity with field values and a single version to the entity service.
+     *
+     * @param semantic            the semantic proxy identifying the semantic to create
+     * @param stampId             the public id of the stamp for the semantic version
+     * @param referencedComponent the entity proxy of the component this semantic references
+     * @param pattern             the pattern proxy defining the semantic's structure
+     * @param fieldValues         the field values for this semantic version, matching the pattern's field definitions
+     */
     public static void semantic(Semantic semantic, PublicId stampId, EntityProxy referencedComponent, Pattern pattern, ImmutableList<Object> fieldValues) {
         //Assign primordial UUID from PublicId
         UUID primordialUUID = semantic.asUuidArray()[0];

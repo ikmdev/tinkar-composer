@@ -29,6 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
+/**
+ * A composition session bound to a specific set of STAMP coordinates (status, time, author,
+ * module, path). Provides {@code compose} methods that create concepts, patterns, and semantics
+ * within a single transaction. Sessions are opened and closed through a {@link Composer}.
+ */
 public class Session {
 
     private static final Logger LOG = LoggerFactory.getLogger(Session.class);
@@ -38,6 +43,10 @@ public class Session {
 
     /**
      * Provides a Session for creating Components using the Transaction and STAMP provided.
+     *
+     * @param transaction the transaction that tracks components created in this session
+     * @param stampEntity the stamp entity defining status, time, author, module, and path
+     * @param id the unique identifier for this session
      */
     protected Session(Transaction transaction, StampEntity<?> stampEntity, UUID id){
         this.transaction = transaction;
@@ -112,6 +121,8 @@ public class Session {
 
     /**
      * Provides the number of Components written by the Session. This count does not include the STAMP associated with the Session.
+     *
+     * @return the number of components in this session's transaction
      */
     public int componentsInSessionCount() {
         return transaction.componentsInTransactionCount();
@@ -140,10 +151,20 @@ public class Session {
         transaction.commit();
     }
 
+    /**
+     * Returns the unique identifier for this session, derived from its STAMP coordinates.
+     *
+     * @return the session identifier
+     */
     protected UUID getId() {
         return this.id;
     }
 
+    /**
+     * Returns an entity proxy representing the STAMP associated with this session.
+     *
+     * @return the stamp as an entity proxy
+     */
     public EntityProxy getStamp() {
         return EntityProxy.make(stampEntity.nid());
     }

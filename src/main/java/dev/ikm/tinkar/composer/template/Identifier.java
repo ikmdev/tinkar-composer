@@ -23,8 +23,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for external identifiers. Composes a semantic with a source concept
+ * and an identifier string, matched against the
+ * {@link TinkarTerm#IDENTIFIER_PATTERN IDENTIFIER_PATTERN}.
+ */
 public class Identifier extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code Identifier} template.
+     */
     public Identifier() {}
 
     private Concept source;

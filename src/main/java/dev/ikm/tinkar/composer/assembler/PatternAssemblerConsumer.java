@@ -15,7 +15,18 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
+/**
+ * Functional interface for consuming a {@link PatternAssembler} during pattern composition.
+ * Implementations configure the assembler (setting meaning, purpose, field definitions, and
+ * attaching semantics) before the framework validates and writes the resulting entity.
+ */
 @FunctionalInterface
 public interface PatternAssemblerConsumer {
+
+    /**
+     * Accepts and configures a {@link PatternAssembler} to define a Pattern entity.
+     *
+     * @param patternAssembler the assembler to configure
+     */
     void accept(PatternAssembler patternAssembler);
 }

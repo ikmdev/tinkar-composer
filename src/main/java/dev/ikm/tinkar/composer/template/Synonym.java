@@ -23,8 +23,17 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for synonym descriptions. Composes a semantic with language,
+ * text, and case-significance fields using the
+ * {@link TinkarTerm#DESCRIPTION_PATTERN DESCRIPTION_PATTERN} with a description type of
+ * {@link TinkarTerm#REGULAR_NAME_DESCRIPTION_TYPE REGULAR_NAME_DESCRIPTION_TYPE}.
+ */
 public class Synonym extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code Synonym} template.
+     */
     public Synonym() {}
 
     private Concept language;

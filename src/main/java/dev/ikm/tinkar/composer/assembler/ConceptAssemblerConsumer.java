@@ -15,7 +15,18 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
+/**
+ * Functional interface for consuming a {@link ConceptAssembler} during concept composition.
+ * Implementations configure the assembler (setting identity, attaching semantics) before
+ * the framework validates and writes the resulting entity.
+ */
 @FunctionalInterface
 public interface ConceptAssemblerConsumer {
+
+    /**
+     * Accepts and configures a {@link ConceptAssembler} to define a Concept entity.
+     *
+     * @param conceptAssembler the assembler to configure
+     */
     void accept(ConceptAssembler conceptAssembler);
 }

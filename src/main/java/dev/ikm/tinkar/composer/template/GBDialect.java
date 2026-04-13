@@ -23,8 +23,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for Great Britain dialect acceptability. Composes a semantic whose
+ * single field is an acceptability concept, matched against the
+ * {@link TinkarTerm#GB_DIALECT_PATTERN GB_DIALECT_PATTERN}.
+ */
 public class GBDialect extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code GBDialect} template.
+     */
     public GBDialect() {}
 
     private Concept acceptability;

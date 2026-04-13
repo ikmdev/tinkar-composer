@@ -22,8 +22,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template that marks a component as part of the Tinkar base model.
+ * Composes a semantic with no additional fields, matched against the
+ * {@link TinkarTerm#TINKAR_BASE_MODEL_COMPONENT_PATTERN TINKAR_BASE_MODEL_COMPONENT_PATTERN}.
+ */
 public class TinkarBaseModel extends SemanticTemplate {
 
+    /**
+     * Constructs a new {@code TinkarBaseModel} template.
+     */
     public TinkarBaseModel() {}
 
     @Override

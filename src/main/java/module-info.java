@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** Provides a fluent API for composing Tinkar concepts, patterns, and semantics. */
 module dev.ikm.tinkar.composer {
     requires transitive dev.ikm.tinkar.common;
     requires transitive dev.ikm.tinkar.terms;

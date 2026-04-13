@@ -22,8 +22,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for OWL axiom syntax. Composes a semantic whose single field
+ * contains OWL-formatted axiom text, matched against the
+ * {@link TinkarTerm#OWL_AXIOM_SYNTAX_PATTERN OWL_AXIOM_SYNTAX_PATTERN}.
+ */
 public class AxiomSyntax extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code AxiomSyntax} template.
+     */
     public AxiomSyntax() {}
 
     private String text;

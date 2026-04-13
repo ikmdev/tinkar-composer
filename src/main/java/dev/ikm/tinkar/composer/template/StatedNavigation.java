@@ -29,8 +29,16 @@ import org.eclipse.collections.api.list.MutableList;
 
 import java.util.Collections;
 
+/**
+ * Semantic template for stated navigation relationships. Composes a semantic with
+ * parent (origin) and child (destination) concept sets, matched against the
+ * {@link TinkarTerm#STATED_NAVIGATION_PATTERN STATED_NAVIGATION_PATTERN}.
+ */
 public class StatedNavigation extends SingleSemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code StatedNavigation} template.
+     */
     public StatedNavigation() {}
 
     private final MutableList<EntityProxy> origins = Lists.mutable.empty();

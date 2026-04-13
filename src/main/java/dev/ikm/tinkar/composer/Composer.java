@@ -28,11 +28,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Entry point for composing Tinkar entities. A Composer manages one or more
+ * {@link Session} instances, each bound to a specific set of STAMP coordinates,
+ * and provides lifecycle methods to commit or cancel them.
+ */
 public class Composer {
     private final Map<UUID, Session> composerSessionCache = new HashMap<>();
     private StampEntity<?> stampEntity;
     private final String name;
 
+    /**
+     * Creates a new Composer with the given name, used to identify its transactions.
+     *
+     * @param name the display name for this composer's transactions
+     */
     public Composer(String name) {
         this.name = name;
     }
@@ -54,6 +64,7 @@ public class Composer {
      * @param author the author set for Components composed in the Session
      * @param module the module set for Components composed in the Session
      * @param path the path set for Components composed in the Session
+     * @return a Session for composing components with the specified STAMP coordinates
      * @see State
      */
     public Session open(State status, long time, Concept author, Concept module, Concept path) {
@@ -82,6 +93,7 @@ public class Composer {
      * @param author the author set for Components composed in the Session
      * @param module the module set for Components composed in the Session
      * @param path the path set for Components composed in the Session
+     * @return a Session for composing components with the specified STAMP coordinates
      * @see State
      */
     public Session open(State status, Concept author, Concept module, Concept path) {
@@ -98,7 +110,7 @@ public class Composer {
      * Commits a Session opened by this Composer.
      * <br />
      * {@link Session#commit()} <strong>commits</strong> the Components and STAMPs in the session transaction.
-     * @param session
+     * @param session the Session to commit
      * @return boolean representing whether the Session was committed. A Composer can only close a Session it opened.
      */
     public boolean commitSession(Session session) {
@@ -121,7 +133,7 @@ public class Composer {
      * Cancels a Session opened by this Composer.
      * <br />
      * {@link Session#cancel()} <strong>cancels</strong> the Components and STAMPs in the session transaction.
-     * @param session
+     * @param session the Session to cancel
      * @return boolean representing whether the Session was cancelled. A Composer can only close a Session it opened.
      */
     public boolean cancelSession(Session session) {

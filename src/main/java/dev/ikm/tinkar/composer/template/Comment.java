@@ -22,8 +22,16 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for comment semantics. Composes a semantic whose single field
+ * contains free-text commentary, matched against the
+ * {@link TinkarTerm#COMMENT_PATTERN COMMENT_PATTERN}.
+ */
 public class Comment extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code Comment} template.
+     */
     public Comment() {}
 
     private String text;
@@ -40,6 +48,7 @@ public class Comment extends SemanticTemplate {
 
     /**
      * Gets the text for the Comment Semantic.
+     * @return the comment text, or {@code null} if not yet set
      */
     public String getText() {
         return text;

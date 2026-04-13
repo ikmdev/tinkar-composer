@@ -18,8 +18,14 @@ package dev.ikm.tinkar.composer;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 
+/**
+ * A semantic template that enforces a single-semantic-per-pattern-and-reference constraint.
+ * The default semantic identity is derived deterministically from the pattern and referenced
+ * component, so only one semantic of this pattern type can exist per reference.
+ */
 public abstract class SingleSemanticTemplate extends SemanticTemplate {
 
+    /** Constructs a SingleSemanticTemplate with no initial state. */
     protected SingleSemanticTemplate() {}
 
     @Override

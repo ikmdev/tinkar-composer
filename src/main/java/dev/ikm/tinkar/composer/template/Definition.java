@@ -23,8 +23,17 @@ import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
+/**
+ * Semantic template for definition descriptions. Composes a semantic with language,
+ * text, and case-significance fields using the
+ * {@link TinkarTerm#DESCRIPTION_PATTERN DESCRIPTION_PATTERN} with a description type of
+ * {@link TinkarTerm#DEFINITION_DESCRIPTION_TYPE DEFINITION_DESCRIPTION_TYPE}.
+ */
 public class Definition extends SemanticTemplate {
 
+    /**
+     * Constructs a new, empty {@code Definition} template.
+     */
     public Definition() {}
 
     private Concept language;
