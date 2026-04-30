@@ -231,3 +231,4 @@ Temporary Items
 # Claude (unpacked build standards)
 ###################
 .claude
+/.vscode/settings.json

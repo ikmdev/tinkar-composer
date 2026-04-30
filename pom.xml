@@ -89,12 +89,6 @@
             <!-- Data Providers       -->
             <dependency>
                 <groupId>${tinkar-core.groupId}</groupId>
-                <artifactId>data-spinedarray-provider</artifactId>
-                <version>${tinkar-core.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${tinkar-core.groupId}</groupId>
                 <artifactId>data-ephemeral-provider</artifactId>
                 <version>${tinkar-core.version}</version>
             </dependency>
