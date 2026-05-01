@@ -30,9 +30,6 @@ module dev.ikm.tinkar.composer.test {
     requires org.eclipse.collections.api;
     requires org.eclipse.collections.impl;
 
-    exports dev.ikm.tinkar.composer.test;
-    exports dev.ikm.tinkar.composer.test.template;
-
     uses CachingService;
     uses DataServiceController;
     uses DefaultDescriptionForNidService;

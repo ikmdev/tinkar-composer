@@ -15,6 +15,9 @@
  */
 package dev.ikm.tinkar.composer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
 import dev.ikm.tinkar.composer.assembler.ConceptAssemblerConsumer;
 import dev.ikm.tinkar.composer.assembler.PatternAssembler;
@@ -22,28 +25,21 @@ import dev.ikm.tinkar.composer.assembler.PatternAssemblerConsumer;
 import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
 import dev.ikm.tinkar.composer.assembler.SemanticAssemblerConsumer;
 import dev.ikm.tinkar.entity.StampEntity;
-import dev.ikm.tinkar.entity.transaction.Transaction;
 import dev.ikm.tinkar.terms.EntityProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
 
 public class Session {
 
     private static final Logger LOG = LoggerFactory.getLogger(Session.class);
     private final StampEntity<?> stampEntity;
-    private final Transaction transaction;
-    private final UUID id;
+    private final String name;
 
     /**
      * Provides a Session for creating Components using the Transaction and STAMP provided.
      */
-    protected Session(Transaction transaction, StampEntity<?> stampEntity, UUID id){
-        this.transaction = transaction;
+    protected Session(String name, StampEntity<?> stampEntity){
+        this.name = name;
         this.stampEntity = stampEntity;
-        this.id = id;
-        LOG.info("Session {} - Initializing with stamp: {}", transaction.hashCode(), stampEntity);
+        LOG.info("Session {} - Initializing with stamp: {}", stampEntity);
     }
 
     /**
@@ -54,7 +50,6 @@ public class Session {
      */
     public Attachable compose(ConceptAssemblerConsumer conceptAssemblerConsumer) {
         ConceptAssembler conceptAssembler = new ConceptAssembler();
-        conceptAssembler.setSessionTransaction(transaction);
         conceptAssembler.setSessionStampEntity(stampEntity);
 
         conceptAssemblerConsumer.accept(conceptAssembler);
@@ -70,7 +65,6 @@ public class Session {
      */
     public Attachable compose(PatternAssemblerConsumer patternAssemblerConsumer) {
         PatternAssembler patternAssembler = new PatternAssembler();
-        patternAssembler.setSessionTransaction(transaction);
         patternAssembler.setSessionStampEntity(stampEntity);
 
         patternAssemblerConsumer.accept(patternAssembler);
@@ -86,7 +80,6 @@ public class Session {
      */
     public Attachable compose(SemanticAssemblerConsumer semanticAssemblerConsumer) {
         SemanticAssembler semanticAssembler = new SemanticAssembler();
-        semanticAssembler.setSessionTransaction(transaction);
         semanticAssembler.setSessionStampEntity(stampEntity);
 
         semanticAssemblerConsumer.accept(semanticAssembler);
@@ -102,7 +95,6 @@ public class Session {
      * @see SemanticTemplate
      */
     public Attachable compose(SemanticTemplate semanticTemplate, EntityProxy reference) {
-        semanticTemplate.setSessionTransaction(transaction);
         semanticTemplate.setSessionStampEntity(stampEntity);
         semanticTemplate.setReference(reference);
 
@@ -110,42 +102,12 @@ public class Session {
         return semanticTemplate;
     }
 
-    /**
-     * Provides the number of Components written by the Session. This count does not include the STAMP associated with the Session.
-     */
-    public int componentsInSessionCount() {
-        return transaction.componentsInTransactionCount();
-    }
-
-    /**
-     * Cancels the Transaction and STAMP associated with this Session so that they will not be committed.
-     */
-    public void cancel() {
-        LOG.info("Session {} - Cancelling updates to {} Entities with stamp: {}",
-                transaction.hashCode(),
-                transaction.componentsInTransactionCount(),
-                stampEntity);
-        transaction.cancel();
-    }
-
-    /**
-     * Commits the Transaction and STAMP associated with this Session. If the Session
-     * was not Constructed with a timestamp, then the timestamp will be set to the time of commit.
-     */
-    protected void commit() {
-        LOG.info("Session {} - Commiting updates to {} Entities with stamp: {}",
-                transaction.hashCode(),
-                transaction.componentsInTransactionCount(),
-                stampEntity);
-        transaction.commit();
-    }
-
-    protected UUID getId() {
-        return this.id;
-    }
-
     public EntityProxy getStamp() {
         return EntityProxy.make(stampEntity.nid());
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

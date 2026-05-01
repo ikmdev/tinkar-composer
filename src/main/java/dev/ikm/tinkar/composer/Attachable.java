@@ -15,27 +15,17 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.entity.StampEntity;
-import dev.ikm.tinkar.entity.transaction.Transaction;
-import dev.ikm.tinkar.terms.EntityProxy;
-
 import java.util.function.Consumer;
+
+import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.terms.EntityProxy;
 
 public abstract class Attachable {
 
     protected Attachable() {}
 
-    private Transaction sessionTransaction;
     private StampEntity<?> sessionStampEntity;
     private EntityProxy reference;
-
-    protected void setSessionTransaction(Transaction sessionTransaction) {
-        this.sessionTransaction = sessionTransaction;
-    }
-
-    protected Transaction getSessionTransaction() {
-        return sessionTransaction;
-    }
 
     protected void setSessionStampEntity(StampEntity<?> sessionStampEntity) {
         this.sessionStampEntity = sessionStampEntity;
@@ -64,7 +54,6 @@ public abstract class Attachable {
 
     private void initializeAttachable(Attachable childAttachable) {
         childAttachable.setReference(this.asReferenceComponent());
-        childAttachable.setSessionTransaction(sessionTransaction);
         childAttachable.setSessionStampEntity(sessionStampEntity);
     }
 

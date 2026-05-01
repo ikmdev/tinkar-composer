@@ -15,15 +15,15 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
 import dev.ikm.tinkar.composer.Write;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PatternAssembler extends Attachable {
 
@@ -121,7 +121,6 @@ public class PatternAssembler extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
-        super.getSessionTransaction().addComponent(pattern());
         Write.pattern(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
     }
 

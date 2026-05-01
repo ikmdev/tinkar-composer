@@ -15,14 +15,14 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
+import java.util.UUID;
+
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
 import dev.ikm.tinkar.composer.Write;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
-
-import java.util.UUID;
 
 public class ConceptAssembler extends Attachable {
 
@@ -86,7 +86,6 @@ public class ConceptAssembler extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
-        super.getSessionTransaction().addComponent(concept());
         Write.concept(concept(), super.getSessionStampEntity());
     }
 

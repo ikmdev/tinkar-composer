@@ -15,17 +15,18 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
+import java.util.function.Consumer;
+
+import org.eclipse.collections.api.factory.Lists;
+import org.eclipse.collections.api.list.ImmutableList;
+import org.eclipse.collections.api.list.MutableList;
+
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
 import dev.ikm.tinkar.composer.Write;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import org.eclipse.collections.api.factory.Lists;
-import org.eclipse.collections.api.list.ImmutableList;
-import org.eclipse.collections.api.list.MutableList;
-
-import java.util.function.Consumer;
 
 public class SemanticAssembler extends Attachable {
 
@@ -102,7 +103,6 @@ public class SemanticAssembler extends Attachable {
     @Override
     protected void validateAndWrite() {
         validate();
-        super.getSessionTransaction().addComponent(semantic());
         Write.semantic(semantic(), super.getSessionStampEntity(), getReference(), pattern(), fieldValues());
     }
 
