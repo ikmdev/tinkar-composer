@@ -123,12 +123,6 @@
         <!-- Data Providers       -->
         <dependency>
             <groupId>${tinkar-core.groupId}</groupId>
-            <artifactId>data-spinedarray-provider</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${tinkar-core.groupId}</groupId>
             <artifactId>data-ephemeral-provider</artifactId>
             <scope>test</scope>
         </dependency>
