@@ -15,6 +15,7 @@
  */
 package dev.ikm.tinkar.composer;
 
+import java.nio.file.Path;
 import java.util.UUID;
 
 import dev.ikm.tinkar.entity.StampEntity;
@@ -23,64 +24,70 @@ import dev.ikm.tinkar.terms.State;
 
 public class Composer {
 
-    /**
-     * Provides a Session for creating Components with a <strong>predefined
-     * timestamp</strong>.
-     * <br />
-     * <br />
-     * Example use case: ingesting a file with previously defined data definitions.
-     * 
-     * <pre>{@code
-     *
-     * Composer composer = new Composer("name");
-     * Session session = composer.open(status, time, author, module, path);
-     * session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-     *         .concept(Concept.make("Example Concept with predefined time", PublicIds.newRandom())));
-     * composer.commitSession(session);
-     * }</pre>
-     * 
-     * @param status the status set for Components composed in the Session
-     * @param time   the timestamp (in epoch milliseconds) set for Components
-     *               composed in the Session
-     * @param author the author set for Components composed in the Session
-     * @param module the module set for Components composed in the Session
-     * @param path   the path set for Components composed in the Session
-     * @see State
-     */
-    public Session open(String name, State status, long time, Concept author, Concept module, Concept path) {
-        UUID stampId = UUID.randomUUID();
-        StampEntity stampEntity = Write.stamp(stampId, status, time, author, module, path);
-        return new Session(name, stampEntity);
-    }
+	private final Path changeSetFile;
 
-    /**
-     * Provides a Session for creating Components with a <strong>current
-     * timestamp</strong>.
-     * Timestamp will be defined as the time of commit.
-     * <br />
-     * <br />
-     * Example use case: creating or editing Components resulting in net new
-     * Components / Versions.
-     * 
-     * <pre>{@code
-     *    Composer composer = new Composer("name");
-     *    Session session = composer.open(status, author, module, path);
-     *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-     *              .concept((Concept.make("Example Concept with commit time", PublicIds.newRandom()));
-     *    composer.commitSession(session);
-     * }</pre>
-     * 
-     * @param status the status set for Components composed in the Session
-     * @param author the author set for Components composed in the Session
-     * @param module the module set for Components composed in the Session
-     * @param path   the path set for Components composed in the Session
-     * @see State
-     */
-    public Session open(String name, State status, Concept author, Concept module, Concept path) {
-        UUID stampId = UUID.randomUUID();
-        long time = System.currentTimeMillis();
-        StampEntity stampEntity = Write.stamp(stampId, status, time, author, module, path);
-        return new Session(name, stampEntity);
-    }
+	public Composer(Path changeSetFile) {
+		this.changeSetFile = changeSetFile;
+	}
+
+	/**
+	 * Provides a Session for creating Components with a <strong>predefined
+	 * timestamp</strong>.
+	 * <br />
+	 * <br />
+	 * Example use case: ingesting a file with previously defined data definitions.
+	 *
+	 * <pre>{@code
+	 *
+	 * Composer composer = new Composer(Path.of("name"));
+	 * Session session = composer.open(status, time, author, module, path);
+	 * session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+	 *         .concept(Concept.make("Example Concept with predefined time", PublicIds.newRandom())));
+	 * composer.commitSession(session);
+	 * }</pre>
+	 *
+	 * @param status the status set for Components composed in the Session
+	 * @param time   the timestamp (in epoch milliseconds) set for Components
+	 *               composed in the Session
+	 * @param author the author set for Components composed in the Session
+	 * @param module the module set for Components composed in the Session
+	 * @param path   the path set for Components composed in the Session
+	 * @see State
+	 */
+	public Session open(String name, State status, long time, Concept author, Concept module, Concept path) {
+		UUID stampId = UUID.randomUUID();
+		StampEntity stampEntity = EntityBuilder.buildStampEntity(stampId, status, time, author, module, path);
+		return new Session(stampEntity, changeSetFile);
+	}
+
+	/**
+	 * Provides a Session for creating Components with a <strong>current
+	 * timestamp</strong>.
+	 * Timestamp will be defined as the time of commit.
+	 * <br />
+	 * <br />
+	 * Example use case: creating or editing Components resulting in net new
+	 * Components / Versions.
+	 *
+	 * <pre>{@code
+	 *    Composer composer = new Composer(Path.of("name"));
+	 *    Session session = composer.open(status, author, module, path);
+	 *    session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
+	 *              .concept((Concept.make("Example Concept with commit time", PublicIds.newRandom()));
+	 *    composer.commitSession(session);
+	 * }</pre>
+	 *
+	 * @param status the status set for Components composed in the Session
+	 * @param author the author set for Components composed in the Session
+	 * @param module the module set for Components composed in the Session
+	 * @param path   the path set for Components composed in the Session
+	 * @see State
+	 */
+	public Session open(String name, State status, Concept author, Concept module, Concept path) {
+		UUID stampId = UUID.randomUUID();
+		long time = System.currentTimeMillis();
+		StampEntity stampEntity = EntityBuilder.buildStampEntity(stampId, status, time, author, module, path);
+		return new Session(stampEntity, changeSetFile);
+	}
 
 }

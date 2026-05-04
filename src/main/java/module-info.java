@@ -19,6 +19,7 @@ module dev.ikm.tinkar.composer {
     requires transitive dev.ikm.tinkar.entity;
     requires transitive org.eclipse.collections.api;
     requires org.eclipse.collections.impl;
+    requires dev.ikm.tinkar.schema;
     requires org.slf4j;
     exports dev.ikm.tinkar.composer;
     exports dev.ikm.tinkar.composer.template;

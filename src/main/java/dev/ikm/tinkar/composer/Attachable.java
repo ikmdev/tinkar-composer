@@ -15,9 +15,13 @@
  */
 package dev.ikm.tinkar.composer;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
+import dev.ikm.tinkar.entity.Entity;
+import dev.ikm.tinkar.entity.EntityVersion;
 import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy;
 
 public abstract class Attachable {
@@ -25,6 +29,7 @@ public abstract class Attachable {
     protected Attachable() {}
 
     private StampEntity<?> sessionStampEntity;
+    private UUID sessionId;
     private EntityProxy reference;
 
     protected void setSessionStampEntity(StampEntity<?> sessionStampEntity) {
@@ -33,6 +38,17 @@ public abstract class Attachable {
 
     protected StampEntity<?> getSessionStampEntity() {
         return sessionStampEntity;
+    }
+
+    protected void setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    protected UUID getSessionId() {
+        if (sessionId == null) {
+            throw new IllegalStateException("Session id not set");
+        }
+        return sessionId;
     }
 
     protected void setReference(EntityProxy reference) {
@@ -48,13 +64,14 @@ public abstract class Attachable {
 
     protected abstract EntityProxy asReferenceComponent();
 
-    protected abstract void validateAndWrite();
+    protected abstract Entity<EntityVersion> validateAndWrite();
 
     protected abstract void validate() throws IllegalArgumentException;
 
     private void initializeAttachable(Attachable childAttachable) {
         childAttachable.setReference(this.asReferenceComponent());
         childAttachable.setSessionStampEntity(sessionStampEntity);
+        childAttachable.setSessionId(getSessionId());
     }
 
     /**
@@ -64,7 +81,8 @@ public abstract class Attachable {
      */
     public Attachable attach(SemanticTemplate semanticTemplate) {
         initializeAttachable(semanticTemplate);
-        semanticTemplate.validateAndWrite();
+        Entity<EntityVersion> entity = semanticTemplate.validateAndWrite();
+        ChangeSetManager.getInstance().add(getSessionStampEntity().publicId(), entity);
         return this;
     }
 
@@ -80,7 +98,8 @@ public abstract class Attachable {
             T template = type.getDeclaredConstructor().newInstance();
             initializeAttachable(template);
             consumer.accept(template);
-            template.validateAndWrite();
+            Entity entity = template.validateAndWrite();
+            ChangeSetManager.getInstance().add(getSessionStampEntity().publicId(), entity);
             return this;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate " + type.getSimpleName(), e);

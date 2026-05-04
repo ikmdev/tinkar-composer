@@ -20,7 +20,10 @@ import java.util.UUID;
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
-import dev.ikm.tinkar.composer.Write;
+import dev.ikm.tinkar.composer.EntityBuilder;
+import dev.ikm.tinkar.entity.Entity;
+import dev.ikm.tinkar.entity.EntityVersion;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 
@@ -84,9 +87,9 @@ public class ConceptAssembler extends Attachable {
     }
 
     @Override
-    protected void validateAndWrite() {
+    protected Entity<EntityVersion> validateAndWrite() {
         validate();
-        Write.concept(concept(), super.getSessionStampEntity());
+        return EntityBuilder.buildConceptEntity(concept(), super.getSessionStampEntity());
     }
 
     @Override

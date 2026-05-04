@@ -15,6 +15,8 @@
  */
 package dev.ikm.tinkar.composer;
 
+import dev.ikm.tinkar.entity.Entity;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import org.eclipse.collections.api.list.ImmutableList;
 
 import dev.ikm.tinkar.common.id.PublicIds;
@@ -66,12 +68,12 @@ public abstract class SemanticTemplate extends Attachable {
     }
 
     @Override
-    protected void validateAndWrite() {
+    protected Entity validateAndWrite() {
         validate();
         if (super.getReference()==null) {
             throw new IllegalArgumentException("Semantic requires a reference");
         }
-        Write.semantic(semantic(),
+        return EntityBuilder.buildSemanticEntity(semantic(),
                 super.getSessionStampEntity(),
                 getReference(),
                 assignPattern(),

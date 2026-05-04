@@ -15,26 +15,30 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
-import dev.ikm.tinkar.composer.Write;
+import dev.ikm.tinkar.composer.EntityBuilder;
+import dev.ikm.tinkar.entity.Entity;
+import dev.ikm.tinkar.entity.EntityVersion;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PatternAssembler extends Attachable {
 
     private Pattern pattern;
     private Concept meaning;
     private Concept purpose;
-    private final List<Write.PatternDefinition> patternDefinitions;
+    private final List<EntityBuilder.PatternDefinition> patternDefinitions;
 
     public PatternAssembler() {
         this.patternDefinitions = new ArrayList<>();
     }
+
+
 
     /**
      * Sets the Pattern Proxy containing the PublicId for the Pattern Entity being assembled.
@@ -92,7 +96,7 @@ public class PatternAssembler extends Attachable {
      * @return the SemanticAssembler for further method chaining
      */
     public PatternAssembler fieldDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {
-        patternDefinitions.add(new Write.PatternDefinition(meaning, purpose, datatype, index));
+        patternDefinitions.add(new EntityBuilder.PatternDefinition(meaning, purpose, datatype, index));
         return this;
     }
 
@@ -105,11 +109,11 @@ public class PatternAssembler extends Attachable {
      */
     public PatternAssembler fieldDefinition(Concept meaning, Concept purpose, Concept datatype) {
         int index = patternDefinitions.size();
-        patternDefinitions.add(new Write.PatternDefinition(meaning, purpose, datatype, index));
+        patternDefinitions.add(new EntityBuilder.PatternDefinition(meaning, purpose, datatype, index));
         return this;
     }
 
-    protected List<Write.PatternDefinition> fieldDefinitions() {
+    protected List<EntityBuilder.PatternDefinition> fieldDefinitions() {
         return patternDefinitions;
     }
 
@@ -119,9 +123,9 @@ public class PatternAssembler extends Attachable {
     }
 
     @Override
-    protected void validateAndWrite() {
+    protected Entity<EntityVersion> validateAndWrite() {
         validate();
-        Write.pattern(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
+        return EntityBuilder.buildPatternEntity(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
     }
 
     @Override
