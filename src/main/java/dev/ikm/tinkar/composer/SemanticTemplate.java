@@ -16,6 +16,9 @@
 package dev.ikm.tinkar.composer;
 
 import dev.ikm.tinkar.entity.Entity;
+import dev.ikm.tinkar.entity.EntityVersion;
+import dev.ikm.tinkar.schema.Field;
+import dev.ikm.tinkar.schema.PublicId;
 import dev.ikm.tinkar.schema.TinkarMsg;
 import org.eclipse.collections.api.list.ImmutableList;
 
@@ -23,6 +26,9 @@ import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
+
+import java.util.List;
+import java.util.UUID;
 
 public abstract class SemanticTemplate extends Attachable {
 
@@ -60,7 +66,7 @@ public abstract class SemanticTemplate extends Attachable {
 
     protected abstract Pattern assignPattern();
 
-    protected abstract ImmutableList<Object> assignFieldValues();
+    protected abstract List<Field> assignFieldValues();
 
     @Override
     protected EntityProxy asReferenceComponent() {
@@ -68,13 +74,13 @@ public abstract class SemanticTemplate extends Attachable {
     }
 
     @Override
-    protected Entity validateAndWrite() {
+    protected TinkarMsg validateAndWrite() {
         validate();
         if (super.getReference()==null) {
             throw new IllegalArgumentException("Semantic requires a reference");
         }
-        return EntityBuilder.buildSemanticEntity(semantic(),
-                super.getSessionStampEntity(),
+        return ChronologyBuilder.buildSemanticChronologyMsg(semantic(),
+                super.getSessionStampChronology(),
                 getReference(),
                 assignPattern(),
                 assignFieldValues());

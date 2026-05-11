@@ -17,9 +17,11 @@ package dev.ikm.tinkar.composer.assembler;
 
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
-import dev.ikm.tinkar.composer.EntityBuilder;
+import dev.ikm.tinkar.composer.ChronologyBuilder;
+import dev.ikm.tinkar.composer.domain.PatternDef;
 import dev.ikm.tinkar.entity.Entity;
 import dev.ikm.tinkar.entity.EntityVersion;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
@@ -32,13 +34,11 @@ public class PatternAssembler extends Attachable {
     private Pattern pattern;
     private Concept meaning;
     private Concept purpose;
-    private final List<EntityBuilder.PatternDefinition> patternDefinitions;
+    private final List<PatternDef> patternDefinitions;
 
     public PatternAssembler() {
         this.patternDefinitions = new ArrayList<>();
     }
-
-
 
     /**
      * Sets the Pattern Proxy containing the PublicId for the Pattern Entity being assembled.
@@ -96,7 +96,7 @@ public class PatternAssembler extends Attachable {
      * @return the SemanticAssembler for further method chaining
      */
     public PatternAssembler fieldDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {
-        patternDefinitions.add(new EntityBuilder.PatternDefinition(meaning, purpose, datatype, index));
+        patternDefinitions.add(new PatternDef(meaning, purpose, datatype, index));
         return this;
     }
 
@@ -109,11 +109,11 @@ public class PatternAssembler extends Attachable {
      */
     public PatternAssembler fieldDefinition(Concept meaning, Concept purpose, Concept datatype) {
         int index = patternDefinitions.size();
-        patternDefinitions.add(new EntityBuilder.PatternDefinition(meaning, purpose, datatype, index));
+        patternDefinitions.add(new PatternDef(meaning, purpose, datatype, index));
         return this;
     }
 
-    protected List<EntityBuilder.PatternDefinition> fieldDefinitions() {
+    protected List<PatternDef> fieldDefinitions() {
         return patternDefinitions;
     }
 
@@ -123,9 +123,9 @@ public class PatternAssembler extends Attachable {
     }
 
     @Override
-    protected Entity<EntityVersion> validateAndWrite() {
+    protected TinkarMsg validateAndWrite() {
         validate();
-        return EntityBuilder.buildPatternEntity(pattern(), super.getSessionStampEntity(), meaning(), purpose(), fieldDefinitions());
+        return ChronologyBuilder.buildPatternChronologyMsg(pattern(), super.getSessionStampChronology(), meaning(), purpose(), fieldDefinitions());
     }
 
     @Override

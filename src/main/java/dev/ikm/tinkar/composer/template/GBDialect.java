@@ -16,12 +16,18 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.schema.Field;
+import dev.ikm.tinkar.schema.PublicId;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
+
+import java.util.List;
+
+import static dev.ikm.tinkar.composer.ChronologyBuilder.createPublicId;
 
 public class GBDialect extends SemanticTemplate {
 
@@ -51,8 +57,9 @@ public class GBDialect extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(acceptability);
+    protected List<Field> assignFieldValues() {
+        PublicId acceptabilityId = createPublicId(acceptability);
+        return List.of(Field.newBuilder().setPublicId(acceptabilityId).build());
     }
 
     @Override

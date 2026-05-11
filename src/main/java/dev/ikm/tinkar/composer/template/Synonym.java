@@ -16,12 +16,18 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.schema.Field;
+import dev.ikm.tinkar.schema.PublicId;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
+
+import java.util.List;
+
+import static dev.ikm.tinkar.composer.ChronologyBuilder.createPublicId;
 
 public class Synonym extends SemanticTemplate {
 
@@ -73,8 +79,19 @@ public class Synonym extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE);
+    protected List<Field> assignFieldValues() {
+        // Create PublicIds for each Concept
+        PublicId languageId = createPublicId(language);
+        PublicId caseSignificanceId = createPublicId(caseSignificance);
+        PublicId descriptionType = createPublicId(TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE);
+
+        // Create Fields for Semantic
+        Field languageField = Field.newBuilder().setPublicId(languageId).build();
+        Field textField = Field.newBuilder().setStringValue(text).build();
+        Field caseSignificanceField = Field.newBuilder().setPublicId(caseSignificanceId).build();
+        Field descriptionTypeField = Field.newBuilder().setPublicId(descriptionType).build();
+
+        return List.of(languageField, textField, caseSignificanceField, descriptionTypeField);
     }
 
     @Override

@@ -20,7 +20,7 @@ import java.util.UUID;
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
-import dev.ikm.tinkar.composer.EntityBuilder;
+import dev.ikm.tinkar.composer.ChronologyBuilder;
 import dev.ikm.tinkar.entity.Entity;
 import dev.ikm.tinkar.entity.EntityVersion;
 import dev.ikm.tinkar.schema.TinkarMsg;
@@ -87,9 +87,9 @@ public class ConceptAssembler extends Attachable {
     }
 
     @Override
-    protected Entity<EntityVersion> validateAndWrite() {
+    protected TinkarMsg validateAndWrite() {
         validate();
-        return EntityBuilder.buildConceptEntity(concept(), super.getSessionStampEntity());
+        return ChronologyBuilder.buildConceptChronologyMsg(concept(), super.getSessionStampChronology());
     }
 
     @Override

@@ -18,9 +18,11 @@ package dev.ikm.tinkar.composer;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import dev.ikm.tinkar.composer.io.PackageWriter;
 import dev.ikm.tinkar.entity.Entity;
 import dev.ikm.tinkar.entity.EntityVersion;
 import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.schema.StampChronology;
 import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy;
 
@@ -28,16 +30,17 @@ public abstract class Attachable {
 
     protected Attachable() {}
 
-    private StampEntity<?> sessionStampEntity;
+    private StampChronology sessionStampChronology;
     private UUID sessionId;
     private EntityProxy reference;
+    private PackageWriter packageWriter;
 
-    protected void setSessionStampEntity(StampEntity<?> sessionStampEntity) {
-        this.sessionStampEntity = sessionStampEntity;
+    protected void setSessionStampChronology(StampChronology stampChronology) {
+        this.sessionStampChronology = stampChronology;
     }
 
-    protected StampEntity<?> getSessionStampEntity() {
-        return sessionStampEntity;
+    protected StampChronology getSessionStampChronology() {
+        return sessionStampChronology;
     }
 
     protected void setSessionId(UUID sessionId) {
@@ -62,15 +65,23 @@ public abstract class Attachable {
         return reference;
     }
 
+    protected void setPackageWriter(PackageWriter packageWriter) {
+        this.packageWriter = packageWriter;
+    }
+
+    protected PackageWriter getPackageWriter() {
+        return packageWriter;
+    }
+
     protected abstract EntityProxy asReferenceComponent();
 
-    protected abstract Entity<EntityVersion> validateAndWrite();
+    protected abstract TinkarMsg validateAndWrite();
 
     protected abstract void validate() throws IllegalArgumentException;
 
     private void initializeAttachable(Attachable childAttachable) {
         childAttachable.setReference(this.asReferenceComponent());
-        childAttachable.setSessionStampEntity(sessionStampEntity);
+        childAttachable.setSessionStampChronology(sessionStampChronology);
         childAttachable.setSessionId(getSessionId());
     }
 
@@ -81,8 +92,8 @@ public abstract class Attachable {
      */
     public Attachable attach(SemanticTemplate semanticTemplate) {
         initializeAttachable(semanticTemplate);
-        Entity<EntityVersion> entity = semanticTemplate.validateAndWrite();
-        ChangeSetManager.getInstance().add(getSessionStampEntity().publicId(), entity);
+        TinkarMsg tinkarMsg = semanticTemplate.validateAndWrite();
+        packageWriter.writeToPackage(tinkarMsg);
         return this;
     }
 
@@ -98,8 +109,8 @@ public abstract class Attachable {
             T template = type.getDeclaredConstructor().newInstance();
             initializeAttachable(template);
             consumer.accept(template);
-            Entity entity = template.validateAndWrite();
-            ChangeSetManager.getInstance().add(getSessionStampEntity().publicId(), entity);
+            TinkarMsg tinkarMsg = template.validateAndWrite();
+            packageWriter.writeToPackage(tinkarMsg);
             return this;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate " + type.getSimpleName(), e);

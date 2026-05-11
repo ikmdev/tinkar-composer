@@ -15,19 +15,24 @@
  */
 package dev.ikm.tinkar.composer;
 
-import java.nio.file.Path;
-import java.util.UUID;
-
+import dev.ikm.tinkar.common.id.PublicId;
+import dev.ikm.tinkar.common.id.PublicIds;
+import dev.ikm.tinkar.composer.io.PackageWriter;
 import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.State;
 
-public class Composer {
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.util.UUID;
 
-	private final Path changeSetFile;
+public class Composer implements AutoCloseable {
 
-	public Composer(Path changeSetFile) {
-		this.changeSetFile = changeSetFile;
+	private final PackageWriter packageWriter;
+
+	public Composer(Path zipPackage) throws FileNotFoundException {
+		this.packageWriter = new PackageWriter(zipPackage);
 	}
 
 	/**
@@ -54,10 +59,12 @@ public class Composer {
 	 * @param path   the path set for Components composed in the Session
 	 * @see State
 	 */
-	public Session open(String name, State status, long time, Concept author, Concept module, Concept path) {
-		UUID stampId = UUID.randomUUID();
-		StampEntity stampEntity = EntityBuilder.buildStampEntity(stampId, status, time, author, module, path);
-		return new Session(stampEntity, changeSetFile);
+	public Session open(State status, long time, Concept author, Concept module, Concept path) {
+		PublicId stampId = dev.ikm.tinkar.common.id.PublicIds.newRandom();
+		PublicId statusId = status.publicId();
+		TinkarMsg stampChronologyMsg = ChronologyBuilder.buildStampChronologyMsg(stampId, statusId, time, author, module, path);
+		packageWriter.writeToPackage(stampChronologyMsg);
+		return new Session(packageWriter, stampChronologyMsg.getStampChronology());
 	}
 
 	/**
@@ -83,11 +90,12 @@ public class Composer {
 	 * @param path   the path set for Components composed in the Session
 	 * @see State
 	 */
-	public Session open(String name, State status, Concept author, Concept module, Concept path) {
-		UUID stampId = UUID.randomUUID();
-		long time = System.currentTimeMillis();
-		StampEntity stampEntity = EntityBuilder.buildStampEntity(stampId, status, time, author, module, path);
-		return new Session(stampEntity, changeSetFile);
+	public Session open(State status, Concept author, Concept module, Concept path) {
+		return open(status, System.currentTimeMillis(), author, module, path);
 	}
 
+	@Override
+	public void close() throws Exception {
+		packageWriter.close();
+	}
 }

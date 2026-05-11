@@ -86,13 +86,6 @@
                 <version>${eclipse-collections-api.version}</version>
             </dependency>
 
-            <!-- Data Providers       -->
-            <dependency>
-                <groupId>${tinkar-core.groupId}</groupId>
-                <artifactId>data-ephemeral-provider</artifactId>
-                <version>${tinkar-core.version}</version>
-            </dependency>
-
             <!-- Core Libraries       -->
             <dependency>
                 <groupId>${tinkar-core.groupId}</groupId>
@@ -170,35 +163,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>dev.ikm.data.tinkar</groupId>
-                            <artifactId>tinkar-starter-data</artifactId>
-                            <version>${tinkar-starter-data.version}</version>
-                            <classifier>reasoned-pb</classifier>
-                            <type>zip</type>
-                            <overWrite>false</overWrite>
-                            <outputDirectory>${project.build.directory}/data</outputDirectory>
-                        </artifactItem>
-                    </artifactItems>
-                    <outputDirectory>${project.build.directory}/data</outputDirectory>
-                    <overWriteReleases>false</overWriteReleases>
-                    <overWriteSnapshots>true</overWriteSnapshots>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>

@@ -16,12 +16,18 @@
 package dev.ikm.tinkar.composer.template;
 
 import dev.ikm.tinkar.composer.SemanticTemplate;
+import dev.ikm.tinkar.schema.Field;
+import dev.ikm.tinkar.schema.PublicId;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.TinkarTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
+
+import java.util.List;
+
+import static dev.ikm.tinkar.composer.ChronologyBuilder.createPublicId;
 
 public class Identifier extends SemanticTemplate {
 
@@ -62,8 +68,15 @@ public class Identifier extends SemanticTemplate {
     }
 
     @Override
-    protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(source, identifier);
+    protected List<Field> assignFieldValues() {
+        // Create PublicIds for each Concept
+        PublicId sourceId = createPublicId(source);
+
+        // Create Fields for Semantic
+        Field sourceField = Field.newBuilder().setPublicId(sourceId).build();
+        Field identifierField = Field.newBuilder().setStringValue(identifier).build();
+
+        return List.of(sourceField, identifierField);
     }
 
     @Override

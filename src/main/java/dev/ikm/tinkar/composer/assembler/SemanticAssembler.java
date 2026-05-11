@@ -15,105 +15,107 @@
  */
 package dev.ikm.tinkar.composer.assembler;
 
-import java.util.function.Consumer;
-
-import dev.ikm.tinkar.entity.Entity;
-import dev.ikm.tinkar.entity.EntityVersion;
-import dev.ikm.tinkar.schema.TinkarMsg;
-import org.eclipse.collections.api.factory.Lists;
-import org.eclipse.collections.api.list.ImmutableList;
-import org.eclipse.collections.api.list.MutableList;
-
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.composer.Attachable;
-import dev.ikm.tinkar.composer.EntityBuilder;
+import dev.ikm.tinkar.composer.ChronologyBuilder;
+import dev.ikm.tinkar.schema.Field;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
+import org.eclipse.collections.api.factory.Lists;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 public class SemanticAssembler extends Attachable {
 
-    public SemanticAssembler() {}
+	public SemanticAssembler() {
+	}
 
-    private Semantic semantic;
-    private Pattern pattern;
-    private Consumer<MutableList<Object>> fieldValuesConsumer;
+	private Semantic semantic;
+	private Pattern pattern;
+	private Consumer<List<Field>> fieldValuesConsumer;
 
-    /**
-     * Sets the Semantic Proxy containing the PublicId for the Semantic Entity being assembled.
-     * <br />
-     * If not supplied, a random PublicId will be assigned.
-     * @param semantic
-     * @return the SemanticAssembler for further method chaining
-     */
-    public SemanticAssembler semantic(Semantic semantic) {
-        this.semantic = semantic;
-        return this;
-    }
+	/**
+	 * Sets the Semantic Proxy containing the PublicId for the Semantic Entity being assembled.
+	 * <br />
+	 * If not supplied, a random PublicId will be assigned.
+	 *
+	 * @param semantic
+	 * @return the SemanticAssembler for further method chaining
+	 */
+	public SemanticAssembler semantic(Semantic semantic) {
+		this.semantic = semantic;
+		return this;
+	}
 
-    /**
-     * Sets the reference - the Component to which the Semantic information applies.
-     * @param reference
-     * @return the SemanticAssembler for further method chaining
-     */
-    public SemanticAssembler reference(EntityProxy reference) {
-        super.setReference(reference);
-        return this;
-    }
+	/**
+	 * Sets the reference - the Component to which the Semantic information applies.
+	 *
+	 * @param reference
+	 * @return the SemanticAssembler for further method chaining
+	 */
+	public SemanticAssembler reference(EntityProxy reference) {
+		super.setReference(reference);
+		return this;
+	}
 
-    protected Semantic semantic() {
-        if (semantic == null) {
-            semantic = Semantic.make(PublicIds.newRandom());
-        }
-        return semantic;
-    }
+	protected Semantic semantic() {
+		if (semantic == null) {
+			semantic = Semantic.make(PublicIds.newRandom());
+		}
+		return semantic;
+	}
 
-    /**
-     * Sets the pattern which defines the fields for the Semantic.
-     * @param pattern
-     * @return the SemanticAssembler for further method chaining
-     */
-    public SemanticAssembler pattern(Pattern pattern) {
-        this.pattern = pattern;
-        return this;
-    }
+	/**
+	 * Sets the pattern which defines the fields for the Semantic.
+	 *
+	 * @param pattern
+	 * @return the SemanticAssembler for further method chaining
+	 */
+	public SemanticAssembler pattern(Pattern pattern) {
+		this.pattern = pattern;
+		return this;
+	}
 
-    protected Pattern pattern() {
-        return pattern;
-    }
+	protected Pattern pattern() {
+		return pattern;
+	}
 
-    /**
-     * Sets a consumer that defines the field values for the Semantic.
-     * @param fieldValuesConsumer
-     * @return the SemanticAssembler for further method chaining
-     */
-    public SemanticAssembler fieldValues(Consumer<MutableList<Object>> fieldValuesConsumer) {
-        this.fieldValuesConsumer = fieldValuesConsumer;
-        return this;
-    }
+	/**
+	 * Sets a consumer that defines the field values for the Semantic.
+	 *
+	 * @param fieldValuesConsumer
+	 * @return the SemanticAssembler for further method chaining
+	 */
+	public SemanticAssembler fieldValues(Consumer<List<Field>> fieldValuesConsumer) {
+		this.fieldValuesConsumer = fieldValuesConsumer;
+		return this;
+	}
 
-    protected ImmutableList<Object> fieldValues() {
-        MutableList<Object> mutableList = Lists.mutable.empty();
-        fieldValuesConsumer.accept(mutableList);
-        return mutableList.toImmutable();
-    }
+	protected List<Field> fieldValues() {
+		List<Field> fieldValues = Lists.mutable.empty();
+		fieldValuesConsumer.accept(fieldValues);
+		return fieldValues;
+	}
 
-    @Override
-    protected EntityProxy asReferenceComponent() {
-        return semantic();
-    }
+	@Override
+	protected EntityProxy asReferenceComponent() {
+		return semantic();
+	}
 
-    @Override
-    protected Entity<EntityVersion> validateAndWrite() {
-        validate();
-        return EntityBuilder.buildSemanticEntity(semantic(), super.getSessionStampEntity(), getReference(), pattern(), fieldValues());
-    }
+	@Override
+	protected TinkarMsg validateAndWrite() {
+		validate();
+		return ChronologyBuilder.buildSemanticChronologyMsg(semantic(), super.getSessionStampChronology(), getReference(), pattern(), fieldValues());
+	}
 
-    @Override
-    protected void validate() throws IllegalArgumentException {
-        if (super.getReference()==null || pattern==null || fieldValuesConsumer==null) {
-            throw new IllegalArgumentException("Semantic requires reference, pattern, and field values");
-        }
-    }
+	@Override
+	protected void validate() throws IllegalArgumentException {
+		if (super.getReference() == null || pattern == null || fieldValuesConsumer == null) {
+			throw new IllegalArgumentException("Semantic requires reference, pattern, and field values");
+		}
+	}
 
 }

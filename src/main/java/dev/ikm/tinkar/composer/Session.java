@@ -15,36 +15,39 @@
  */
 package dev.ikm.tinkar.composer;
 
-import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
 import dev.ikm.tinkar.composer.assembler.ConceptAssemblerConsumer;
 import dev.ikm.tinkar.composer.assembler.PatternAssembler;
 import dev.ikm.tinkar.composer.assembler.PatternAssemblerConsumer;
 import dev.ikm.tinkar.composer.assembler.SemanticAssembler;
 import dev.ikm.tinkar.composer.assembler.SemanticAssemblerConsumer;
+import dev.ikm.tinkar.composer.io.PackageWriter;
 import dev.ikm.tinkar.entity.Entity;
-import dev.ikm.tinkar.entity.EntityVersion;
+import dev.ikm.tinkar.entity.EntityService;
 import dev.ikm.tinkar.entity.StampEntity;
+import dev.ikm.tinkar.schema.StampChronology;
+import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
-import java.util.List;
+import java.util.UUID;
 
 public final class Session {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Session.class);
-	private final StampEntity<?> stampEntity;
-	private final ChangeSetWriter changeSetWriter;
+	private final UUID id;
+	private final StampChronology stampChronology;
+	private final PackageWriter packageWriter;
 
 	/**
 	 * Provides a Session for creating Components using the Transaction and STAMP provided.
 	 */
-	protected Session(StampEntity<?> stampEntity, Path changeSetFile) {
-		this.stampEntity = stampEntity;
-		this.changeSetWriter = new ChangeSetWriter(changeSetFile);
-		LOG.info("Session {} - Initializing with stamp: {}", stampEntity.publicId());
+	protected Session(PackageWriter packageWriter, StampChronology stampChronology) {
+		this.id = UUID.randomUUID();
+		this.stampChronology = stampChronology;
+		this.packageWriter = packageWriter;
+		LOG.info("Session {} - Initializing with stamp: {}", stampChronology);
 	}
 
 	/**
@@ -56,11 +59,13 @@ public final class Session {
 	 */
 	public Attachable compose(ConceptAssemblerConsumer conceptAssemblerConsumer) {
 		ConceptAssembler conceptAssembler = new ConceptAssembler();
-		conceptAssembler.setSessionStampEntity(stampEntity);
+		conceptAssembler.setSessionStampChronology(stampChronology);
+		conceptAssembler.setSessionId(id);
+		conceptAssembler.setPackageWriter(packageWriter);
 
 		conceptAssemblerConsumer.accept(conceptAssembler);
-		Entity entity = ((Attachable) conceptAssembler).validateAndWrite();
-		ChangeSetManager.getInstance().add(stampEntity.publicId(), entity);
+		TinkarMsg tinkarMsg = ((Attachable) conceptAssembler).validateAndWrite();
+		packageWriter.writeToPackage(tinkarMsg);
 		return conceptAssembler;
 	}
 
@@ -73,11 +78,13 @@ public final class Session {
 	 */
 	public Attachable compose(PatternAssemblerConsumer patternAssemblerConsumer) {
 		PatternAssembler patternAssembler = new PatternAssembler();
-		patternAssembler.setSessionStampEntity(stampEntity);
+		patternAssembler.setSessionStampChronology(stampChronology);
+		patternAssembler.setSessionId(id);
+		patternAssembler.setPackageWriter(packageWriter);
 
 		patternAssemblerConsumer.accept(patternAssembler);
-		Entity entity = ((Attachable) patternAssembler).validateAndWrite();
-		ChangeSetManager.getInstance().add(stampEntity.publicId(), entity);
+		TinkarMsg tinkarMsg = ((Attachable) patternAssembler).validateAndWrite();
+		packageWriter.writeToPackage(tinkarMsg);
 		return patternAssembler;
 	}
 
@@ -90,11 +97,13 @@ public final class Session {
 	 */
 	public Attachable compose(SemanticAssemblerConsumer semanticAssemblerConsumer) {
 		SemanticAssembler semanticAssembler = new SemanticAssembler();
-		semanticAssembler.setSessionStampEntity(stampEntity);
+		semanticAssembler.setSessionStampChronology(stampChronology);
+		semanticAssembler.setSessionId(id);
+		semanticAssembler.setPackageWriter(packageWriter);
 
 		semanticAssemblerConsumer.accept(semanticAssembler);
-		Entity entity = ((Attachable) semanticAssembler).validateAndWrite();
-		ChangeSetManager.getInstance().add(stampEntity.publicId(), entity);
+		TinkarMsg tinkarMsg = ((Attachable) semanticAssembler).validateAndWrite();
+		packageWriter.writeToPackage(tinkarMsg);
 		return semanticAssembler;
 	}
 
@@ -107,27 +116,18 @@ public final class Session {
 	 * @see SemanticTemplate
 	 */
 	public Attachable compose(SemanticTemplate semanticTemplate, EntityProxy reference) {
-		semanticTemplate.setSessionStampEntity(stampEntity);
+		semanticTemplate.setSessionStampChronology(stampChronology);
 		semanticTemplate.setReference(reference);
+		semanticTemplate.setSessionId(id);
+		semanticTemplate.setPackageWriter(packageWriter);
 
-		Entity entity = semanticTemplate.validateAndWrite();
-		ChangeSetManager.getInstance().add(stampEntity.publicId(), entity);
+		TinkarMsg tinkarMsg = semanticTemplate.validateAndWrite();
+		packageWriter.writeToPackage(tinkarMsg);
 		return semanticTemplate;
 	}
 
-	public PublicId getId() {
-		return stampEntity.publicId();
-	}
-
-	public void commit() {
-		LOG.info("Session {} - Committing {} changes", stampEntity.publicId(), ChangeSetManager.getInstance().size(stampEntity.publicId()));
-		List<Entity<EntityVersion>> messages = ChangeSetManager.getInstance().get(stampEntity.publicId());
-		if (messages != null) {
-			changeSetWriter.writeChangeSet(messages);
-			ChangeSetManager.getInstance().clear(stampEntity.publicId());
-		} else {
-			LOG.warn("Session {} - No changes to commit", stampEntity.publicId());
-		}
+	public UUID getId() {
+		return id;
 	}
 
 }

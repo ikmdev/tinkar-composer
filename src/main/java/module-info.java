@@ -21,7 +21,10 @@ module dev.ikm.tinkar.composer {
     requires org.eclipse.collections.impl;
     requires dev.ikm.tinkar.schema;
     requires org.slf4j;
-    exports dev.ikm.tinkar.composer;
+	requires dev.ikm.jpms.protobuf;
+	exports dev.ikm.tinkar.composer;
     exports dev.ikm.tinkar.composer.template;
     exports dev.ikm.tinkar.composer.assembler;
+	exports dev.ikm.tinkar.composer.io;
+    exports dev.ikm.tinkar.composer.domain;
 }
