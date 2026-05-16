@@ -39,8 +39,8 @@ public class ChronologyBuilder {
 	}
 
 	public static TinkarMsg buildPatternChronologyMsg(dev.ikm.tinkar.common.id.PublicId ids, StampChronology stampChronology,
-	                                                dev.ikm.tinkar.common.id.PublicId meaningIds, dev.ikm.tinkar.common.id.PublicId purposeIds,
-	                                                List<PatternDef> patternDefs) {
+	                                                  dev.ikm.tinkar.common.id.PublicId meaningIds, dev.ikm.tinkar.common.id.PublicId purposeIds,
+	                                                  List<PatternDef> patternDefs) {
 		PublicId patternPublicId = createPublicId(ids);
 		PublicId meaningPublicId = createPublicId(meaningIds);
 		PublicId purposePublicId = createPublicId(purposeIds);
@@ -64,8 +64,8 @@ public class ChronologyBuilder {
 	}
 
 	public static TinkarMsg buildSemanticChronologyMsg(dev.ikm.tinkar.common.id.PublicId ids, StampChronology stampChronology,
-	                                                  dev.ikm.tinkar.common.id.PublicId referenceIds, dev.ikm.tinkar.common.id.PublicId patternIds,
-	                                                  List<Field> fields) {
+	                                                   dev.ikm.tinkar.common.id.PublicId referenceIds, dev.ikm.tinkar.common.id.PublicId patternIds,
+	                                                   List<Field> fields) {
 		PublicId semanticPublicId = createPublicId(ids);
 		PublicId referencePublicId = createPublicId(referenceIds);
 		PublicId patternPublicId = createPublicId(patternIds);
@@ -82,9 +82,8 @@ public class ChronologyBuilder {
 	}
 
 	public static TinkarMsg buildStampChronologyMsg(dev.ikm.tinkar.common.id.PublicId id, dev.ikm.tinkar.common.id.PublicId stateIds, long time, dev.ikm.tinkar.common.id.PublicId authorIds,
-	                                            dev.ikm.tinkar.common.id.PublicId moduleIds,
-	                                            dev.ikm.tinkar.common.id.PublicId pathIds) {
-		StampChronology.Builder stampBuilder = StampChronology.newBuilder().setPublicId(createPublicId(id));
+	                                                dev.ikm.tinkar.common.id.PublicId moduleIds,
+	                                                dev.ikm.tinkar.common.id.PublicId pathIds) {
 		StampVersion stampVersion = StampVersion.newBuilder()
 				.setStatusPublicId(createPublicId(stateIds))
 				.setTime(time)
@@ -92,7 +91,9 @@ public class ChronologyBuilder {
 				.setModulePublicId(createPublicId(moduleIds))
 				.setPathPublicId(createPublicId(pathIds))
 				.build();
-		StampChronology stampChronology = StampChronology.newBuilder().setFirstStampVersion(stampVersion).build();
+		StampChronology stampChronology = StampChronology.newBuilder()
+				.setPublicId(createPublicId(id))
+				.setFirstStampVersion(stampVersion).build();
 		return TinkarMsg.newBuilder().setStampChronology(stampChronology).build();
 	}
 

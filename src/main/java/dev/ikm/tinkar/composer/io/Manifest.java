@@ -1,11 +1,21 @@
 package dev.ikm.tinkar.composer.io;
 
+import dev.ikm.tinkar.common.id.PublicIds;
+import dev.ikm.tinkar.entity.Entity;
+import dev.ikm.tinkar.entity.EntityHandle;
+import dev.ikm.tinkar.entity.EntityVersion;
 import dev.ikm.tinkar.schema.PublicId;
+import dev.ikm.tinkar.terms.TinkarTerm;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.stream.Collectors;
 
 public class Manifest {
 
@@ -55,14 +65,42 @@ public class Manifest {
 		this.authors.add(author);
 	}
 
-	public String manifestString() {
-		return "Entity Count: " + entityCount + "\n" +
-				"Concept Count: " + conceptsCount + "\n" +
-				"Semantic Count: " + semanticsCount + "\n" +
-				"Pattern Count: " + patternsCount + "\n" +
-				"Stamp Count: " + stampsCount + "\n" +
-				"Modules: " + modules + "\n" +
-				"Authors: " + authors;
+	public String constructManifestContent() {
+		return "Packager-Name: " + TinkarTerm.KOMET_USER.description() + "\n" +
+				"Package-Date: " + LocalDateTime.now(Clock.systemUTC()) + "\n" +
+				"Total-Count: " + entityCount + "\n" +
+				"Concept-Count: " + conceptsCount + "\n" +
+				"Semantic-Count: " + semanticsCount + "\n" +
+				"Pattern-Count: " + patternsCount + "\n" +
+				"Stamp-Count: " + stampsCount + "\n" +
+				idsToManifestEntry(modules) +
+				idsToManifestEntry(authors) +
+				"\n";
+	}
+
+
+	public static String idsToManifestEntry(Collection<PublicId> publicIds) {
+		StringBuilder manifestEntry = new StringBuilder();
+		publicIds.forEach((publicId) -> {
+			// Convert PublicId to Manifest Entry Name
+			String idString = publicId.getUuidsList().stream()
+					.map(UUID::fromString)
+					.map(UUID::toString)
+					.collect(Collectors.joining(","));
+			// Get Description
+			dev.ikm.tinkar.common.id.PublicId tinkarId = PublicIds.of(publicId.getUuidsList().getFirst());
+			EntityHandle entityHandle = EntityHandle.get(tinkarId);
+			Optional<Entity<? extends EntityVersion>> entity = entityHandle.entity();
+			String manifestDescription = "Description Undefined";
+			if (entity.isPresent()) {
+				manifestDescription = entity.get().description();
+			}
+			// Create Manifest Entry
+			manifestEntry.append("\n")
+					.append("Name: ").append(idString).append("\n")
+					.append("Description: ").append(manifestDescription).append("\n");
+		});
+		return manifestEntry.toString();
 	}
 
 }

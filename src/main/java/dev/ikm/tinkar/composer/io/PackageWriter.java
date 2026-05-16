@@ -62,7 +62,7 @@ public class PackageWriter implements AutoCloseable {
 		zos.closeEntry();
 		// Write the Manifest Zip Entry
 		final ZipEntry manifestEntry = new ZipEntry("META-INF/MANIFEST.MF");
-		String manifestString = manifest.manifestString();
+		String manifestString = manifest.constructManifestContent();
 		zos.putNextEntry(manifestEntry);
 		zos.write(manifestString.getBytes(StandardCharsets.UTF_8));
 		zos.closeEntry();

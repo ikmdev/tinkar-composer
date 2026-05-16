@@ -44,7 +44,6 @@ public class StatedAxiom extends SingleSemanticTemplate {
 
 	private static final int IDX_DEFINITION_ROOT = 0;
 	private final AtomicInteger vertexIdx = new AtomicInteger(1); //Index zero reserved for DefinitionRoot
-	private final MutableList<EntityVertex> originVertexList = Lists.mutable.empty();
 	private final List<Vertex> originVertices = new ArrayList<>();
 
 	/**
@@ -79,7 +78,7 @@ public class StatedAxiom extends SingleSemanticTemplate {
 
 	@Override
 	protected List<Field> assignFieldValues() {
-		if (originVertexList.notEmpty()) {
+		if (!originVertices.isEmpty()) {
 			Field diTreeField = Field.newBuilder().setDiTree(constructDiTree()).build();
 			return List.of(diTreeField);
 		}
@@ -88,7 +87,7 @@ public class StatedAxiom extends SingleSemanticTemplate {
 
 	@Override
 	protected void validate() {
-		if (originVertexList.isEmpty()) {
+		if (originVertices.isEmpty()) {
 			throw new IllegalArgumentException("StatedAxiom requires at least one origin vertex");
 		}
 	}
@@ -117,13 +116,12 @@ public class StatedAxiom extends SingleSemanticTemplate {
 
 	private Vertex createEntityVertex(int index, Concept meaningConcept) {
 		PublicId meaningId = ChronologyBuilder.createPublicId(meaningConcept);
-		Vertex.Property property = Vertex.Property.newBuilder().build();
 		VertexUUID vertexUUID = VertexUUID.newBuilder().setUuid(UUID.randomUUID().toString()).build();
 		return Vertex.newBuilder()
 				.setVertexUuid(vertexUUID)
 				.setIndex(index)
 				.setMeaningPublicId(meaningId)
-				.addProperties(property)
+				.addAllProperties(new ArrayList<Vertex.Property>())
 				.build();
 	}
 

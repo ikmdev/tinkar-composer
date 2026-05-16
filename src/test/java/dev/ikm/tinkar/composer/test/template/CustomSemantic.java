@@ -4,8 +4,6 @@ import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.schema.Field;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.TinkarTerm;
-import org.eclipse.collections.api.factory.Lists;
-import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.List;
 

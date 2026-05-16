@@ -83,6 +83,7 @@ public abstract class Attachable {
         childAttachable.setReference(this.asReferenceComponent());
         childAttachable.setSessionStampChronology(sessionStampChronology);
         childAttachable.setSessionId(getSessionId());
+        childAttachable.setPackageWriter(packageWriter);
     }
 
     /**
