@@ -232,3 +232,4 @@ Temporary Items
 ###################
 .claude
 /.vscode/settings.json
+/composer-standard-esh/composer-standard-esh-origin/src/main/resources
