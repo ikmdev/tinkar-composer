@@ -12,7 +12,7 @@
     <groupId>dev.ikm.tinkar</groupId>
     <artifactId>composer</artifactId>
     <version>1.14.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>IKM Tinkar Composer</name>
     <description>
@@ -41,8 +41,12 @@
             <email>support@ikm.dev</email>
         </developer>
     </developers>
+	<subprojects>
+		<subproject>composer-core</subproject>
+        <subproject>composer-standard-esh</subproject>
+    </subprojects>
 
-    <scm>
+	<scm>
         <url>http://www.github.com/ikmdev/tinkar-composer</url>
     </scm>
     <issueManagement>
@@ -108,35 +112,6 @@
     </dependencyManagement>
     <!-- Cross project dependencies -->
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse.collections</groupId>
-            <artifactId>eclipse-collections-api</artifactId>
-        </dependency>
-
-        <!-- Data Providers       -->
-        <dependency>
-            <groupId>${tinkar-core.groupId}</groupId>
-            <artifactId>data-ephemeral-provider</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Core Libraries       -->
-        <dependency>
-            <groupId>${tinkar-core.groupId}</groupId>
-            <artifactId>entity-provider</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>${tinkar-core.groupId}</groupId>
-            <artifactId>executor-provider</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${tinkar-core.groupId}</groupId>
-            <artifactId>search-provider</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
