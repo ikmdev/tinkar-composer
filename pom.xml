@@ -1,163 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
-    <modelVersion>4.1.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
+	<modelVersion>4.1.0</modelVersion>
 
-    <parent>
-        <groupId>network.ike.pipeline</groupId>
-        <artifactId>ike-parent</artifactId>
-        <version>111</version>
-        <relativePath/>
-    </parent>
+	<parent>
+		<groupId>network.ike.pipeline</groupId>
+		<artifactId>ike-parent</artifactId>
+		<version>111</version>
+		<relativePath/>
+	</parent>
 
-    <groupId>dev.ikm.tinkar</groupId>
-    <artifactId>composer</artifactId>
-    <version>1.14.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+	<groupId>dev.ikm.tinkar</groupId>
+	<artifactId>composer</artifactId>
+	<version>1.14.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <name>IKM Tinkar Composer</name>
-    <description>
-        Tinkar-Composer is a java software project that provides an API for creating,
-        updating, and retiring data Components that adhere to the Tinkar data model.
-    </description>
-    <url>http://www.ikm.dev</url>
-    <inceptionYear>2024</inceptionYear>
-    <organization>
-        <name>Integrated Knowledge Management</name>
-        <url>http://www.ikm.dev</url>
-    </organization>
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
+	<name>IKM Tinkar Composer</name>
+	<description>
+		Tinkar-Composer is a java software project that provides an API for creating,
+		updating, and retiring data Components that adhere to the Tinkar data model.
+	</description>
+	<url>http://www.ikm.dev</url>
+	<inceptionYear>2024</inceptionYear>
+	<organization>
+		<name>Integrated Knowledge Management</name>
+		<url>http://www.ikm.dev</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
 
-    <developers>
-        <developer>
-            <id>ikmdev</id>
-            <name>IKM Development Team</name>
-            <email>support@ikm.dev</email>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<id>ikmdev</id>
+			<name>IKM Development Team</name>
+			<email>support@ikm.dev</email>
+		</developer>
+	</developers>
 	<subprojects>
 		<subproject>composer-core</subproject>
-        <subproject>composer-standard-esh</subproject>
-    </subprojects>
+		<subproject>composer-standard-esh</subproject>
+	</subprojects>
 
 	<scm>
-        <url>http://www.github.com/ikmdev/tinkar-composer</url>
-    </scm>
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/ikmdev/tinkar-composer/issues</url>
-    </issueManagement>
+		<url>http://www.github.com/ikmdev/tinkar-composer</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/ikmdev/tinkar-composer/issues</url>
+	</issueManagement>
 
-    <properties>
-        <maven.compiler.enablePreview>true</maven.compiler.enablePreview>
-        <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.127.2-SNAPSHOT</tinkar-core.version>
-        <tinkar-starter-data.version>20250915</tinkar-starter-data.version>
+	<properties>
+		<maven.compiler.enablePreview>true</maven.compiler.enablePreview>
+		<tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
+		<tinkar-core.version>1.127.2-SNAPSHOT</tinkar-core.version>
+		<tinkar-starter-data.version>20250915</tinkar-starter-data.version>
 
-        <!-- JPMS Dependencies -->
-        <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
-        <eclipse-collections-api.version>13.0.0</eclipse-collections-api.version>
-    </properties>
+		<!-- JPMS Dependencies -->
+		<tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
+		<eclipse-collections-api.version>13.0.0</eclipse-collections-api.version>
+	</properties>
 
-    <repositories>
-        <repository>
-            <id>tinkar-nexus</id>
-            <url>https://nexus.tinkar.org/repository/ike-public/</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>tinkar-nexus</id>
+			<url>https://nexus.tinkar.org/repository/ike-public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
-    <!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>dev.ikm.komet</groupId>
-                <artifactId>komet-bom</artifactId>
-                <version>3.0.7-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.collections</groupId>
-                <artifactId>eclipse-collections-api</artifactId>
-                <version>${eclipse-collections-api.version}</version>
-            </dependency>
+	<!-- All Dependencies and versions used in this project are pre-defined here for use in modules -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>dev.ikm.komet</groupId>
+				<artifactId>komet-bom</artifactId>
+				<version>3.0.7-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.collections</groupId>
+				<artifactId>eclipse-collections-api</artifactId>
+				<version>${eclipse-collections-api.version}</version>
+			</dependency>
 
-            <!-- Core Libraries       -->
-            <dependency>
-                <groupId>${tinkar-core.groupId}</groupId>
-                <artifactId>entity-provider</artifactId>
-                <version>${tinkar-core.version}</version>
-            </dependency>
+			<!-- Core Libraries       -->
+			<dependency>
+				<groupId>${tinkar-core.groupId}</groupId>
+				<artifactId>entity-provider</artifactId>
+				<version>${tinkar-core.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>${tinkar-core.groupId}</groupId>
-                <artifactId>executor-provider</artifactId>
-                <version>${tinkar-core.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>${tinkar-core.groupId}</groupId>
+				<artifactId>executor-provider</artifactId>
+				<version>${tinkar-core.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>${tinkar-core.groupId}</groupId>
-                <artifactId>search-provider</artifactId>
-                <version>${tinkar-core.version}</version>
-            </dependency>
-       </dependencies>
-    </dependencyManagement>
-    <!-- Cross project dependencies -->
-    <dependencies>
+			<dependency>
+				<groupId>${tinkar-core.groupId}</groupId>
+				<artifactId>search-provider</artifactId>
+				<version>${tinkar-core.version}</version>
+			</dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+			<!-- Composer Libraries -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>composer-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<!-- Cross project dependencies -->
+	<dependencies>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j2-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 
-        <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-console</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-console</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

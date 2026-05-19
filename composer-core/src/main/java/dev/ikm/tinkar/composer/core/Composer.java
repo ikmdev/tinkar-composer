@@ -17,7 +17,6 @@ package dev.ikm.tinkar.composer.core;
 
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
-import dev.ikm.tinkar.composer.core.Session;
 import dev.ikm.tinkar.composer.core.io.PackageWriter;
 import dev.ikm.tinkar.schema.TinkarMsg;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
@@ -29,9 +28,11 @@ import java.nio.file.Path;
 public class Composer implements AutoCloseable {
 
 	private final PackageWriter packageWriter;
+	private final TransformRecord.Builder recordBuilder;
 
-	public Composer(Path zipPackage) throws FileNotFoundException {
+	public Composer(Path zipPackage, String standardName) throws FileNotFoundException {
 		this.packageWriter = new PackageWriter(zipPackage);
+		this.recordBuilder = new TransformRecord.Builder(standardName);
 	}
 
 	/**
@@ -62,8 +63,9 @@ public class Composer implements AutoCloseable {
 		PublicId stampId = PublicIds.newRandom();
 		PublicId statusId = status.publicId();
 		TinkarMsg stampChronologyMsg = ChronologyBuilder.buildStampChronologyMsg(stampId, statusId, time, author, module, path);
+		recordBuilder.incrementStamps();
 		packageWriter.writeToPackage(stampChronologyMsg);
-		return new Session(packageWriter, stampChronologyMsg.getStampChronology());
+		return new Session(packageWriter, stampChronologyMsg.getStampChronology(), recordBuilder);
 	}
 
 	/**
@@ -91,6 +93,10 @@ public class Composer implements AutoCloseable {
 	 */
 	public Session open(State status, Concept author, Concept module, Concept path) {
 		return open(status, System.currentTimeMillis(), author, module, path);
+	}
+
+	public TransformRecord getTransformRecord() {
+		return recordBuilder.build();
 	}
 
 	@Override

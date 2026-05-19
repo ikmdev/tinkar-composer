@@ -32,6 +32,7 @@ public abstract class Attachable {
     private UUID sessionId;
     private EntityProxy reference;
     private PackageWriter packageWriter;
+    private TransformRecord.Builder recordBuilder;
 
     protected void setSessionStampChronology(StampChronology stampChronology) {
         this.sessionStampChronology = stampChronology;
@@ -71,6 +72,14 @@ public abstract class Attachable {
         return packageWriter;
     }
 
+    protected void setRecordBuilder(TransformRecord.Builder recordBuilder) {
+        this.recordBuilder = recordBuilder;
+    }
+
+    protected TransformRecord.Builder getRecordBuilder() {
+        return recordBuilder;
+    }
+
     protected abstract EntityProxy asReferenceComponent();
 
     protected abstract TinkarMsg validateAndWrite();
@@ -82,6 +91,7 @@ public abstract class Attachable {
         childAttachable.setSessionStampChronology(sessionStampChronology);
         childAttachable.setSessionId(getSessionId());
         childAttachable.setPackageWriter(packageWriter);
+        childAttachable.setRecordBuilder(recordBuilder);
     }
 
     /**
@@ -93,6 +103,7 @@ public abstract class Attachable {
         initializeAttachable(semanticTemplate);
         TinkarMsg tinkarMsg = semanticTemplate.validateAndWrite();
         packageWriter.writeToPackage(tinkarMsg);
+        recordBuilder.incrementSemantics();
         return this;
     }
 
@@ -110,6 +121,7 @@ public abstract class Attachable {
             consumer.accept(template);
             TinkarMsg tinkarMsg = template.validateAndWrite();
             packageWriter.writeToPackage(tinkarMsg);
+            recordBuilder.incrementSemantics();
             return this;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate " + type.getSimpleName(), e);

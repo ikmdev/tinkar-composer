@@ -10,14 +10,55 @@
 	</parent>
 
 	<artifactId>composer-standard-esh-origin</artifactId>
+	<packaging>pom</packaging>
+
+	<name>Event Set Hierarchy Origin Content</name>
+
+	<description>
+		Origin data artifact for the Event Set Hierarchy (ESH) standard.
+		This module repackages untransformed source files into a versioned ZIP for Maven/Nexus distribution.
+		The POM is the authoritative manifest for source metadata, including standard data version and source release date.
+		Source files are packaged under /artifacts in the ZIP.
+	</description>
+
+	<properties>
+		<!-- Origin Packaging Properties -->
+		<origin.groupId>dev.ikm.content</origin.groupId>
+		<origin.artifactId>esh-origin-data</origin.artifactId>
+		<origin.version>1.0.0</origin.version>
+		<origin.fileName>${origin.artifactId}-${origin.version}</origin.fileName>
+		<origin.manifest.source>pom</origin.manifest.source>
+
+		<!-- Origin Metadata -->
+		<esh.source.name>Event Set Hierarchy</esh.source.name>
+		<esh.source.files>
+			intersect-grid-section_06042025.xlsx,
+			POST_p0630_ec_unload_05222025.csv,
+			POST_p0630_es_unload_05222025.csv,
+			specialty_input_06042025.xlsx
+		</esh.source.files>
+		<esh.source.releaseDates>
+			06/04/2025,
+			05/22/2025
+		</esh.source.releaseDates>
+		<esh.source.provider>IKE</esh.source.provider>
+		<esh.source.system>ESH</esh.source.system>
+
+		<!-- Maven Properties -->
+		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
+	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
-			<!-- Assemble origin data files into a ZIP -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.6.0</version>
 				<executions>
 					<execution>
 						<id>package-origin-data</id>
@@ -27,30 +68,54 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>src/assembly/origin-data.xml</descriptor>
+								<descriptor>${project.basedir}/src/assembly/origin-data.xml</descriptor>
 							</descriptors>
-							<!-- Make this the primary artifact -->
+							<attach>true</attach>
 							<appendAssemblyId>false</appendAssemblyId>
-							<finalName>${project.artifactId}-${project.version}</finalName>
+							<finalName>${origin.fileName}</finalName>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
-			<!-- Attach the JAR for the Java code if needed -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
+				<artifactId>maven-install-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>attach-code-jar</id>
-						<phase>package</phase>
+						<id>install-origin-zip-custom-coordinates</id>
+						<phase>install</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>install-file</goal>
 						</goals>
 						<configuration>
-							<classifier>code</classifier>
+							<file>${project.build.directory}/${origin.fileName}.zip</file>
+							<groupId>${origin.groupId}</groupId>
+							<artifactId>${origin.artifactId}</artifactId>
+							<version>${origin.version}</version>
+							<packaging>zip</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>deploy-origin-zip-custom-coordinates</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<configuration>
+							<file>${origin.fileName}.zip</file>
+							<groupId>${origin.groupId}</groupId>
+							<artifactId>${origin.artifactId}</artifactId>
+							<version>${origin.version}</version>
+							<packaging>zip</packaging>
+							<repositoryId>ike-public</repositoryId>
+							<url>https://nexus.tinkar.org/repository/ike-public/</url>
 						</configuration>
 					</execution>
 				</executions>

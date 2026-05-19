@@ -36,14 +36,16 @@ public final class Session {
 	private final UUID id;
 	private final StampChronology stampChronology;
 	private final PackageWriter packageWriter;
+	private final TransformRecord.Builder recordBuilder;
 
 	/**
 	 * Provides a Session for creating Components using the Transaction and STAMP provided.
 	 */
-	protected Session(PackageWriter packageWriter, StampChronology stampChronology) {
+	protected Session(PackageWriter packageWriter, StampChronology stampChronology, TransformRecord.Builder recordBuilder) {
 		this.id = UUID.randomUUID();
 		this.stampChronology = stampChronology;
 		this.packageWriter = packageWriter;
+		this.recordBuilder = recordBuilder;
 		LOG.info("Session {} - Initializing with stamp: {}", stampChronology);
 	}
 
@@ -59,10 +61,13 @@ public final class Session {
 		conceptAssembler.setSessionStampChronology(stampChronology);
 		conceptAssembler.setSessionId(id);
 		conceptAssembler.setPackageWriter(packageWriter);
+		conceptAssembler.setRecordBuilder(recordBuilder);
 
 		conceptAssemblerConsumer.accept(conceptAssembler);
 		TinkarMsg tinkarMsg = ((Attachable) conceptAssembler).validateAndWrite();
 		packageWriter.writeToPackage(tinkarMsg);
+		recordBuilder.incrementConcepts();
+
 		return conceptAssembler;
 	}
 
@@ -78,10 +83,12 @@ public final class Session {
 		patternAssembler.setSessionStampChronology(stampChronology);
 		patternAssembler.setSessionId(id);
 		patternAssembler.setPackageWriter(packageWriter);
+		patternAssembler.setRecordBuilder(recordBuilder);
 
 		patternAssemblerConsumer.accept(patternAssembler);
 		TinkarMsg tinkarMsg = ((Attachable) patternAssembler).validateAndWrite();
 		packageWriter.writeToPackage(tinkarMsg);
+		recordBuilder.incrementPatterns();
 		return patternAssembler;
 	}
 
@@ -97,10 +104,12 @@ public final class Session {
 		semanticAssembler.setSessionStampChronology(stampChronology);
 		semanticAssembler.setSessionId(id);
 		semanticAssembler.setPackageWriter(packageWriter);
+		semanticAssembler.setRecordBuilder(recordBuilder);
 
 		semanticAssemblerConsumer.accept(semanticAssembler);
 		TinkarMsg tinkarMsg = ((Attachable) semanticAssembler).validateAndWrite();
 		packageWriter.writeToPackage(tinkarMsg);
+		recordBuilder.incrementSemantics();
 		return semanticAssembler;
 	}
 
@@ -117,9 +126,11 @@ public final class Session {
 		semanticTemplate.setReference(reference);
 		semanticTemplate.setSessionId(id);
 		semanticTemplate.setPackageWriter(packageWriter);
+		semanticTemplate.setRecordBuilder(recordBuilder);
 
 		TinkarMsg tinkarMsg = semanticTemplate.validateAndWrite();
 		packageWriter.writeToPackage(tinkarMsg);
+		recordBuilder.incrementSemantics();
 		return semanticTemplate;
 	}
 
