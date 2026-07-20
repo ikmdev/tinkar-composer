@@ -1,6 +1,6 @@
 # tinkar-composer
 
-tinkar-composer component.
+tinkar-composer subproject.
 
 ## Build Standards
 
