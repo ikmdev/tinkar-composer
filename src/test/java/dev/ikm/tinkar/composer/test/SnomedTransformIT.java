@@ -68,7 +68,7 @@ public class SnomedTransformIT {
 //
 //    private void loadSnomedStarterData() {
 //        State status = State.ACTIVE;
-//        long time = PrimitiveData.PREMUNDANE_TIME;
+//        long time = PrimitiveData.PRE_INCEPTION_TIME;
 //        Concept author = TinkarTerm.USER;
 //        Concept module = TinkarTerm.PRIMORDIAL_MODULE;
 //        Concept path = TinkarTerm.PRIMORDIAL_PATH;

@@ -708,7 +708,7 @@ public class SandboxIT {
                 .concept(Concept.make(PublicIds.of(HEALTH_CONCEPT.asUuidArray()[0]))));
         composer.commitSession(snomedRootConceptSession);
 
-        int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
+        int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
         int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
@@ -730,7 +730,7 @@ public class SandboxIT {
                 .concept(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
         composer.commitSession(snomedRootConceptSession);
 
-        int expectedVersionCount = 3; // First version is Premundane time from TinkarStarterData, next 2 versions are written above
+        int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
         int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
