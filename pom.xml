@@ -64,7 +64,7 @@
     <properties>
         <maven.compiler.enablePreview>true</maven.compiler.enablePreview>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.127.3</tinkar-core.version>
+        <tinkar-core.version>1.127.4-SNAPSHOT</tinkar-core.version>
         <tinkar-starter-data.version>20250915</tinkar-starter-data.version>
 
         <!-- JPMS Dependencies -->
@@ -87,7 +87,7 @@
             <dependency>
                 <groupId>dev.ikm.komet</groupId>
                 <artifactId>komet-bom</artifactId>
-                <version>3.0.8</version>
+                <version>3.0.9-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
