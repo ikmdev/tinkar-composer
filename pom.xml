@@ -11,7 +11,7 @@
 
     <groupId>dev.ikm.tinkar</groupId>
     <artifactId>composer</artifactId>
-    <version>1.14.2</version>
+    <version>1.14.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>IKM Tinkar Composer</name>
