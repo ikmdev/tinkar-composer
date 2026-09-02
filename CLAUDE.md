@@ -15,7 +15,7 @@ mvn clean verify -DskipTests -T 1C
 ## Key Facts
 
 - GroupId: `dev.ikm.tinkar`
-- Version: `1.14.0-SNAPSHOT`
+- Version: `1.14.4-SNAPSHOT`
 - Uses `--enable-preview` (Java 25)
 - BOM: imports `dev.ikm.ike:ike-bom` for dependency version management
 
