@@ -23,4 +23,4 @@ mvn clean verify -DskipTests -T4
 - GroupId: `dev.ikm.tinkar`
 - ArtifactId: `composer`
 - Single jar artifact (no submodules)
-- Uses `--enable-preview` (Java 25) — set via `maven.compiler.enablePreview`
+- Uses `--enable-preview` (Java 27) — set via `maven.compiler.enablePreview`
