@@ -26,6 +26,7 @@ import dev.ikm.tinkar.composer.assembler.ConceptAssembler;
 import dev.ikm.tinkar.composer.template.FullyQualifiedName;
 import dev.ikm.tinkar.composer.template.StatedAxiom;
 import dev.ikm.tinkar.common.service.EntityCountSummary;
+import dev.ikm.tinkar.entity.EntityHandle;
 import dev.ikm.tinkar.entity.EntityService;
 import dev.ikm.tinkar.entity.SemanticEntityVersion;
 import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
@@ -84,7 +85,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptId.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -110,7 +111,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(firstSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptId.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -131,7 +132,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(previousSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptId.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -175,7 +176,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptWithMultipleUuids.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -198,7 +199,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptWithMultipleUuids.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -221,7 +222,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptWithLastUuids.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptWithLastUuids.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -243,7 +244,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
+        int actualVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -265,7 +266,7 @@ public class ComposeVersionsToMergeIT {
         composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
+        int actualVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }

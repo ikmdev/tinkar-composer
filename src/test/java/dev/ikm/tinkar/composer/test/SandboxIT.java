@@ -36,7 +36,9 @@ import dev.ikm.tinkar.composer.template.USDialect;
 import dev.ikm.tinkar.composer.test.template.CustomSemantic;
 import dev.ikm.tinkar.entity.Entity;
 import dev.ikm.tinkar.common.service.EntityCountSummary;
+import dev.ikm.tinkar.entity.EntityHandle;
 import dev.ikm.tinkar.entity.EntityService;
+import dev.ikm.tinkar.entity.EntityVersion;
 import dev.ikm.tinkar.entity.PatternRecord;
 import dev.ikm.tinkar.entity.SemanticEntityVersion;
 import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
@@ -129,7 +131,7 @@ public class SandboxIT {
                     .fieldDefinition(MEANING, PURPOSE, STRING);
         });
 
-        PatternRecord patternFromDbBefore = EntityService.get().getEntityFast(testPattern.asUuidArray());
+        PatternRecord patternFromDbBefore = EntityHandle.get(testPattern.asUuidArray()).expectPatternRecord();
         int versionsCountBefore = patternFromDbBefore.versions().size();
 
         System.out.println("Stamp PublicId: " + patternFromDbBefore.versions().get(0).stamp().publicId().idString());
@@ -142,7 +144,7 @@ public class SandboxIT {
                     .fieldDefinition(MEANING, PURPOSE, COMPONENT_FIELD);
         });
 
-        PatternRecord patternFromDbAfter = EntityService.get().getEntityFast(testPattern.asUuidArray());
+        PatternRecord patternFromDbAfter = EntityHandle.get(testPattern.asUuidArray()).expectPatternRecord();
         int versionsCountAfter = patternFromDbAfter.versions().size();
 
 //        afterAll();
@@ -163,10 +165,10 @@ public class SandboxIT {
     @Test
     @Disabled
     public void createMultiplePatternVersionsWithOneStampPart2() throws IOException, InterruptedException {
-        Optional<Entity> stampEntity = EntityService.get().getEntity(UUID.fromString("6b4c07c5-a804-5f97-a803-bb72501c57b6"));
+        Optional<Entity<? extends EntityVersion>> stampEntity = EntityHandle.get(UUID.fromString("6b4c07c5-a804-5f97-a803-bb72501c57b6")).entity().filter(e -> !e.canceled());
         Transaction.forStamp(stampEntity.get().publicId());
 
-        PatternRecord patternFromDbRetrieve = EntityService.get().getEntityFast(testPattern.asUuidArray());
+        PatternRecord patternFromDbRetrieve = EntityHandle.get(testPattern.asUuidArray()).expectPatternRecord();
         int versionsCountRetrieve = patternFromDbRetrieve.versions().size();
 
 //        Composer composer = new Composer("createMultiplePatternVersionsWithOneStampPart2");
@@ -443,7 +445,7 @@ public class SandboxIT {
         composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptId.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -472,7 +474,7 @@ public class SandboxIT {
         composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(patternId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(patternId.asUuidArray()).expectPattern().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -511,7 +513,7 @@ public class SandboxIT {
         composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(semanticId.asUuidArray()).expectSemantic().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -541,7 +543,7 @@ public class SandboxIT {
         composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(semanticId.asUuidArray()).expectSemantic().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -573,7 +575,7 @@ public class SandboxIT {
         appendComposer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(semanticId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(semanticId.asUuidArray()).expectSemantic().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -598,7 +600,7 @@ public class SandboxIT {
         composer.commitSession(firstSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptId.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -619,7 +621,7 @@ public class SandboxIT {
         composer.commitSession(previousSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptId.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptId.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -663,7 +665,7 @@ public class SandboxIT {
         composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptWithMultipleUuids.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -686,7 +688,7 @@ public class SandboxIT {
         composer.commitSession(laterSession);
 
         int expectedVersionCount = 2;
-        int actualVersionCount = EntityService.get().getEntityFast(conceptWithMultipleUuids.asUuidArray()).versions().size();
+        int actualVersionCount = EntityHandle.get(conceptWithMultipleUuids.asUuidArray()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -709,7 +711,7 @@ public class SandboxIT {
         composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
+        int actualVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
@@ -731,7 +733,7 @@ public class SandboxIT {
         composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityService.get().getEntityFast(HEALTH_CONCEPT).versions().size();
+        int actualVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
