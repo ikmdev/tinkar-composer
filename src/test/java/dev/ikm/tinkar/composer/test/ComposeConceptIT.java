@@ -16,6 +16,7 @@ package dev.ikm.tinkar.composer.test;
  * limitations under the License.
  */
 
+import network.ike.foundation.ike.bindings.IkeTerms;
 import dev.ikm.tinkar.common.id.PublicId;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.common.service.CachingService;
@@ -41,7 +42,6 @@ import dev.ikm.tinkar.entity.load.LoadEntitiesFromProtobufFile;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import dev.ikm.tinkar.terms.State;
-import dev.ikm.tinkar.terms.TinkarTerm;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,14 +52,14 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static dev.ikm.tinkar.terms.KernelTerm.*;
-import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
-import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
+import static network.ike.foundation.ike.bindings.IkeTerms.DEVELOPMENT_MODULE;
+import static network.ike.foundation.ike.bindings.IkeTerms.MEANING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ComposeConceptIT {
     public static final Function<String, File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
-    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-20250915-reasoned-pb.zip");
+    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/ike-starter-set-reasoned-pb.zip");
     public static State DEFAULT_STATUS = State.ACTIVE;
     public static long DEFAULT_TIME = System.currentTimeMillis();
     public static Concept DEFAULT_AUTHOR = USER;
@@ -241,7 +241,7 @@ public class ComposeConceptIT {
         Concept conceptProxy = Concept.make(PublicIds.of(conceptUuid));
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .attach(Identifier.class, identifier -> identifier
-                        .source(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER)
+                        .source(IkeTerms.UNIVERSALLY_UNIQUE_IDENTIFIER)
                         .identifier(conceptUuid.toString())));
 
         composer.commitSession(session);

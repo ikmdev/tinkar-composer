@@ -65,7 +65,8 @@
         <maven.compiler.enablePreview>true</maven.compiler.enablePreview>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
         <tinkar-core.version>1.127.7-64bit-SNAPSHOT</tinkar-core.version>
-        <tinkar-starter-data.version>20250915</tinkar-starter-data.version>
+        <!-- The IKE starter set the tests load, from starter-data-ws, which builds after this repository. -->
+        <ike-starter-set.version>1-64bit-SNAPSHOT</ike-starter-set.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
@@ -184,6 +185,13 @@
             <artifactId>junit-platform-console</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- The IKE starter set's bindings (IkeTerms) for the components the tests name beyond the kernel. -->
+        <dependency>
+            <groupId>network.ike.foundation</groupId>
+            <artifactId>ike-bindings</artifactId>
+            <version>${ike-starter-set.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -203,19 +211,33 @@
                 <configuration>
                     <artifactItems>
                         <artifactItem>
-                            <groupId>dev.ikm.data.tinkar</groupId>
-                            <artifactId>tinkar-starter-data</artifactId>
-                            <version>${tinkar-starter-data.version}</version>
+                            <groupId>network.ike.foundation</groupId>
+                            <artifactId>ike-starter-set</artifactId>
+                            <version>${ike-starter-set.version}</version>
                             <classifier>reasoned-pb</classifier>
                             <type>zip</type>
                             <overWrite>false</overWrite>
                             <outputDirectory>${project.build.directory}/data</outputDirectory>
+                            <destFileName>ike-starter-set-reasoned-pb.zip</destFileName>
                         </artifactItem>
                     </artifactItems>
                     <outputDirectory>${project.build.directory}/data</outputDirectory>
                     <overWriteReleases>false</overWriteReleases>
                     <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
+            </plugin>
+            <!-- The *IT classes run here; ike-parent declares failsafe only in pluginManagement. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

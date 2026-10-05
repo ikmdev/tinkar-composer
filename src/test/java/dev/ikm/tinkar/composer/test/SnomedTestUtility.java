@@ -15,6 +15,7 @@
  */
 package dev.ikm.tinkar.composer.test;
 
+import network.ike.foundation.ike.bindings.IkeTerms;
 import dev.ikm.tinkar.terms.KernelTerm;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.common.service.PrimitiveData;
@@ -23,7 +24,6 @@ import dev.ikm.tinkar.common.util.uuid.UuidUtil;
 import dev.ikm.tinkar.entity.export.ExportEntitiesController;
 import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
-import dev.ikm.tinkar.terms.TinkarTerm;
 
 import java.io.File;
 import java.text.ParseException;
@@ -123,7 +123,7 @@ public class SnomedTestUtility {
         Concept acceptabilityConcept = null;
         switch (acceptabilityCode) {
             case "900000000000548007" -> acceptabilityConcept = KernelTerm.PREFERRED;
-            case "900000000000549004" -> acceptabilityConcept = TinkarTerm.ACCEPTABLE;
+            case "900000000000549004" -> acceptabilityConcept = IkeTerms.ACCEPTABLE;
             default -> throw new RuntimeException("UNRECOGNIZED ACCEPTABILITY CODE");
         }
         return acceptabilityConcept;

@@ -45,16 +45,16 @@ import java.nio.file.Path;
 import java.util.function.Function;
 
 import static dev.ikm.tinkar.terms.KernelTerm.*;
-import static dev.ikm.tinkar.terms.TinkarTerm.ACCEPTABLE;
-import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
-import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
-import static dev.ikm.tinkar.terms.TinkarTerm.PURPOSE;
+import static network.ike.foundation.ike.bindings.IkeTerms.ACCEPTABLE;
+import static network.ike.foundation.ike.bindings.IkeTerms.DEVELOPMENT_MODULE;
+import static network.ike.foundation.ike.bindings.IkeTerms.MEANING;
+import static network.ike.foundation.ike.bindings.IkeTerms.PURPOSE;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ConceptComposerIT {
 
     public static final Function<String,File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
-    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-20250915-reasoned-pb.zip");
+    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/ike-starter-set-reasoned-pb.zip");
     public static State DEFAULT_STATUS = State.ACTIVE;
     public static long DEFAULT_TIME = System.currentTimeMillis();
     public static Concept DEFAULT_AUTHOR = USER;

@@ -63,21 +63,19 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static dev.ikm.tinkar.terms.KernelTerm.*;
-import static dev.ikm.tinkar.terms.TinkarTerm.ACCEPTABLE;
-import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_NAME;
-import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_PROPERTIES;
-import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_PURPOSE;
-import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
-import static dev.ikm.tinkar.terms.TinkarTerm.HEALTH_CONCEPT;
-import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
-import static dev.ikm.tinkar.terms.TinkarTerm.MODEL_CONCEPT;
-import static dev.ikm.tinkar.terms.TinkarTerm.PURPOSE;
+import static network.ike.foundation.ike.bindings.IkeTerms.ACCEPTABLE;
+import static network.ike.foundation.ike.bindings.IkeTerms.ACTION_PROPERTIES;
+import static network.ike.foundation.ike.bindings.IkeTerms.DEVELOPMENT_MODULE;
+import static network.ike.foundation.ike.bindings.IkeTerms.HEALTH_CONCEPT;
+import static network.ike.foundation.ike.bindings.IkeTerms.MEANING;
+import static network.ike.foundation.ike.bindings.IkeTerms.MODEL_CONCEPT;
+import static network.ike.foundation.ike.bindings.IkeTerms.PURPOSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SandboxIT {
     public static final Function<String, File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
-    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-20250915-reasoned-pb.zip");
+    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/ike-starter-set-reasoned-pb.zip");
     public static State DEFAULT_STATUS = State.ACTIVE;
     public static long DEFAULT_TIME = System.currentTimeMillis();
     public static Concept DEFAULT_AUTHOR = USER;
@@ -249,7 +247,7 @@ public class SandboxIT {
         session.compose((PatternAssembler patternAssembler) -> patternAssembler
                         .meaning(MEANING)
                         .purpose(PURPOSE)
-                        .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING));
+                        .fieldDefinition(MEANING, PURPOSE, STRING));
 
         composer.commitSession(session);
         int expectedComponentsUpdatedCount = 1;
@@ -326,7 +324,7 @@ public class SandboxIT {
         session.compose((PatternAssembler patternAssembler) -> patternAssembler
                 .meaning(MEANING)
                 .purpose(PURPOSE)
-                .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING)
+                .fieldDefinition(MEANING, PURPOSE, STRING)
                 .attach(FullyQualifiedName.class, fqn -> fqn
                         .language(ENGLISH_LANGUAGE)
                         .text("FQN for Pattern")
@@ -483,7 +481,7 @@ public class SandboxIT {
                 .pattern(Pattern.make(patternId))
                 .meaning(ACTION_PROPERTIES)
                 .purpose(ACTION_PROPERTIES)
-                .fieldDefinition(ACTION_NAME, ACTION_PURPOSE, STRING));
+                .fieldDefinition(MEANING, PURPOSE, STRING));
         composer.commitSession(appendSession);
 
         int expectedVersionCount = 2;
@@ -712,6 +710,8 @@ public class SandboxIT {
     @Test
     public void writeHealthConceptRecords() {
         Composer composer = new Composer("writeHealthConceptRecords");
+        int baselineVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
+        assertEquals(1, baselineVersionCount, "The IKE starter set's versions of HEALTH_CONCEPT");
 
         // Create Concept with multiple UUIDs (i.e., Health Concept)
         Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
@@ -725,7 +725,7 @@ public class SandboxIT {
                 .concept(Concept.make(PublicIds.of(SNOMED_ROOT_UUID))));
         composer.commitSession(snomedRootConceptSession);
 
-        int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
+        int expectedVersionCount = baselineVersionCount + 2; // the 2 versions written above
         int actualVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
@@ -734,6 +734,8 @@ public class SandboxIT {
     @Test
     public void writeFullyQualifiedNameConceptRecords() {
         Composer composer = new Composer("writeFullyQualifiedNameConceptRecords");
+        int baselineVersionCount = EntityHandle.get(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.nid()).expectConcept().versions().size();
+        assertEquals(1, baselineVersionCount, "The IKE starter set's versions of FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE");
 
         // Create Concept with multiple UUIDs (i.e., FullyQualifiedName)
         Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
@@ -747,8 +749,8 @@ public class SandboxIT {
                 .concept(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE));
         composer.commitSession(snomedRootConceptSession);
 
-        int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
-        int actualVersionCount = EntityHandle.get(HEALTH_CONCEPT.nid()).expectConcept().versions().size();
+        int expectedVersionCount = baselineVersionCount + 2; // the 2 versions written above
+        int actualVersionCount = EntityHandle.get(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.nid()).expectConcept().versions().size();
         assertEquals(expectedVersionCount, actualVersionCount,
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }

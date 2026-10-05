@@ -16,13 +16,14 @@ package dev.ikm.tinkar.composer.test;
  * limitations under the License.
  */
 
+import network.ike.foundation.ike.bindings.IkeTerms;
 import dev.ikm.tinkar.terms.KernelTerm;
 import org.junit.jupiter.api.TestInstance;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SnomedTransformIT {
 //    public static final Function<String,File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
-//    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-20250915-reasoned-pb.zip");
+//    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/ike-starter-set-reasoned-pb.zip");
 //    public static final File DATASTORE = createFilePathInTarget.apply("generated-data/" + SnomedTransformIT.class.getSimpleName());
 //    public final Composer COMPOSER_SESSION_MANAGER = new Composer();
 //
@@ -85,7 +86,7 @@ public class SnomedTransformIT {
 //                .with(new Definition(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "International Health Terminology Standards Development Organisation (IHTSDO) SNOMED CT Author", KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
 //                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)));
 //
-//        Concept healthConcept = Concept.make("", TinkarTerm.HEALTH_CONCEPT.publicId());
+//        Concept healthConcept = Concept.make("", IkeTerms.HEALTH_CONCEPT.publicId());
 //        session.composeConcept(healthConcept);
 //
 ////        Concept snomedModule = Concept.make("IHTSDO SNOMED CT Module", UuidUtil.fromSNOMED().nameUUIDFromBytes("IHTSDO SNOMED CT Module".getBytes());

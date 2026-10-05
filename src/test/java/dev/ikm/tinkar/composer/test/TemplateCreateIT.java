@@ -51,19 +51,19 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static dev.ikm.tinkar.terms.KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE;
-import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
+import static network.ike.foundation.ike.bindings.IkeTerms.DEVELOPMENT_MODULE;
 import static dev.ikm.tinkar.terms.KernelTerm.DEVELOPMENT_PATH;
 import static dev.ikm.tinkar.terms.KernelTerm.ENGLISH_LANGUAGE;
 import static dev.ikm.tinkar.terms.KernelTerm.PREFERRED;
 import static dev.ikm.tinkar.terms.KernelTerm.ROOT_VERTEX;
-import static dev.ikm.tinkar.terms.TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER;
+import static network.ike.foundation.ike.bindings.IkeTerms.UNIVERSALLY_UNIQUE_IDENTIFIER;
 import static dev.ikm.tinkar.terms.KernelTerm.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TemplateCreateIT {
     public static final Function<String, File> createFilePathInTarget = (pathName) -> new File("%s/target/%s".formatted(System.getProperty("user.dir"), pathName));
-    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/tinkar-starter-data-20250915-reasoned-pb.zip");
+    public static final File PB_STARTER_DATA = createFilePathInTarget.apply("data/ike-starter-set-reasoned-pb.zip");
     public static State DEFAULT_STATUS = State.ACTIVE;
     public static long DEFAULT_TIME = System.currentTimeMillis();
     public static Concept DEFAULT_AUTHOR = USER;
