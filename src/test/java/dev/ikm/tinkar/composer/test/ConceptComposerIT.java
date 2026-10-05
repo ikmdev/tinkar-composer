@@ -44,7 +44,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import static dev.ikm.tinkar.terms.TinkarTerm.*;
+import static dev.ikm.tinkar.terms.KernelTerm.*;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACCEPTABLE;
+import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
+import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
+import static dev.ikm.tinkar.terms.TinkarTerm.PURPOSE;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ConceptComposerIT {

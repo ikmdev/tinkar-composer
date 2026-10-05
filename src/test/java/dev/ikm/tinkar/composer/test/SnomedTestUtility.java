@@ -15,6 +15,7 @@
  */
 package dev.ikm.tinkar.composer.test;
 
+import dev.ikm.tinkar.terms.KernelTerm;
 import dev.ikm.tinkar.common.id.PublicIds;
 import dev.ikm.tinkar.common.service.PrimitiveData;
 import dev.ikm.tinkar.common.util.io.FileUtil;
@@ -59,8 +60,8 @@ public class SnomedTestUtility {
     public static Concept getLanguageConcept(String languageCode){
         Concept languageConcept = null;
         switch (languageCode) {
-            case "en" -> languageConcept = TinkarTerm.ENGLISH_LANGUAGE;
-            case "es" -> languageConcept = TinkarTerm.SPANISH_LANGUAGE;
+            case "en" -> languageConcept = KernelTerm.ENGLISH_LANGUAGE;
+            case "es" -> languageConcept = KernelTerm.SPANISH_LANGUAGE;
             default -> throw new RuntimeException("UNRECOGNIZED LANGUAGE CODE");
         }
         return languageConcept;
@@ -74,9 +75,9 @@ public class SnomedTestUtility {
     public static Concept getDescriptionCaseSignificanceConcept(String caseSensitivityCode){
         Concept caseSensitivityConcept = null;
         switch (caseSensitivityCode) {
-            case "900000000000448009" -> caseSensitivityConcept = TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE;
-            case "900000000000017005" -> caseSensitivityConcept = TinkarTerm.DESCRIPTION_CASE_SENSITIVE;
-            case "900000000000020002" -> caseSensitivityConcept = TinkarTerm.DESCRIPTION_INITIAL_CHARACTER_CASE_SENSITIVE;
+            case "900000000000448009" -> caseSensitivityConcept = KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE;
+            case "900000000000017005" -> caseSensitivityConcept = KernelTerm.DESCRIPTION_CASE_SENSITIVE;
+            case "900000000000020002" -> caseSensitivityConcept = KernelTerm.DESCRIPTION_INITIAL_CHARACTER_CASE_SENSITIVE;
             default -> throw new RuntimeException("UNRECOGNIZED CASE SENSITIVITY CODE");
         }
         return caseSensitivityConcept;
@@ -90,9 +91,9 @@ public class SnomedTestUtility {
      public static Concept getDescriptionType(String descriptionTypeCode){
         Concept descriptionTypeConcept = null;
         switch (descriptionTypeCode) {
-            case "900000000000550004" -> descriptionTypeConcept = TinkarTerm.DEFINITION_DESCRIPTION_TYPE;
-            case "900000000000003001" -> descriptionTypeConcept = TinkarTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE;
-            case "900000000000013009" -> descriptionTypeConcept = TinkarTerm.REGULAR_NAME_DESCRIPTION_TYPE;
+            case "900000000000550004" -> descriptionTypeConcept = KernelTerm.DEFINITION_DESCRIPTION_TYPE;
+            case "900000000000003001" -> descriptionTypeConcept = KernelTerm.FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE;
+            case "900000000000013009" -> descriptionTypeConcept = KernelTerm.REGULAR_NAME_DESCRIPTION_TYPE;
             default -> throw new RuntimeException("UNRECOGNIZED DESCRIPTION TYPE CODE");
         }
         return descriptionTypeConcept;
@@ -106,8 +107,8 @@ public class SnomedTestUtility {
     public static EntityProxy.Pattern getDialectPattern(String dialectRefsetId) {
         EntityProxy.Pattern dialectPattern = null;
         switch (dialectRefsetId) {
-            case "900000000000509007" -> dialectPattern = TinkarTerm.US_DIALECT_PATTERN;
-            case "900000000000508004" -> dialectPattern = TinkarTerm.GB_DIALECT_PATTERN;
+            case "900000000000509007" -> dialectPattern = KernelTerm.US_DIALECT_PATTERN;
+            case "900000000000508004" -> dialectPattern = KernelTerm.GB_DIALECT_PATTERN;
             default -> throw new RuntimeException("UNRECOGNIZED ACCEPTABILITY CODE");
         }
         return dialectPattern;
@@ -121,7 +122,7 @@ public class SnomedTestUtility {
     public static Concept getDialectAccceptability(String acceptabilityCode){
         Concept acceptabilityConcept = null;
         switch (acceptabilityCode) {
-            case "900000000000548007" -> acceptabilityConcept = TinkarTerm.PREFERRED;
+            case "900000000000548007" -> acceptabilityConcept = KernelTerm.PREFERRED;
             case "900000000000549004" -> acceptabilityConcept = TinkarTerm.ACCEPTABLE;
             default -> throw new RuntimeException("UNRECOGNIZED ACCEPTABILITY CODE");
         }
@@ -135,7 +136,7 @@ public class SnomedTestUtility {
         public static Concept getUserConcept(){
         Concept snomedAuthor = Concept.make("IHTSDO SNOMED CT Author", UUID.nameUUIDFromBytes("IHTSDO SNOMED CT Author".getBytes()));
         return snomedAuthor;
-//        return TinkarTerm.USER;
+//        return KernelTerm.USER;
     }
 
     /**
@@ -143,7 +144,7 @@ public class SnomedTestUtility {
      * @return TinkarTerm from Concept class
      */
     public static Concept getPathConcept(){
-        return TinkarTerm.DEVELOPMENT_PATH;
+        return KernelTerm.DEVELOPMENT_PATH;
     }
 
     /**

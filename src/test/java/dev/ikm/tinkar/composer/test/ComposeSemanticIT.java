@@ -53,7 +53,10 @@ import java.io.File;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static dev.ikm.tinkar.terms.TinkarTerm.*;
+import static dev.ikm.tinkar.terms.KernelTerm.*;
+import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
+import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
+import static dev.ikm.tinkar.terms.TinkarTerm.PURPOSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

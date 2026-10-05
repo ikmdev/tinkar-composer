@@ -16,6 +16,7 @@ package dev.ikm.tinkar.composer.test;
  * limitations under the License.
  */
 
+import dev.ikm.tinkar.terms.KernelTerm;
 import org.junit.jupiter.api.TestInstance;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -69,32 +70,32 @@ public class SnomedTransformIT {
 //    private void loadSnomedStarterData() {
 //        State status = State.ACTIVE;
 //        long time = PrimitiveData.PRE_INCEPTION_TIME;
-//        Concept author = TinkarTerm.USER;
-//        Concept module = TinkarTerm.PRIMORDIAL_MODULE;
-//        Concept path = TinkarTerm.PRIMORDIAL_PATH;
+//        Concept author = KernelTerm.USER;
+//        Concept module = KernelTerm.PRIMORDIAL_MODULE;
+//        Concept path = KernelTerm.PRIMORDIAL_PATH;
 //
 //        ComposerSession session = COMPOSER_SESSION_MANAGER.makeSession(status, time, author, module, path);
 //
 //        Concept snomedAuthor = Concept.make("IHTSDO SNOMED CT Author", UUID.nameUUIDFromBytes("IHTSDO SNOMED CT Author".getBytes()));
 //        session.composeConcept(snomedAuthor)
-//                .with(new FullyQualifiedName(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "IHTSDO SNOMED CT Author", TinkarTerm.DESCRIPTION_CASE_SENSITIVE)
-//                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)))
-//                .with(new Synonym(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "SNOMED CT Author", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
-//                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)))
-//                .with(new Definition(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "International Health Terminology Standards Development Organisation (IHTSDO) SNOMED CT Author", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
-//                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)));
+//                .with(new FullyQualifiedName(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "IHTSDO SNOMED CT Author", KernelTerm.DESCRIPTION_CASE_SENSITIVE)
+//                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)))
+//                .with(new Synonym(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "SNOMED CT Author", KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
+//                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)))
+//                .with(new Definition(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "International Health Terminology Standards Development Organisation (IHTSDO) SNOMED CT Author", KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
+//                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)));
 //
 //        Concept healthConcept = Concept.make("", TinkarTerm.HEALTH_CONCEPT.publicId());
 //        session.composeConcept(healthConcept);
 //
 ////        Concept snomedModule = Concept.make("IHTSDO SNOMED CT Module", UuidUtil.fromSNOMED().nameUUIDFromBytes("IHTSDO SNOMED CT Module".getBytes());
 ////        session.composeConcept(snomedModule)
-////                .with(new FullyQualifiedName(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "IHTSDO SNOMED CT Module", TinkarTerm.DESCRIPTION_CASE_SENSITIVE)
-////                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)))
-////                .with(new Synonym(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "SNOMED CT Module", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
-////                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)))
-////                .with(new Definition(Semantic.make(PublicIds.newRandom()), TinkarTerm.ENGLISH_LANGUAGE, "International Health Terminology Standards Development Organisation (IHTSDO) SNOMED CT Module", TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
-////                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),TinkarTerm.PREFERRED)));
+////                .with(new FullyQualifiedName(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "IHTSDO SNOMED CT Module", KernelTerm.DESCRIPTION_CASE_SENSITIVE)
+////                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)))
+////                .with(new Synonym(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "SNOMED CT Module", KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
+////                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)))
+////                .with(new Definition(Semantic.make(PublicIds.newRandom()), KernelTerm.ENGLISH_LANGUAGE, "International Health Terminology Standards Development Organisation (IHTSDO) SNOMED CT Module", KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE)
+////                        .with(new USEnglishDialect(Semantic.make(PublicIds.newRandom()),KernelTerm.PREFERRED)));
 //
 //        COMPOSER_SESSION_MANAGER.closeSession(session);
 //    }
@@ -207,7 +208,7 @@ public class SnomedTransformIT {
 //                        ComposerSession session = COMPOSER_SESSION_MANAGER.makeSession(status, time, author, module, path);
 //                        session.composeSemantic(Semantic.make(PublicIds.of(UuidUtil.fromSNOMED(data[ID]))),
 //                                referencedComponent,
-//                                TinkarTerm.DESCRIPTION_PATTERN,
+//                                KernelTerm.DESCRIPTION_PATTERN,
 //                                Lists.immutable.of(
 //                                        languageType,
 //                                        data[TERM],

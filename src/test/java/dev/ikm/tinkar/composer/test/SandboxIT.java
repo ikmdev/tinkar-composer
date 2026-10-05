@@ -62,7 +62,16 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static dev.ikm.tinkar.terms.TinkarTerm.*;
+import static dev.ikm.tinkar.terms.KernelTerm.*;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACCEPTABLE;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_NAME;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_PROPERTIES;
+import static dev.ikm.tinkar.terms.TinkarTerm.ACTION_PURPOSE;
+import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
+import static dev.ikm.tinkar.terms.TinkarTerm.HEALTH_CONCEPT;
+import static dev.ikm.tinkar.terms.TinkarTerm.MEANING;
+import static dev.ikm.tinkar.terms.TinkarTerm.MODEL_CONCEPT;
+import static dev.ikm.tinkar.terms.TinkarTerm.PURPOSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

@@ -50,14 +50,14 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static dev.ikm.tinkar.terms.TinkarTerm.DESCRIPTION_NOT_CASE_SENSITIVE;
+import static dev.ikm.tinkar.terms.KernelTerm.DESCRIPTION_NOT_CASE_SENSITIVE;
 import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_MODULE;
-import static dev.ikm.tinkar.terms.TinkarTerm.DEVELOPMENT_PATH;
-import static dev.ikm.tinkar.terms.TinkarTerm.ENGLISH_LANGUAGE;
-import static dev.ikm.tinkar.terms.TinkarTerm.PREFERRED;
-import static dev.ikm.tinkar.terms.TinkarTerm.ROOT_VERTEX;
+import static dev.ikm.tinkar.terms.KernelTerm.DEVELOPMENT_PATH;
+import static dev.ikm.tinkar.terms.KernelTerm.ENGLISH_LANGUAGE;
+import static dev.ikm.tinkar.terms.KernelTerm.PREFERRED;
+import static dev.ikm.tinkar.terms.KernelTerm.ROOT_VERTEX;
 import static dev.ikm.tinkar.terms.TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER;
-import static dev.ikm.tinkar.terms.TinkarTerm.USER;
+import static dev.ikm.tinkar.terms.KernelTerm.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
