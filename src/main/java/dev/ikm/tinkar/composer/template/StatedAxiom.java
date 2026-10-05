@@ -22,7 +22,7 @@ import dev.ikm.tinkar.terms.ConceptFacade;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import dev.ikm.tinkar.terms.TinkarTerm;
+import dev.ikm.tinkar.terms.KernelTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.factory.primitive.IntIntMaps;
 import org.eclipse.collections.api.factory.primitive.IntLists;
@@ -52,12 +52,12 @@ public class StatedAxiom extends SingleSemanticTemplate {
     public StatedAxiom isA(Concept... originConcepts) {
         for (Concept originConcept : originConcepts) {
             MutableIntObjectMap<Object> referenceProperty = IntObjectMaps.mutable.empty();
-            referenceProperty.put(TinkarTerm.CONCEPT_REFERENCE.nid(), originConcept.toProxy());
+            referenceProperty.put(KernelTerm.CONCEPT_REFERENCE.nid(), originConcept.toProxy());
 
             EntityVertex originVertex = EntityVertex.make(originConcept);
             originVertex.setProperties(referenceProperty);
             originVertex.setVertexIndex(vertexIdx.getAndIncrement());
-            originVertex.setMeaningNid(TinkarTerm.CONCEPT_REFERENCE.nid());
+            originVertex.setMeaningNid(KernelTerm.CONCEPT_REFERENCE.nid());
             originVertexList.with(originVertex);
         }
         return this;
@@ -71,7 +71,7 @@ public class StatedAxiom extends SingleSemanticTemplate {
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.EL_PLUS_PLUS_STATED_AXIOMS_PATTERN;
+        return KernelTerm.EL_PLUS_PLUS_STATED_AXIOMS_PATTERN;
     }
 
     @Override
@@ -108,14 +108,14 @@ public class StatedAxiom extends SingleSemanticTemplate {
         int necessarySetIndex = vertexIdx.getAndIncrement();
 
         //Construct Vertex Map
-        EntityVertex definitionRootVertex = createEntityVertex(IDX_DEFINITION_ROOT, TinkarTerm.DEFINITION_ROOT);
+        EntityVertex definitionRootVertex = createEntityVertex(IDX_DEFINITION_ROOT, KernelTerm.DEFINITION_ROOT);
         vertexMap.add(definitionRootVertex);
         for (EntityVertex originVertex : originVertexList) {
             vertexMap.add(originVertex.vertexIndex(), originVertex);
             originVertexIdxList.add(originVertex.vertexIndex());
         }
-        vertexMap.add(createEntityVertex(andIndex, TinkarTerm.AND));
-        vertexMap.add(createEntityVertex(necessarySetIndex, TinkarTerm.NECESSARY_SET));
+        vertexMap.add(createEntityVertex(andIndex, KernelTerm.AND));
+        vertexMap.add(createEntityVertex(necessarySetIndex, KernelTerm.NECESSARY_SET));
 
         //Construct Successor Map
         successorMap.put(IDX_DEFINITION_ROOT, IntLists.immutable.of(necessarySetIndex));

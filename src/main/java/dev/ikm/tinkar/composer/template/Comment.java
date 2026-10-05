@@ -18,7 +18,7 @@ package dev.ikm.tinkar.composer.template;
 import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import dev.ikm.tinkar.terms.TinkarTerm;
+import dev.ikm.tinkar.terms.KernelTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
@@ -53,7 +53,7 @@ public class Comment extends SemanticTemplate {
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.COMMENT_PATTERN;
+        return KernelTerm.COMMENT_PATTERN;
     }
 
     @Override

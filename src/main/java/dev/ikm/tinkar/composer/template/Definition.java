@@ -19,7 +19,7 @@ import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import dev.ikm.tinkar.terms.TinkarTerm;
+import dev.ikm.tinkar.terms.KernelTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
@@ -69,12 +69,12 @@ public class Definition extends SemanticTemplate {
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.DESCRIPTION_PATTERN;
+        return KernelTerm.DESCRIPTION_PATTERN;
     }
 
     @Override
     protected ImmutableList<Object> assignFieldValues() {
-        return Lists.immutable.of(language, text, caseSignificance, TinkarTerm.DEFINITION_DESCRIPTION_TYPE);
+        return Lists.immutable.of(language, text, caseSignificance, KernelTerm.DEFINITION_DESCRIPTION_TYPE);
     }
 
     @Override

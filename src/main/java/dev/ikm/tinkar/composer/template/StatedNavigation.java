@@ -22,7 +22,7 @@ import dev.ikm.tinkar.terms.EntityProxy;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import dev.ikm.tinkar.terms.TinkarTerm;
+import dev.ikm.tinkar.terms.KernelTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
@@ -64,7 +64,7 @@ public class StatedNavigation extends SingleSemanticTemplate {
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.STATED_NAVIGATION_PATTERN;
+        return KernelTerm.STATED_NAVIGATION_PATTERN;
     }
 
     @Override

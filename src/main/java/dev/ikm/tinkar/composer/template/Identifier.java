@@ -19,7 +19,7 @@ import dev.ikm.tinkar.composer.SemanticTemplate;
 import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
-import dev.ikm.tinkar.terms.TinkarTerm;
+import dev.ikm.tinkar.terms.KernelTerm;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
 
@@ -58,7 +58,7 @@ public class Identifier extends SemanticTemplate {
 
     @Override
     protected Pattern assignPattern() {
-        return TinkarTerm.IDENTIFIER_PATTERN;
+        return KernelTerm.IDENTIFIER_PATTERN;
     }
 
     @Override
