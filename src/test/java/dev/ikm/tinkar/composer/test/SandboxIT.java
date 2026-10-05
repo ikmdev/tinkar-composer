@@ -74,6 +74,10 @@ public class SandboxIT {
     public static Concept DEFAULT_AUTHOR = USER;
     public static Concept DEFAULT_MODULE = DEVELOPMENT_MODULE;
     public static Concept DEFAULT_PATH = DEVELOPMENT_PATH;
+    /** One of {@code HEALTH_CONCEPT}'s UUIDs: the SNOMED CT root concept's. */
+    private static final UUID SNOMED_ROOT_UUID = UUID.fromString("ee9ac5d2-a07c-3981-a57a-f7f26baf38d8");
+    /** One of {@code FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE}'s UUIDs. */
+    private static final UUID FULLY_QUALIFIED_NAME_UUID = UUID.fromString("00791270-77c9-32b6-b34f-d932569bd2bf");
     public static final File DATASTORE = createFilePathInTarget.apply("generated-data/" + SandboxIT.class.getSimpleName());
 
     private static final Pattern testPattern = EntityProxy.Pattern.make(PublicIds.of("451c6aa4-8319-4b15-ace7-922285eb268f"));
@@ -649,9 +653,10 @@ public class SandboxIT {
     // ### START: Miscellaneous Tests
     @Test
     public void writeConceptWithOneThenMultipleUuids() {
-        PublicId pubIdWithTwoUuids = PublicIds.of(UUID.randomUUID(), UUID.randomUUID());
-        Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
-        Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
+        UUID uuid1 = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        Concept conceptWithSingleUuid = Concept.make(PublicIds.of(uuid1));
+        Concept conceptWithMultipleUuids = Concept.make(PublicIds.of(uuid1, uuid2));
         Composer composer = new Composer("writeConceptWithOneThenMultipleUuids");
 
         // Create Concept with one Uuids
@@ -672,9 +677,10 @@ public class SandboxIT {
 
     @Test
     public void writeConceptWithMultipleThenOneUuids() {
-        PublicId pubIdWithTwoUuids = PublicIds.of(UUID.randomUUID(), UUID.randomUUID());
-        Concept conceptWithSingleUuid = Concept.make(PublicIds.of(pubIdWithTwoUuids.asUuidArray()[0]));
-        Concept conceptWithMultipleUuids = Concept.make(pubIdWithTwoUuids);
+        UUID uuid1 = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        Concept conceptWithSingleUuid = Concept.make(PublicIds.of(uuid1));
+        Concept conceptWithMultipleUuids = Concept.make(PublicIds.of(uuid1, uuid2));
         Composer composer = new Composer("writeConceptWithMultipleThenOneUuids");
 
         // Create Concept with multiple Uuids
@@ -707,7 +713,7 @@ public class SandboxIT {
         // Create Concept version for a single UUID in the PublicId from the Concept above
         Session snomedRootConceptSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         snomedRootConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-                .concept(Concept.make(PublicIds.of(HEALTH_CONCEPT.asUuidArray()[0]))));
+                .concept(Concept.make(PublicIds.of(SNOMED_ROOT_UUID))));
         composer.commitSession(snomedRootConceptSession);
 
         int expectedVersionCount = 3; // First version is Pre-inception time from TinkarStarterData, next 2 versions are written above
@@ -723,7 +729,7 @@ public class SandboxIT {
         // Create Concept with multiple UUIDs (i.e., FullyQualifiedName)
         Session healthConceptSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
         healthConceptSession.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
-                .concept(Concept.make(PublicIds.of(FULLY_QUALIFIED_NAME_DESCRIPTION_TYPE.asUuidArray()[0]))));
+                .concept(Concept.make(PublicIds.of(FULLY_QUALIFIED_NAME_UUID))));
         composer.commitSession(healthConceptSession);
 
         // Create Concept version for a single UUID in the PublicId from the Concept above
@@ -738,34 +744,6 @@ public class SandboxIT {
                 String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
     }
 
-//    @Test
-//    @Disabled
-//    public void writeSemanticWithMergableVersions() {
-//        PublicId conceptId = PublicIds.newRandom();
-//        PublicId initialSemanticId = PublicIds.newRandom();
-//        PublicId semanticIdWithExtraUuid = PublicIds.of(initialSemanticId.asUuidArray()[0], PublicIds.newRandom().asUuidArray()[0]);
-//        Concept referencedConcept = Concept.make(conceptId);
-//        Composer composer = new Composer("writeSemanticWithMergableVersions");
-//
-//        // Create Initial Semantic Version from Template
-//        Session initSession = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-//        initSession.compose(new Synonym(Semantic.make(initialSemanticId), ENGLISH_LANGUAGE,
-//                        "Synonym Version with single UUID", DESCRIPTION_NOT_CASE_SENSITIVE),
-//                referencedConcept);
-//        composer.commitSession(initSession);
-//
-//        // Append Semantic Version from Template
-//        Session appendSession = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-//        appendSession.compose(new Synonym(Semantic.make(semanticIdWithExtraUuid), ENGLISH_LANGUAGE,
-//                        "Synonym Version with multiple UUIDs", DESCRIPTION_NOT_CASE_SENSITIVE),
-//                referencedConcept);
-//        composer.commitSession(appendSession);
-//
-//        int expectedVersionCount = 2;
-//        int actualVersionCount = EntityService.get().getEntityFast(semanticIdWithExtraUuid.asUuidArray()).versions().size();
-//        assertEquals(expectedVersionCount, actualVersionCount,
-//                String.format("Expected %s versions after append, but there were %s versions instead.", expectedVersionCount, actualVersionCount));
-//    }
 
     @Test
     public void complexCreateTest() {
@@ -841,53 +819,6 @@ public class SandboxIT {
                     SemanticEntityVersion semanticEntityVersion = semanticEntity.versions().get(0);
                     semanticEntityVersion.active();
                 });
-
-
-//        Concept conceptId = EntityProxy.Concept.make(PublicIds.of(UuidUtil.fromSNOMED("2309482309")));
-//        long epochTime2002 = new SimpleDateFormat("yyyyMMdd").parse("20020131").getTime();
-//        Session session2002 = composer.open(DEFAULT_STATUS, epochTime2002, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-//        session2002.compose((ConceptAssembler concept) -> concept
-//                .concept(conceptId));
-//
-//        long epochTime2017 = new SimpleDateFormat("yyyyMMdd").parse("20170731").getTime();
-//        Session session2017 = composer.open(DEFAULT_STATUS, epochTime2017, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-//        session2017.compose((ConceptAssembler concept) -> concept
-//                .concept(conceptId));
-//
-//        composer.cancelAllSessions();
-////        composer.commitSession(session2002);
-////        composer.commitAllSessions();
-//
-//        assertEquals(2, EntityService.get().getEntityFast(conceptId).versions().size(), "Versions should be 2");
-//
-//        Session session = composer.open(DEFAULT_STATUS, System.currentTimeMillis(), DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
-//        session.compose((ConceptAssembler concept) -> concept
-//                .concept(ENGLISH_DIALECT_ASSEMBLAGE))
-//                        .attach(FullyQualifiedName.class, fqn -> fqn
-//                                .language(ENGLISH_LANGUAGE)
-//                                .text("English Dialect")
-//                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-//                                .attach(USDialect.class, usDialect -> usDialect
-//                                        .acceptability(PREFERRED)))
-//                        .attach(Synonym.class, synonym -> synonym
-//                                .language(ENGLISH_LANGUAGE)
-//                                .text("English Dialect")
-//                                .caseSignificance(DESCRIPTION_NOT_CASE_SENSITIVE)
-//                                .attach(USDialect.class, usDialect -> usDialect
-//                                        .acceptability(PREFERRED))))
-//
-//
-//
-//        starterData.concept(TinkarTerm.ENGLISH_DIALECT_ASSEMBLAGE)
-//                .fullyQualifiedName("English Dialect", TinkarTerm.PREFERRED)
-//                .synonym("English dialect", TinkarTerm.PREFERRED)
-//                .definition("Specifies the dialect of the English language", TinkarTerm.PREFERRED)
-//                .identifier(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER, TinkarTerm.ENGLISH_DIALECT_ASSEMBLAGE.asUuidArray()[0].toString())
-//                .statedNavigation(List.of(TinkarTerm.GB_ENGLISH_DIALECT, TinkarTerm.US_ENGLISH_DIALECT), List.of(TinkarTerm.DIALECT_ASSEMBLAGE))
-//                .statedDefinition(List.of(TinkarTerm.DIALECT_ASSEMBLAGE))
-//                .tinkarBaseModelMembership()
-//                .build();
-
     }
 
 //    @Test

@@ -283,7 +283,9 @@ public class ComposeSemanticIT {
         Composer composer = new Composer("createSemanticWithIdentifierTest");
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        Semantic semanticProxy = Semantic.make(PublicIds.newRandom());
+        UUID semanticUuid = UUID.randomUUID();
+
+        Semantic semanticProxy = Semantic.make(PublicIds.of(semanticUuid));
         session.compose((SemanticAssembler semanticAssembler) -> semanticAssembler
                 .reference(ROOT_VERTEX)
                 .pattern(COOL_NEW_PATTERN)
@@ -291,7 +293,7 @@ public class ComposeSemanticIT {
                         .add("String Field Value for Cool New Pattern"))
                 .attach(Identifier.class, identifier -> identifier
                         .source(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER)
-                        .identifier(semanticProxy.publicId().asUuidArray()[0].toString())));
+                        .identifier(semanticUuid.toString())));
 
         composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
@@ -558,11 +560,13 @@ public class ComposeSemanticIT {
         Composer composer = new Composer("createSemanticFromSupplierWithIdentifierTest");
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        Semantic semanticProxy = Semantic.make(PublicIds.newRandom());
+        UUID semanticUuid = UUID.randomUUID();
+
+        Semantic semanticProxy = Semantic.make(PublicIds.of(semanticUuid));
         session.compose(new CustomSemantic().text("Custom Semantic from Supplier"), DEFAULT_REF_PROXY)
                 .attach(Identifier.class, identifier -> identifier
                         .source(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER)
-                        .identifier(semanticProxy.publicId().asUuidArray()[0].toString()));
+                        .identifier(semanticUuid.toString()));
 
         composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;

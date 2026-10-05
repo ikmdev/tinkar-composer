@@ -261,14 +261,16 @@ public class ComposePatternIT {
         Composer composer = new Composer("createPatternWithIdentifierTest");
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        Pattern patternProxy = Pattern.make(PublicIds.newRandom());
+        UUID patternUuid = UUID.randomUUID();
+
+        Pattern patternProxy = Pattern.make(PublicIds.of(patternUuid));
         session.compose((PatternAssembler patternAssembler) -> patternAssembler
                 .meaning(MEANING)
                 .purpose(PURPOSE)
                 .fieldDefinition(MEANING, PURPOSE, STRING)
                 .attach(Identifier.class, identifier -> identifier
                         .source(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER)
-                        .identifier(patternProxy.publicId().asUuidArray()[0].toString())));
+                        .identifier(patternUuid.toString())));
 
         composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;

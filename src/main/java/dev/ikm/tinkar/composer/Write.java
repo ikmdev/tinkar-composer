@@ -22,15 +22,12 @@ import dev.ikm.tinkar.terms.EntityProxy.Concept;
 import dev.ikm.tinkar.terms.EntityProxy.Pattern;
 import dev.ikm.tinkar.terms.EntityProxy.Semantic;
 import org.eclipse.collections.api.factory.Lists;
-import org.eclipse.collections.api.factory.primitive.LongLists;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.list.primitive.ImmutableLongList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.UUID;
 
 public class Write {
 
@@ -40,23 +37,9 @@ public class Write {
 
     public record PatternDefinition(Concept meaning, Concept purpose, Concept datatype, int index) {}
 
-    private static long[] createAdditionalLongs(PublicId publicId) {
-        long[] additionalLongs = new long[(publicId.uuidCount() * 2) - 2];
-        int index = 0;
-        for (int i = 1; i < publicId.uuidCount(); i++) {
-            UUID uuid = publicId.asUuidArray()[i];
-            additionalLongs[index++] = uuid.getMostSignificantBits();
-            additionalLongs[index++] = uuid.getLeastSignificantBits();
-        }
-        return additionalLongs.length == 0 ? null : additionalLongs;
-    }
-
     public static void concept(Concept concept, PublicId stampId) {
-        //Pull out primordial UUID from PublicId
-        UUID primordialUUID = concept.asUuidArray()[0];
-
-        //Process additional UUID longs from PublicId
-        ImmutableLongList additionalLongs = LongLists.immutable.of(createAdditionalLongs(concept));
+        //Every UUID of the PublicId goes into the record header
+        PublicIdentifierRecord identifier = PublicIdentifierRecord.make(concept);
 
         //Create empty version list
         RecordListBuilder<ConceptVersionRecord> versions = RecordListBuilder.make();
@@ -67,9 +50,9 @@ public class Write {
         //Create Concept Chronology
         ConceptRecord conceptRecord = ConceptRecordBuilder.builder()
                 .nid(concept.nid())
-                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
-                .mostSignificantBits(primordialUUID.getMostSignificantBits())
-                .additionalUuidLongs(additionalLongs)
+                .leastSignificantBits(identifier.leastSignificantBits())
+                .mostSignificantBits(identifier.mostSignificantBits())
+                .additionalUuidLongs(identifier.additionalUuidLongs())
                 .versions(versions)
                 .build();
 
@@ -87,11 +70,8 @@ public class Write {
     public static void pattern(Pattern pattern, PublicId stampId,
                                Concept meaning, Concept purpose,
                                List<PatternDefinition> patternDefinitions){
-        //Pull out primordial UUID from PublicId
-        UUID primordialUUID = pattern.asUuidArray()[0];
-
-        //Process additional UUID longs from PublicId
-        ImmutableLongList additionalLongs = LongLists.immutable.of(createAdditionalLongs(pattern));
+        //Every UUID of the PublicId goes into the record header
+        PublicIdentifierRecord identifier = PublicIdentifierRecord.make(pattern);
 
         //Create empty version list
         RecordListBuilder<PatternVersionRecord> versions = RecordListBuilder.make();
@@ -102,9 +82,9 @@ public class Write {
         //Create Pattern Chronology
         PatternRecord patternRecord = PatternRecordBuilder.builder()
                 .nid(pattern.nid())
-                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
-                .mostSignificantBits(primordialUUID.getMostSignificantBits())
-                .additionalUuidLongs(additionalLongs)
+                .leastSignificantBits(identifier.leastSignificantBits())
+                .mostSignificantBits(identifier.mostSignificantBits())
+                .additionalUuidLongs(identifier.additionalUuidLongs())
                 .versions(versions.toImmutable())
                 .build();
 
@@ -141,11 +121,8 @@ public class Write {
     }
 
     public static void semantic(Semantic semantic, PublicId stampId, EntityProxy referencedComponent, Pattern pattern, ImmutableList<Object> fieldValues) {
-        //Assign primordial UUID from PublicId
-        UUID primordialUUID = semantic.asUuidArray()[0];
-
-        //Process additional UUID longs from PublicId
-        ImmutableLongList additionalLongs = LongLists.immutable.of(createAdditionalLongs(semantic));
+        //Every UUID of the PublicId goes into the record header
+        PublicIdentifierRecord identifier = PublicIdentifierRecord.make(semantic);
 
         //Create empty version list
         RecordListBuilder<SemanticVersionRecord> versions = RecordListBuilder.make();
@@ -156,9 +133,9 @@ public class Write {
         //Create Semantic Chronology
         SemanticRecord semanticRecord = SemanticRecordBuilder.builder()
                 .nid(semantic.nid())
-                .leastSignificantBits(primordialUUID.getLeastSignificantBits())
-                .mostSignificantBits(primordialUUID.getMostSignificantBits())
-                .additionalUuidLongs(additionalLongs)
+                .leastSignificantBits(identifier.leastSignificantBits())
+                .mostSignificantBits(identifier.mostSignificantBits())
+                .additionalUuidLongs(identifier.additionalUuidLongs())
                 .patternNid(pattern.nid())
                 .referencedComponentNid(referencedComponent.nid())
                 .versions(versions.toImmutable())

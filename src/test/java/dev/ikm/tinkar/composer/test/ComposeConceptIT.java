@@ -234,11 +234,13 @@ public class ComposeConceptIT {
         Composer composer = new Composer("createConceptWithIdentifierTest");
         Session session = composer.open(DEFAULT_STATUS, DEFAULT_TIME, DEFAULT_AUTHOR, DEFAULT_MODULE, DEFAULT_PATH);
 
-        Concept conceptProxy = Concept.make(PublicIds.newRandom());
+        UUID conceptUuid = UUID.randomUUID();
+
+        Concept conceptProxy = Concept.make(PublicIds.of(conceptUuid));
         session.compose((ConceptAssembler conceptAssembler) -> conceptAssembler
                 .attach(Identifier.class, identifier -> identifier
                         .source(TinkarTerm.UNIVERSALLY_UNIQUE_IDENTIFIER)
-                        .identifier(conceptProxy.publicId().asUuidArray()[0].toString())));
+                        .identifier(conceptUuid.toString())));
 
         composer.commitSession(session);
         int expectedComponentsUpdatedCount = 2;
