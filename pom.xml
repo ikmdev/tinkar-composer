@@ -11,7 +11,7 @@
 
     <groupId>dev.ikm.tinkar</groupId>
     <artifactId>composer</artifactId>
-    <version>1.14.5-64bit-SNAPSHOT</version>
+    <version>1.14.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>IKM Tinkar Composer</name>
@@ -64,9 +64,9 @@
     <properties>
         <maven.compiler.enablePreview>true</maven.compiler.enablePreview>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
-        <tinkar-core.version>1.127.7-64bit-SNAPSHOT</tinkar-core.version>
+        <tinkar-core.version>1.127.7-SNAPSHOT</tinkar-core.version>
         <!-- The IKE starter set the tests load, from starter-data-ws, which builds after this repository. -->
-        <ike-starter-set.version>1-64bit-SNAPSHOT</ike-starter-set.version>
+        <ike-starter-set.version>1-SNAPSHOT</ike-starter-set.version>
 
         <!-- JPMS Dependencies -->
         <tinkar-jpms-deps.groupId>dev.ikm.jpms</tinkar-jpms-deps.groupId>
@@ -89,7 +89,7 @@
             <dependency>
                 <groupId>dev.ikm.komet</groupId>
                 <artifactId>komet-bom</artifactId>
-                <version>3.0.12-64bit-SNAPSHOT</version>
+                <version>3.0.12-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
